@@ -2,3 +2,6 @@
 /__pycache__
 /dist
 /build
+.idea/misc.xml
+.idea/MyTrans.iml
+.idea/vcs.xml
