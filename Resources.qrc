@@ -1,0 +1,44 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+        <file alias="AI">./Resources/AI.png</file>
+        <file alias="dickbookgray">./Resources/dickbookgray.png</file>
+        <file alias="dickbookred">./Resources/dickbookred.png</file>
+        <file alias="firstpagegray">./Resources/firstpagegray.png</file>
+        <file alias="firstpagered">./Resources/firstpagered.png</file>
+        <file alias="mytransgray">./Resources/mytransgray.png</file>
+        <file alias="mytransred">./Resources/mytransred.png</file>
+        <file alias="shotimg">./Resources/shotimg.png</file>
+        <file alias="soulunwengray">./Resources/soulunwengray.png</file>
+        <file alias="soulunwenred">./Resources/soulunwenred.png</file>
+        <file alias="transgray">./Resources/transgray.png</file>
+        <file alias="transred">./Resources/transred.png</file>
+        <file alias="user">./Resources/user.svg</file>
+        <file alias="writegray">./Resources/writegray.png</file>
+        <file alias="writered">./Resources/writered.png</file>
+        <file alias="CkOpen">./Resources/CkOpen.png</file>
+        <file alias="CkClose">./Resources/CkClose.png</file>
+        <file alias="close16">./Resources/close16.svg</file>
+        <file alias="max16">./Resources/max16.svg</file>
+        <file alias="normal16">./Resources/normal16.svg</file>
+        <file alias="min16">./Resources/min16.svg</file>
+        <file alias="menu16">./Resources/menu16.svg</file>
+        <file alias="login_logo">./Resources/LoginDlg/login_logo.svg</file>
+        <file alias="login_logo2">./Resources/LoginDlg/login_logo2.jpg</file>
+        <file alias="login_pwd">./Resources/LoginDlg/login_pwd.svg</file>
+        <file alias="login_user">./Resources/LoginDlg/login_user.svg</file>
+        <file alias="QQ">./Resources/LoginDlg/QQ.svg</file>
+        <file alias="weibo">./Resources/LoginDlg/weibo.svg</file>
+        <file alias="weichat">./Resources/LoginDlg/weichat.svg</file>
+        <file alias="down_arrow">./Resources/down_arrow.svg</file>
+        <file alias="keda">./Resources/LoginDlg/keda.jpg</file>
+
+
+        <file alias="double">./Resources/Keda/double_top2.png</file>
+        <file alias="single">./Resources/Keda/single_top2.png</file>
+        <file alias="equal">./Resources/Keda/equal_top2.png</file>
+        <file alias="middle">./Resources/Keda/middle2.png</file>
+        <file alias="bottom">./Resources/Keda/bottom2.png</file>
+
+    </qresource>
+</RCC>
