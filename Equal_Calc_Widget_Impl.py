@@ -2,6 +2,10 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QMovie
 from PySide6.QtWidgets import QWidget, QLabel
 import math
+
+from matplotlib import pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 import Equal_Calc
 import Equal_Calc_Parameter_Calculate
 from Equal_Calc_Polishing_Distribution_Simulation import Polishing_distribution_Thread
@@ -176,7 +180,7 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
     def trajectory_animation_ready(self,str_22):
         # 加载GIF动画
         print(str_22)
-        self.movie = QMovie('./animation_name.gif')
+        self.movie = QMovie('./animation.gif')
         #self.movie.setloopCount(1)  # 设置只播放一次
         self.gif_label.setMovie(self.movie)
         self.movie.start()
