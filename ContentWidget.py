@@ -7,12 +7,12 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QWidget, QStackedWidget, QVBoxLayout, QStyleOption, QStyle, QMainWindow
 
-from DoubleCalcWidgetImpl import DoubleCalcWidgetImpl
-from DoubleSimWidgetImpl import DoubleSimWidgetImpl
-from EqualSimWidgetImpl import EqualSimWidgetImpl
-from EqualWidgetImpl import EqualWidgetImpl
-from SingleCalcWidgetImpl import SingleCalcWidgetImpl
-from SingleSimWidgetImpl import SingleSimWidgetImpl
+from Double_Calc_WidgetImpl import DoubleCalcWidgetImpl
+from Double_Sim_WidgetImpl import DoubleSimWidgetImpl
+from Equal_Sim_WidgetImpl import EqualSimWidgetImpl
+from Equal_Calc_Widget_Impl import EqualWidgetImpl
+from Single_Calc_Widget_Impl import SingleCalcWidgetImpl
+from Single_Sim_Widget_Impl import SingleSimWidgetImpl
 from TransWidgetImpl import TransWidgetImpl
 
 
