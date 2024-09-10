@@ -12,7 +12,7 @@ def double_num_calculate(v1,ceramic_width,between,between_beam,R,overlap,a,beam_
     else:
         v2_ = beam_speed_up
     # 中间计算(边部停留时长为单倍磨头间距)
-    B = (ceramic_width + 200) - 2 * R           # 摆幅（要求两极限位置各伸出100mm）
+    B = (ceramic_width + 120) - 2 * R           # 摆幅（要求两极限位置各伸出60mm）
     t_a_ = v2_ / a                    # 加速时间
     t_e = (B - a * t_a_ ** 2) / v2_   # 匀速时间
     t_between = between / v1          # 边部停留时长
@@ -40,7 +40,7 @@ def double_num_calculate(v1,ceramic_width,between,between_beam,R,overlap,a,beam_
     result[0,3] = round(t_between,2)
     result[0,4] = round(num_1)
     result[0,5] = round((between_beam-2*between)/v1,2)
-    result[0,6] = round(B,2)
+    result[0,6] = round(a*t_a**2+v2*t_e,2)
     # 方案二 高光泽度方案
     result[1,0] = round(v1,2)
     result[1,1] = round(v2,2)
@@ -48,5 +48,5 @@ def double_num_calculate(v1,ceramic_width,between,between_beam,R,overlap,a,beam_
     result[1,3] = round(t_between * 2,2)
     result[1,4] = round(num_1 + 2,2)
     result[1,5] = round((between_beam-2*between)/v1,2)
-    result[1,6] = round(B,2)
+    result[1,6] = round(a*t_a**2+v2*t_e,2)
     return result

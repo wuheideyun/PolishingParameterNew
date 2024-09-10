@@ -102,17 +102,18 @@ class middle_line_plot():
         ax.set_ylim((-200, self.a * (self.v2 / self.a) ** 2 + self.v2 * self.constant_t + 600))
         ax.set_aspect('equal', adjustable='box')
         # 设置图片文本
-        ani_text = ax.text(period * 2 * self.v1,
-                           self.a * (self.v2 / self.a) ** 2 + self.v2 * self.constant_t + 200, '', fontsize=10)
+        ani_text = ax.text(0.7, 0.82, '', transform=ax.transAxes, fontsize=10)
         ani_text.set_text('Same_grinding_num=%.0f' % self.num)
         # 设置坐标轴名称
         plt.xlabel('Tile feed direction')
         plt.ylabel('Beam swing direction')
         between_cell = math.floor(self.between / self.v1 / msize)  # 间距步长
+        color_20 = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple','lightgreen',
+                        'slategrey', 'cornflowerblue', 'navy', 'indigo', 'violet', 'plum', 'oldlace', 'maroon',
+                        'lightcyan', 'lightseagreen', 'seagreen', 'springgreen']  # 红橙黄绿青蓝紫
         for i in range(0, self.num):
             plt.scatter(single_X_location[0, 0:all_time_n - i * between_cell] + i * self.between,
-                        single_Y_location[0, 0:all_time_n - i * between_cell], s=1)
-
+                        single_Y_location[0, 0:all_time_n - i * between_cell],color=color_20[i], s=1)
         # ax.spines['top'].set_visible(False)       # 顶部边框不显示
         # ax.spines['right'].set_visible(False)     # 右侧边框不显示
         # ax.spines['bottom'].set_visible(False)  # 底部边框不显示

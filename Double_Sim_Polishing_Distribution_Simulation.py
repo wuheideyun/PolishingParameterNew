@@ -661,7 +661,6 @@ class Polishing_distribution_Thread_order(QThread):
         result = format(variance_matrix ** 0.5 / equal_subsample, '.4f')  # 抛磨变异系数
         print(result)
         return object_matrix, result
-
 class Polishing_distribution_Thread_order_unequal(QThread):
     result_ready= Signal(np.ndarray,str)
     def __init__(self,v1, v2, t1, t2, a, between,between_beam, num, R, mo,delay_time,group):
