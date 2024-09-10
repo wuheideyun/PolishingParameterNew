@@ -39,12 +39,12 @@
     <item row="1" column="6">
      <widget class="QLabel" name="label_belt_speed">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;皮带速度：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;皮带速度：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QLabel" name="label_mod_size">
+     <widget class="QLabel" name="label_grind_size">
       <property name="text">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;磨块尺寸：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
@@ -65,28 +65,28 @@
      </widget>
     </item>
     <item row="2" column="6">
-     <widget class="QLabel" name="label_beam_speed">
+     <widget class="QLabel" name="label_beam_swing_speed">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;横梁摆动速度&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;横梁摆动速度：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
     <item row="7" column="2">
-     <widget class="QPushButton" name="Button_animation_order">
+     <widget class="QPushButton" name="button_animation_order">
       <property name="text">
        <string>顺序摆动画</string>
       </property>
      </widget>
     </item>
     <item row="8" column="6">
-     <widget class="QPushButton" name="Button_middle_line_cross">
+     <widget class="QPushButton" name="button_middle_line_cross">
       <property name="text">
        <string>交叉摆轨迹中心线绘制</string>
       </property>
      </widget>
     </item>
     <item row="6" column="3" colspan="3">
-     <widget class="QPushButton" name="Button_simulation_equal">
+     <widget class="QPushButton" name="button_simulation_equal">
       <property name="text">
        <string>同步摆抛磨量分布仿真</string>
       </property>
@@ -100,21 +100,21 @@
      </widget>
     </item>
     <item row="7" column="6">
-     <widget class="QPushButton" name="Button_middle_line_order">
+     <widget class="QPushButton" name="button_middle_line_order">
       <property name="text">
        <string>顺序摆轨迹中心线绘制</string>
       </property>
      </widget>
     </item>
     <item row="2" column="7">
-     <widget class="QLineEdit" name="lineEdit_beam_speed">
+     <widget class="QLineEdit" name="lineEdit_beam_swing_speed">
       <property name="text">
        <string>800</string>
       </property>
      </widget>
     </item>
     <item row="1" column="5">
-     <widget class="QLineEdit" name="lineEdit_constant_time">
+     <widget class="QLineEdit" name="lineEdit_beam_constant_time">
       <property name="text">
        <string>1</string>
       </property>
@@ -128,7 +128,7 @@
      </widget>
     </item>
     <item row="6" column="2">
-     <widget class="QPushButton" name="Button_animation_equal">
+     <widget class="QPushButton" name="button_animation_equal">
       <property name="text">
        <string>同步摆动画</string>
       </property>
@@ -137,7 +137,7 @@
     <item row="3" column="2">
      <widget class="QLabel" name="label_num">
       <property name="text">
-       <string>同粒度磨头数目</string>
+       <string>同粒度磨头数目：</string>
       </property>
      </widget>
     </item>
@@ -175,35 +175,35 @@
      </widget>
     </item>
     <item row="3" column="6">
-     <widget class="QLabel" name="label_accelate_speed">
+     <widget class="QLabel" name="label_accelerate">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;加速度大小：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;加速度大小：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
     <item row="2" column="2" colspan="2">
      <widget class="QLabel" name="label_stay_time">
       <property name="text">
-       <string>边部停留时间</string>
+       <string>边部停留时间：</string>
       </property>
      </widget>
     </item>
     <item row="8" column="2">
-     <widget class="QPushButton" name="Button_animation_cross">
+     <widget class="QPushButton" name="button_animation_cross">
       <property name="text">
        <string>交叉摆动画</string>
       </property>
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QLabel" name="label_gap">
+     <widget class="QLabel" name="label_between">
       <property name="text">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;磨头间距：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
     <item row="7" column="3" colspan="3">
-     <widget class="QPushButton" name="Button_simulation_order">
+     <widget class="QPushButton" name="button_simulation_order">
       <property name="text">
        <string>顺序摆抛磨量分布仿真</string>
       </property>
@@ -217,7 +217,7 @@
      </widget>
     </item>
     <item row="6" column="6">
-     <widget class="QPushButton" name="Button_middle_line_equal">
+     <widget class="QPushButton" name="button_middle_line_equal">
       <property name="text">
        <string>同步摆轨迹中心线绘制</string>
       </property>
@@ -231,7 +231,7 @@
      </widget>
     </item>
     <item row="3" column="7">
-     <widget class="QLineEdit" name="lineEdit_a_speed">
+     <widget class="QLineEdit" name="lineEdit_accelerate">
       <property name="text">
        <string>650</string>
       </property>
@@ -259,12 +259,12 @@
     <item row="4" column="6">
      <widget class="QLabel" name="label_delay_time">
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;延时时间：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;延时时间：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
     <item row="8" column="3" colspan="3">
-     <widget class="QPushButton" name="Button_simulation_cross">
+     <widget class="QPushButton" name="button_simulation_cross">
       <property name="text">
        <string>交叉抛磨量分布仿真</string>
       </property>
@@ -273,7 +273,7 @@
     <item row="1" column="2" colspan="3">
      <widget class="QLabel" name="label_beam_constant_time">
       <property name="text">
-       <string>横梁匀速摆动时间</string>
+       <string>横梁匀速摆动时间：</string>
       </property>
      </widget>
     </item>

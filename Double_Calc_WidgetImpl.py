@@ -43,19 +43,19 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
 
         # 运行逻辑
         # 按钮操作
-        self.Button_energy_calculate.clicked.connect(self.energy_calculate)  # 节能计算按钮
-        self.Button_efficient_calculate.clicked.connect(self.efficient_calculate)  # 高效计算按钮
-        self.Button_selfdefine_calculate.clicked.connect(self.define_calculate)  # 自定义计算按钮
+        self.button_energy_calculate.clicked.connect(self.energy_calculate)  # 节能计算按钮
+        self.button_efficient_calculate.clicked.connect(self.efficient_calculate)  # 高效计算按钮
+        self.button_selfdefine_calculate.clicked.connect(self.define_calculate)  # 自定义计算按钮
 
-        self.Button_animation_order.clicked.connect(self.start_computation_trajectory_animation_order)  # 顺序摆动画
+        self.button_animation_order.clicked.connect(self.start_computation_trajectory_animation_order)  # 顺序摆动画
 
-        self.Button_simulation_order.clicked.connect(
+        self.button_simulation_order.clicked.connect(
             self.start_computation_Polishing_distribution_order)  # 顺序摆抛磨量分布仿真按钮
-        self.Button_simulation_order_define.clicked.connect(
+        self.button_simulation_order_define.clicked.connect(
             self.start_computation_Polishing_distribution_order_define)  # 顺序摆(自定义)抛磨量分布
 
-        self.Button_middle_line_order.clicked.connect(self.middle_line_figure_plot_order)  # 顺序摆轨迹中心线绘制
-        self.Button_middle_line_order_define.clicked.connect(
+        self.button_middle_line_order.clicked.connect(self.middle_line_figure_plot_order)  # 顺序摆轨迹中心线绘制
+        self.button_middle_line_order_define.clicked.connect(
             self.middle_line_figure_plot_order_selfdefine)  # 顺序摆(自定义)中心线绘制
         # 在程序中创建一个显示图框 播放gif动画
         self.gif_label = QLabel(self.widget)
@@ -91,14 +91,14 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
             }
         """
 
-        self.Button_middle_line_order.setStyleSheet(qss_Button)
-        self.Button_middle_line_order_define.setStyleSheet(qss_Button)
-        self.Button_energy_calculate.setStyleSheet(qss_Button)
-        self.Button_animation_order.setStyleSheet(qss_Button)
-        self.Button_simulation_order.setStyleSheet(qss_Button)
-        self.Button_simulation_order_define.setStyleSheet(qss_Button)
-        self.Button_efficient_calculate.setStyleSheet(qss_Button)
-        self.Button_selfdefine_calculate.setStyleSheet(qss_Button)
+        self.button_middle_line_order.setStyleSheet(qss_Button)
+        self.button_middle_line_order_define.setStyleSheet(qss_Button)
+        self.button_energy_calculate.setStyleSheet(qss_Button)
+        self.button_animation_order.setStyleSheet(qss_Button)
+        self.button_simulation_order.setStyleSheet(qss_Button)
+        self.button_simulation_order_define.setStyleSheet(qss_Button)
+        self.button_efficient_calculate.setStyleSheet(qss_Button)
+        self.button_selfdefine_calculate.setStyleSheet(qss_Button)
 
     # 轨迹参数计算（节能计算）
     def energy_calculate(self):
@@ -108,11 +108,11 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         between_beam=float(self.lineEdit_between_beam.text())
         R=float(self.lineEdit_radius.text())
         overlap=float(self.lineEdit_overlap.text())
-        a=float(self.lineEdit_a_speed.text())
+        a=float(self.lineEdit_accelerate.text())
         beam_speed_up=float(self.lineEdit_beam_speed_up.text())
         result=Double_Calc_Parameter_Calculate.double_num_calculate(v1,ceramic_width,between,between_beam,R,overlap,a,beam_speed_up)
-        self.lineEdit_beam_speed.setText(str(result[0, 1]))
-        self.lineEdit_constant_time.setText(str(result[0, 2]))
+        self.lineEdit_beam_swing_speed.setText(str(result[0, 1]))
+        self.lineEdit_beam_constant_time.setText(str(result[0, 2]))
         self.lineEdit_stay_time.setText(str(result[0, 3]))
         self.lineEdit_num.setText(str(result[0, 4]))
         self.lineEdit_delay_time.setText(str(result[0,5]))
@@ -125,11 +125,11 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         between_beam = float(self.lineEdit_between_beam.text())
         R=float(self.lineEdit_radius.text())
         overlap=float(self.lineEdit_overlap.text())
-        a=float(self.lineEdit_a_speed.text())
+        a=float(self.lineEdit_accelerate.text())
         beam_speed_up=float(self.lineEdit_beam_speed_up.text())
         result=Double_Calc_Parameter_Calculate.double_num_calculate(v1,ceramic_width,between,between_beam,R,overlap,a,beam_speed_up)
-        self.lineEdit_beam_speed.setText(str(result[1, 1]))
-        self.lineEdit_constant_time.setText(str(result[1, 2]))
+        self.lineEdit_beam_swing_speed.setText(str(result[1, 1]))
+        self.lineEdit_beam_constant_time.setText(str(result[1, 2]))
         self.lineEdit_stay_time.setText(str(result[1, 3]))
         self.lineEdit_num.setText(str(result[1, 4]))
         self.lineEdit_delay_time.setText(str(result[1, 5]))
@@ -141,12 +141,12 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         between = float(self.lineEdit_between.text())
         between_beam = float(self.lineEdit_between_beam.text())
         R = float(self.lineEdit_radius.text())
-        a = float(self.lineEdit_a_speed.text())
+        a = float(self.lineEdit_accelerate.text())
         num=float(self.lineEdit_self_define_num.text())
-        group=float(self.lineEdit_group.text())
+        group=float(self.lineEdit_group_count.text())
         result = self_define_calculate(v1,ceramic_width,between,between_beam,R,a,num,group)
-        self.lineEdit_beam_speed.setText(str(result[0, 1]))
-        self.lineEdit_constant_time.setText(str(result[0, 2]))
+        self.lineEdit_beam_swing_speed.setText(str(result[0, 1]))
+        self.lineEdit_beam_constant_time.setText(str(result[0, 2]))
         self.lineEdit_stay_time.setText(str(result[0, 3]))
         self.lineEdit_num.setText(str(result[0, 4]))
         self.lineEdit_delay_time.setText(str(result[0, 5]))
@@ -156,10 +156,10 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
     def start_computation_Polishing_distribution_order(self):      # 抛磨量分布仿真子线程
         # 创建子线程
         self.Polishing_distribution_thread = Polishing_distribution_Thread_order(float(self.lineEdit_belt_speed.text()),
-                                                                           float(self.lineEdit_beam_speed.text()),
-                                                                           float(self.lineEdit_constant_time.text()),
+                                                                           float(self.lineEdit_beam_swing_speed.text()),
+                                                                           float(self.lineEdit_beam_constant_time.text()),
                                                                            float(self.lineEdit_stay_time.text()),
-                                                                           float(self.lineEdit_a_speed.text()),
+                                                                           float(self.lineEdit_accelerate.text()),
                                                                            float(self.lineEdit_between.text()),
                                                                            float(self.lineEdit_between_beam.text()),
                                                                            math.ceil(float(self.lineEdit_num.text())),
@@ -167,29 +167,29 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
                                                                            float(self.lineEdit_grind_size.text()),
                                                                            float(self.lineEdit_delay_time.text()))
         self.Polishing_distribution_thread.result_ready.connect(self.Polishing_distribution_ready)
-        self.Button_simulation_order.setEnabled(False)
-        self.Button_simulation_order.setEnabled(False)
-        self.Button_simulation_order_define.setEnabled(False)
+        self.button_simulation_order.setEnabled(False)
+        self.button_simulation_order.setEnabled(False)
+        self.button_simulation_order_define.setEnabled(False)
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def start_computation_Polishing_distribution_order_define(self):      # 抛磨量分布仿真子线程
         # 创建子线程
         self.Polishing_distribution_thread = Polishing_distribution_Thread_order_unequal(float(self.lineEdit_belt_speed.text()),
-                                                                           float(self.lineEdit_beam_speed.text()),
-                                                                           float(self.lineEdit_constant_time.text()),
+                                                                           float(self.lineEdit_beam_swing_speed.text()),
+                                                                           float(self.lineEdit_beam_constant_time.text()),
                                                                            float(self.lineEdit_stay_time.text()),
-                                                                           float(self.lineEdit_a_speed.text()),
+                                                                           float(self.lineEdit_accelerate.text()),
                                                                            float(self.lineEdit_between.text()),
                                                                            float(self.lineEdit_between_beam.text()),
                                                                            math.ceil(float(self.lineEdit_num.text())),
                                                                            float(self.lineEdit_radius.text()),
                                                                            float(self.lineEdit_grind_size.text()),
                                                                            float(self.lineEdit_delay_time.text()),
-                                                                           float(self.lineEdit_group.text()))
+                                                                           float(self.lineEdit_group_count.text()))
         self.Polishing_distribution_thread.result_ready.connect(self.Polishing_distribution_ready)
-        self.Button_simulation_order.setEnabled(False)
-        self.Button_simulation_order.setEnabled(False)
-        self.Button_simulation_order_define.setEnabled(False)
+        self.button_simulation_order.setEnabled(False)
+        self.button_simulation_order.setEnabled(False)
+        self.button_simulation_order_define.setEnabled(False)
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def Polishing_distribution_ready(self,object_matrix, result):     # 子线程回调函数
@@ -207,16 +207,16 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         plt.colorbar(im, cax=cax)
         plt.show()  # 显示函数图像
         #equal_coefficient
-        self.Button_simulation_order.setEnabled(True)
-        self.Button_simulation_order.setEnabled(True)
-        self.Button_simulation_order_define.setEnabled(True)
+        self.button_simulation_order.setEnabled(True)
+        self.button_simulation_order.setEnabled(True)
+        self.button_simulation_order_define.setEnabled(True)
     # 轨迹动画生成子线程
     def start_computation_trajectory_animation_order(self):
         self.trajectory_animation_thread = Animation_produce_order(float(self.lineEdit_belt_speed.text()),
-                                                            float(self.lineEdit_beam_speed.text()),
-                                                            float(self.lineEdit_constant_time.text()),
+                                                            float(self.lineEdit_beam_swing_speed.text()),
+                                                            float(self.lineEdit_beam_constant_time.text()),
                                                             float(self.lineEdit_stay_time.text()),
-                                                            float(self.lineEdit_a_speed.text()),
+                                                            float(self.lineEdit_accelerate.text()),
                                                             float(self.lineEdit_radius.text()),
                                                             float(self.lineEdit_between.text()),
                                                             float(self.lineEdit_between_beam.text()),
@@ -224,7 +224,7 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
                                                             float(self.lineEdit_delay_time.text())
                                                             )
         self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
-        self.Button_animation_order.setEnabled(False)
+        self.button_animation_order.setEnabled(False)
         # 运行子线程
         self.trajectory_animation_thread.start()
     def trajectory_animation_ready(self,str_22):
@@ -234,17 +234,17 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         #self.movie.setloopCount(1)  # 设置只播放一次
         self.gif_label.setMovie(self.movie)
         self.movie.start()
-        self.Button_animation_order.setEnabled(True)
+        self.button_animation_order.setEnabled(True)
     # 调整动画在界面图框中的位置
     def resize_event(self, event):
         self.gif_label.resize(event.size())
     # 绘制磨头中心轨迹线
     def middle_line_figure_plot_order(self):
         belt_speed=float(self.lineEdit_belt_speed.text())
-        beam_speed=float(self.lineEdit_beam_speed.text())
-        constant_time=float(self.lineEdit_constant_time.text())
+        beam_speed=float(self.lineEdit_beam_swing_speed.text())
+        constant_time=float(self.lineEdit_beam_constant_time.text())
         stay_time=float(self.lineEdit_stay_time.text())
-        a_speed=float(self.lineEdit_a_speed.text())
+        a_speed=float(self.lineEdit_accelerate.text())
         num=math.ceil(float(self.lineEdit_num.text()))
         between=float(self.lineEdit_between.text())
         between_beam = float(self.lineEdit_between_beam.text())
@@ -253,14 +253,14 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         mid_var.figure_plot()
     def middle_line_figure_plot_order_selfdefine(self):
         belt_speed=float(self.lineEdit_belt_speed.text())
-        beam_speed=float(self.lineEdit_beam_speed.text())
-        constant_time=float(self.lineEdit_constant_time.text())
+        beam_speed=float(self.lineEdit_beam_swing_speed.text())
+        constant_time=float(self.lineEdit_beam_constant_time.text())
         stay_time=float(self.lineEdit_stay_time.text())
-        a_speed=float(self.lineEdit_a_speed.text())
+        a_speed=float(self.lineEdit_accelerate.text())
         num=math.ceil(float(self.lineEdit_num.text()))
         between=float(self.lineEdit_between.text())
         between_beam = float(self.lineEdit_between_beam.text())
         delay_time = float(self.lineEdit_delay_time.text())
-        group = float(self.lineEdit_group.text())
+        group = float(self.lineEdit_group_count.text())
         mid_var=middle_line_plot_self_define_order(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between,between_beam,delay_time,group)
         mid_var.figure_plot()

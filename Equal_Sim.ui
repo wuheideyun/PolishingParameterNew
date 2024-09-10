@@ -19,28 +19,28 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="2" column="3">
-     <widget class="QLabel" name="label_12">
+     <widget class="QLabel" name="label_num">
       <property name="text">
        <string>同粒度磨头数目：</string>
       </property>
      </widget>
     </item>
     <item row="2" column="4">
-     <widget class="QLineEdit" name="num">
+     <widget class="QLineEdit" name="lineEdit_num">
       <property name="text">
        <string>5</string>
       </property>
      </widget>
     </item>
     <item row="1" column="3">
-     <widget class="QLabel" name="label_5">
+     <widget class="QLabel" name="label_grind_size">
       <property name="text">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;磨块尺寸：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
     <item row="4" column="6">
-     <widget class="QLineEdit" name="equal_coefficient">
+     <widget class="QLineEdit" name="lineEdit_coefficient">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -50,23 +50,23 @@
      </widget>
     </item>
     <item row="1" column="5">
-     <widget class="QLabel" name="label_2">
+     <widget class="QLabel" name="label_radius">
       <property name="text">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;磨头半径：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
     <item row="4" column="1" colspan="2">
-     <widget class="QLineEdit" name="beam_speed">
+     <widget class="QLineEdit" name="lineEdit_beam_swing_speed">
       <property name="text">
        <string>500</string>
       </property>
      </widget>
     </item>
     <item row="6" column="3">
-     <widget class="QPushButton" name="middle_line_button">
+     <widget class="QPushButton" name="button_middle_line_equal">
       <property name="text">
-       <string>轨迹中心线绘制</string>
+       <string>同步摆轨迹中心线绘制</string>
       </property>
      </widget>
     </item>
@@ -109,35 +109,35 @@
      </widget>
     </item>
     <item row="4" column="3">
-     <widget class="QLabel" name="label_10">
+     <widget class="QLabel" name="label_beam_constant_time">
       <property name="text">
        <string>横梁匀速摆动时间：</string>
       </property>
      </widget>
     </item>
     <item row="4" column="4">
-     <widget class="QLineEdit" name="constant_time">
+     <widget class="QLineEdit" name="lineEdit_beam_constant_time">
       <property name="text">
        <string>1</string>
       </property>
      </widget>
     </item>
     <item row="1" column="4">
-     <widget class="QLineEdit" name="grind_size">
+     <widget class="QLineEdit" name="lineEdit_grind_size">
       <property name="text">
        <string>170</string>
       </property>
      </widget>
     </item>
     <item row="3" column="3">
-     <widget class="QLabel" name="label_11">
+     <widget class="QLabel" name="label_stay_time">
       <property name="text">
        <string>边部停留时间：</string>
       </property>
      </widget>
     </item>
     <item row="3" column="1" colspan="2">
-     <widget class="QLineEdit" name="belt_speed">
+     <widget class="QLineEdit" name="lineEdit_belt_speed">
       <property name="text">
        <string>300</string>
       </property>
@@ -151,70 +151,70 @@
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QLabel" name="label_8">
+     <widget class="QLabel" name="label_belt_speed">
       <property name="text">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;皮带速度：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
     <item row="4" column="0">
-     <widget class="QLabel" name="label_9">
+     <widget class="QLabel" name="label_beam_swing_speed">
       <property name="text">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;横梁摆动速度：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
     <item row="3" column="4">
-     <widget class="QLineEdit" name="stay_time">
+     <widget class="QLineEdit" name="lineEdit_stay_time">
       <property name="text">
        <string>1</string>
       </property>
      </widget>
     </item>
     <item row="2" column="1" colspan="2">
-     <widget class="QLineEdit" name="a_speed">
+     <widget class="QLineEdit" name="lineEdit_accelerate">
       <property name="text">
        <string>500</string>
       </property>
      </widget>
     </item>
     <item row="6" column="2">
-     <widget class="QPushButton" name="animation_button">
+     <widget class="QPushButton" name="button_animation_equal">
       <property name="text">
-       <string>动画按钮</string>
+       <string>同步摆动画</string>
       </property>
      </widget>
     </item>
     <item row="6" column="4">
-     <widget class="QPushButton" name="simulation_button">
+     <widget class="QPushButton" name="button_simulation_equal">
       <property name="text">
-       <string>抛磨量分布仿真</string>
+       <string>同步摆抛磨量分布仿真</string>
       </property>
      </widget>
     </item>
     <item row="2" column="0">
-     <widget class="QLabel" name="label_4">
+     <widget class="QLabel" name="label_accelerate">
       <property name="text">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;加速度大小：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QLabel" name="label">
+     <widget class="QLabel" name="label_between">
       <property name="text">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;磨头间距：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
     <item row="1" column="6">
-     <widget class="QLineEdit" name="radius">
+     <widget class="QLineEdit" name="lineEdit_radius">
       <property name="text">
        <string>270</string>
       </property>
      </widget>
     </item>
     <item row="4" column="5">
-     <widget class="QLabel" name="label_13">
+     <widget class="QLabel" name="label_coefficient">
       <property name="text">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;均匀系数：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
@@ -240,7 +240,7 @@
      </widget>
     </item>
     <item row="1" column="1" colspan="2">
-     <widget class="QLineEdit" name="between">
+     <widget class="QLineEdit" name="lineEdit_between">
       <property name="text">
        <string>600</string>
       </property>

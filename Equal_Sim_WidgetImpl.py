@@ -38,15 +38,15 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         # 如果需要，可以让图片自适应 QLabel 的大小
         self.label_bottom.setScaledContents(True)
 
-        # self.simulation_button.setText("开始翻译")
-        # self.simulation_button.setFixedSize(100, 32)
-        # self.simulation_button.clicked.connect(self.onStartTrans)
+        # self.button_simulation_equal.setText("开始翻译")
+        # self.button_simulation_equal.setFixedSize(100, 32)
+        # self.button_simulation_equal.clicked.connect(self.onStartTrans)
 
         # 运行逻辑
         # 按钮操作
-        self.animation_button.clicked.connect(self.start_computation_trajectory_animation)  # 动画按钮
-        self.simulation_button.clicked.connect(self.start_computation_Polishing_distribution)  # 抛磨量分布仿真按钮
-        self.middle_line_button.clicked.connect(self.middle_line_figure_plot)  # 磨头中心线绘制按钮
+        self.button_animation_equal.clicked.connect(self.start_computation_trajectory_animation)  # 动画按钮
+        self.button_simulation_equal.clicked.connect(self.start_computation_Polishing_distribution)  # 抛磨量分布仿真按钮
+        self.button_middle_line_equal.clicked.connect(self.middle_line_figure_plot)  # 磨头中心线绘制按钮
         # 在程序中创建一个显示图框 播放gif动画
         self.gif_label = QLabel(self.widget)
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -81,24 +81,24 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
             }
         """
 
-        self.animation_button.setStyleSheet(qss_Button)
-        self.middle_line_button.setStyleSheet(qss_Button)
-        self.simulation_button.setStyleSheet(qss_Button)
+        self.button_animation_equal.setStyleSheet(qss_Button)
+        self.button_middle_line_equal.setStyleSheet(qss_Button)
+        self.button_simulation_equal.setStyleSheet(qss_Button)
 
     # 抛磨量分布仿真子线程
     def start_computation_Polishing_distribution(self):      # 抛磨量分布仿真子线程
         # 创建子线程
-        self.Polishing_distribution_thread = Polishing_distribution_Thread(float(self.belt_speed.text()),
-                                                                           float(self.beam_speed.text()),
-                                                                           float(self.constant_time.text()),
-                                                                           float(self.stay_time.text()),
-                                                                           float(self.a_speed.text()),
-                                                                           float(self.between.text()),
-                                                                           math.ceil(float(self.num.text())),
-                                                                           float(self.radius.text()),
-                                                                           float(self.grind_size.text()))
+        self.Polishing_distribution_thread = Polishing_distribution_Thread(float(self.lineEdit_belt_speed.text()),
+                                                                           float(self.lineEdit_beam_swing_speed.text()),
+                                                                           float(self.lineEdit_beam_constant_time.text()),
+                                                                           float(self.lineEdit_stay_time.text()),
+                                                                           float(self.lineEdit_accelerate.text()),
+                                                                           float(self.lineEdit_between.text()),
+                                                                           math.ceil(float(self.lineEdit_num.text())),
+                                                                           float(self.lineEdit_radius.text()),
+                                                                           float(self.lineEdit_radius.text()))
         self.Polishing_distribution_thread.result_ready.connect(self.Polishing_distribution_ready)
-        self.simulation_button.setEnabled(False)
+        self.button_simulation_equal.setEnabled(False)
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def Polishing_distribution_ready(self,object_matrix, result):     # 子线程回调函数
@@ -116,21 +116,21 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         cax = divider.append_axes("right", size="5%", pad=0.1)
         plt.colorbar(im, cax=cax)
         plt.show()  # 显示函数图像
-        self.equal_coefficient.setText(result)
-        self.simulation_button.setEnabled(True)
+        self.lineEdit_coefficient.setText(result)
+        self.button_simulation_equal.setEnabled(True)
     # 轨迹动画生成子线程
     def start_computation_trajectory_animation(self):
-        self.trajectory_animation_thread = Animation_produce(float(self.belt_speed.text()),
-                                                            float(self.beam_speed.text()),
-                                                            float(self.constant_time.text()),
-                                                            float(self.stay_time.text()),
-                                                            float(self.a_speed.text()),
-                                                            float(self.radius.text()),
-                                                            float(self.between.text()),
-                                                            math.ceil(float(self.num.text()))
+        self.trajectory_animation_thread = Animation_produce(float(self.lineEdit_belt_speed.text()),
+                                                            float(self.lineEdit_beam_swing_speed.text()),
+                                                            float(self.lineEdit_beam_constant_time.text()),
+                                                            float(self.lineEdit_stay_time.text()),
+                                                            float(self.lineEdit_accelerate.text()),
+                                                            float(self.lineEdit_radius.text()),
+                                                            float(self.lineEdit_between.text()),
+                                                            math.ceil(float(self.lineEdit_num.text()))
                                                             )
         self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
-        self.animation_button.setEnabled(False)
+        self.button_animation_equal.setEnabled(False)
         # 运行子线程
         self.trajectory_animation_thread.start()
     def trajectory_animation_ready(self,str_222):
@@ -140,18 +140,18 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         #self.movie.setloopCount(1)  # 设置只播放一次
         self.gif_label.setMovie(self.movie)
         self.movie.start()
-        self.animation_button.setEnabled(True)
+        self.button_animation_equal.setEnabled(True)
     # 调整动画在界面图框中的位置
     def resize_event(self, event):
         self.gif_label.resize(event.size())
     # 绘制磨头中心轨迹线
     def middle_line_figure_plot(self):
-        belt_speed=float(self.belt_speed.text())
-        beam_speed=float(self.beam_speed.text())
-        constant_time=float(self.constant_time.text())
-        stay_time=float(self.stay_time.text())
-        a_speed=float(self.a_speed.text())
-        num=math.ceil(float(self.num.text()))
-        between=float(self.between.text())
+        belt_speed=float(self.lineEdit_belt_speed.text())
+        beam_speed=float(self.lineEdit_beam_swing_speed.text())
+        constant_time=float(self.lineEdit_beam_constant_time.text())
+        stay_time=float(self.lineEdit_stay_time.text())
+        a_speed=float(self.lineEdit_accelerate.text())
+        num=math.ceil(float(self.lineEdit_num.text()))
+        between=float(self.lineEdit_between.text())
         mid_var=middle_line_plot(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between)
         mid_var.figure_plot()

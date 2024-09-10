@@ -54,10 +54,10 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_grind_size, 1, 2, 1, 1)
 
-        self.label_cerimatic_width = QLabel(self.centralwidget)
-        self.label_cerimatic_width.setObjectName(u"label_cerimatic_width")
+        self.label_ceramic_width = QLabel(self.centralwidget)
+        self.label_ceramic_width.setObjectName(u"label_ceramic_width")
 
-        self.gridLayout.addWidget(self.label_cerimatic_width, 2, 2, 1, 1)
+        self.gridLayout.addWidget(self.label_ceramic_width, 2, 2, 1, 1)
 
         self.label_belt_speed = QLabel(self.centralwidget)
         self.label_belt_speed.setObjectName(u"label_belt_speed")
@@ -240,7 +240,7 @@ class Ui_MainWindow(object):
         self.button_middle_line_equal.setText(QCoreApplication.translate("MainWindow", u"\u540c\u6b65\u6446\u8f68\u8ff9\u4e2d\u5fc3\u7ebf\u7ed8\u5236", None))
         self.button_simulation_equal.setText(QCoreApplication.translate("MainWindow", u"\u540c\u6b65\u6446\u629b\u78e8\u91cf\u5206\u5e03\u4eff\u771f", None))
         self.label_grind_size.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5757\u5c3a\u5bf8\uff1a</p></body></html>", None))
-        self.label_cerimatic_width.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u8fdb\u7816\u5bbd\u5ea6\uff1a</p></body></html>", None))
+        self.label_ceramic_width.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u8fdb\u7816\u5bbd\u5ea6\uff1a</p></body></html>", None))
         self.label_belt_speed.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u76ae\u5e26\u901f\u5ea6\uff1a</p></body></html>", None))
         self.label_stay_time.setText(QCoreApplication.translate("MainWindow", u"\u8fb9\u90e8\u505c\u7559\u65f6\u95f4", None))
         self.lineEdit_ceramic_width.setText(QCoreApplication.translate("MainWindow", u"1800", None))

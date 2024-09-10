@@ -24,11 +24,11 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
 
         # 运行逻辑
         # 按钮操作
-        self.energy_button.clicked.connect(self.energy_calculate)  # 节能计算按钮
-        self.efficient_button.clicked.connect(self.efficient_calculate)  # 高效计算按钮
-        self.animation_button.clicked.connect(self.start_computation_trajectory_animation)  # 动画按钮
-        self.simulation_button.clicked.connect(self.start_computation_Polishing_distribution)  # 抛磨量分布仿真按钮
-        self.middle_line_button.clicked.connect(self.middle_line_figure_plot)  # 磨头中心线绘制按钮
+        self.button_energy_calculate.clicked.connect(self.energy_calculate)  # 节能计算按钮
+        self.button_efficient_calculate.clicked.connect(self.efficient_calculate)  # 高效计算按钮
+        self.button_animation_equal.clicked.connect(self.start_computation_trajectory_animation)  # 动画按钮
+        self.button_simulation_equal.clicked.connect(self.start_computation_Polishing_distribution)  # 抛磨量分布仿真按钮
+        self.button_middle_line_equal.clicked.connect(self.middle_line_figure_plot)  # 磨头中心线绘制按钮
         # 在程序中创建一个显示图框 播放gif动画
         self.gif_label = QLabel(self.widget)
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -37,19 +37,26 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         # 确保gif_label随widget大小变化而变化
         self.widget.resizeEvent = self.resize_event
 
-        self.between.setText('600')
-        self.radius.setText('270')
-        self.grind_size.setText('170')
-        self.ceramic_width.setText('1200')
-        self.belt_speed.setText('300')
-        self.beam_speed_up.setText('500')
-        self.a_speed.setText('600')
-        self.overlap.setText('50')
+        self.lineEdit_between.setText('600')
+        self.lineEdit_radius.setText('270')
+        self.lineEdit_grind_size.setText('170')
+        self.lineEdit_ceramic_width.setText('1200')
+        self.lineEdit_belt_speed.setText('300')
+        self.lineEdit_beam_speed_up.setText('500')
+        self.lineEdit_accelerate.setText('600')
+        self.lineEdit_overlap.setText('50')
 
-        # self.simulation_button.setText("开始翻译")
-        # self.simulation_button.setFixedSize(100, 32)
-        # self.simulation_button.clicked.connect(self.onStartTrans)
+        self.add_text_change_monitor(self.lineEdit_between)
+        self.add_text_change_monitor(self.lineEdit_grind_size)
+        self.add_text_change_monitor(self.lineEdit_belt_speed)
+        self.add_text_change_monitor(self.lineEdit_accelerate)
+        self.add_text_change_monitor(self.lineEdit_radius)
+        self.add_text_change_monitor(self.lineEdit_beam_speed_up)
+        self.add_text_change_monitor(self.lineEdit_ceramic_width)
+        self.add_text_change_monitor(self.lineEdit_overlap)
 
+        self.line_edits = [self.lineEdit_between, self.lineEdit_grind_size, self.lineEdit_belt_speed, self.lineEdit_accelerate,
+                           self.lineEdit_radius, self.lineEdit_beam_speed_up, self.lineEdit_ceramic_width, self.lineEdit_overlap]
 
         # 界面分割图片元素
         self.label_top.setText('')
@@ -96,56 +103,65 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
             }
         """
 
-        self.energy_button.setStyleSheet(qss_Button)
-        self.animation_button.setStyleSheet(qss_Button)
-        self.efficient_button.setStyleSheet(qss_Button)
-        self.middle_line_button.setStyleSheet(qss_Button)
-        self.simulation_button.setStyleSheet(qss_Button)
+        self.button_energy_calculate.setStyleSheet(qss_Button)
+        self.button_animation_equal.setStyleSheet(qss_Button)
+        self.button_efficient_calculate.setStyleSheet(qss_Button)
+        self.button_middle_line_equal.setStyleSheet(qss_Button)
+        self.button_simulation_equal.setStyleSheet(qss_Button)
+
+    def add_text_change_monitor(self, line_edit):
+        """为QLineEdit控件添加内容变化监控"""
+        line_edit.textChanged.connect(self.on_text_changed)
+
+    def on_text_changed(self, text):
+        """当LineEdit内容发生变化时触发的回调函数"""
+        # print(f"内容发生变化: {text}")
+        self.reCalcFlag = True
 
     # 轨迹参数计算（节能计算）
     def energy_calculate(self):
-        v1=float(self.belt_speed.text())
-        ceramic_width=float(self.ceramic_width.text())
-        between=float(self.between.text())
-        R=float(self.radius.text())
-        overlap=float(self.overlap.text())
-        a=float(self.a_speed.text())
-        beam_speed_up=float(self.beam_speed_up.text())
+        v1=float(self.lineEdit_belt_speed.text())
+        ceramic_width=float(self.lineEdit_ceramic_width.text())
+        between=float(self.lineEdit_between.text())
+        R=float(self.lineEdit_radius.text())
+        overlap=float(self.lineEdit_overlap.text())
+        a=float(self.lineEdit_accelerate.text())
+        beam_speed_up=float(self.lineEdit_beam_speed_up.text())
         result=Equal_Calc_Parameter_Calculate.equal_num_calculate(v1,ceramic_width,between,R,overlap,a,beam_speed_up)
-        self.beam_speed.setText(str(result[0, 1]))
-        self.num.setText(str(result[0, 4]))
-        self.stay_time.setText(str(result[0, 3]))
-        self.constant_time.setText(str(result[0, 2]))
-        self.swing.setText(str(result[0, 5]))
+        self.lineEdit_beam_swing_speed.setText(str(result[0, 1]))
+        self.lineEdit_num.setText(str(result[0, 4]))
+        self.lineEdit_stay_time.setText(str(result[0, 3]))
+        self.lineEdit_beam_constant_time.setText(str(result[0, 2]))
+        self.lineEdit_swing.setText(str(result[0, 5]))
     # 轨迹参数计算（高效计算）
     def efficient_calculate(self):       # 高效计算
-        v1=float(self.belt_speed.text())
-        ceramic_width=float(self.ceramic_width.text())
-        between=float(self.between.text())
-        R=float(self.radius.text())
-        overlap=float(self.overlap.text())
-        a=float(self.a_speed.text())
-        beam_speed_up=float(self.beam_speed_up.text())
+        v1=float(self.lineEdit_belt_speed.text())
+        ceramic_width=float(self.lineEdit_ceramic_width.text())
+        between=float(self.lineEdit_between.text())
+        R=float(self.lineEdit_radius.text())
+        overlap=float(self.lineEdit_overlap.text())
+        a=float(self.lineEdit_accelerate.text())
+        beam_speed_up=float(self.lineEdit_beam_speed_up.text())
         result=Equal_Calc_Parameter_Calculate.equal_num_calculate(v1,ceramic_width,between,R,overlap,a,beam_speed_up)
-        self.beam_speed.setText(str(result[1, 1]))
-        self.num.setText(str(result[1, 4]))
-        self.stay_time.setText(str(result[1, 3]))
-        self.constant_time.setText(str(result[1, 2]))
-        self.swing.setText(str(result[1, 5]))
+        self.lineEdit_beam_swing_speed.setText(str(result[1, 1]))
+        self.lineEdit_num.setText(str(result[1, 4]))
+        self.lineEdit_stay_time.setText(str(result[1, 3]))
+        self.lineEdit_beam_constant_time.setText(str(result[1, 2]))
+        self.lineEdit_swing.setText(str(result[1, 5]))
     # 抛磨量分布仿真子线程
     def start_computation_Polishing_distribution(self):      # 抛磨量分布仿真子线程
         # 创建子线程
-        self.Polishing_distribution_thread = Polishing_distribution_Thread(float(self.belt_speed.text()),
-                                                                           float(self.beam_speed.text()),
-                                                                           float(self.constant_time.text()),
-                                                                           float(self.stay_time.text()),
-                                                                           float(self.a_speed.text()),
-                                                                           float(self.between.text()),
-                                                                           math.ceil(float(self.num.text())),
-                                                                           float(self.radius.text()),
-                                                                           float(self.grind_size.text()))
+        self.Polishing_distribution_thread = Polishing_distribution_Thread(float(self.lineEdit_belt_speed.text()),
+                                                                           float(self.lineEdit_beam_swing_speed.text()),
+                                                                           float(self.lineEdit_beam_constant_time.text()),
+                                                                           float(self.lineEdit_stay_time.text()),
+                                                                           float(self.lineEdit_accelerate.text()),
+                                                                           float(self.lineEdit_between.text()),
+                                                                           math.ceil(float(self.lineEdit_num.text())),
+                                                                           float(self.lineEdit_radius.text()),
+                                                                           float(self.lineEdit_grind_size.text()))
         self.Polishing_distribution_thread.result_ready.connect(self.Polishing_distribution_ready)
-        self.simulation_button.setEnabled(False)
+        self.button_simulation_equal.setEnabled(False)
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def Polishing_distribution_ready(self,object_matrix, result):     # 子线程回调函数
@@ -162,21 +178,21 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         cax = divider.append_axes("right", size="5%", pad=0.1)
         plt.colorbar(im, cax=cax)
         plt.show()  # 显示函数图像
-        self.equal_coefficient.setText(result)
-        self.simulation_button.setEnabled(True)
+        self.lineEdit_coefficient.setText(result)
+        self.button_simulation_equal.setEnabled(True)
     # 轨迹动画生成子线程
     def start_computation_trajectory_animation(self):
-        self.trajectory_animation_thread = Animation_produce(float(self.belt_speed.text()),
-                                                            float(self.beam_speed.text()),
-                                                            float(self.constant_time.text()),
-                                                            float(self.stay_time.text()),
-                                                            float(self.a_speed.text()),
-                                                            float(self.radius.text()),
-                                                            float(self.between.text()),
-                                                            math.ceil(float(self.num.text()))
+        self.trajectory_animation_thread = Animation_produce(float(self.lineEdit_belt_speed.text()),
+                                                            float(self.lineEdit_beam_swing_speed.text()),
+                                                            float(self.lineEdit_beam_constant_time.text()),
+                                                            float(self.lineEdit_stay_time.text()),
+                                                            float(self.lineEdit_accelerate.text()),
+                                                            float(self.lineEdit_radius.text()),
+                                                            float(self.lineEdit_between.text()),
+                                                            math.ceil(float(self.lineEdit_num.text()))
                                                             )
         self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
-        self.animation_button.setEnabled(False)
+        self.button_animation_equal.setEnabled(False)
         # 运行子线程
         self.trajectory_animation_thread.start()
     def trajectory_animation_ready(self,str_22):
@@ -186,18 +202,18 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         #self.movie.setloopCount(1)  # 设置只播放一次
         self.gif_label.setMovie(self.movie)
         self.movie.start()
-        self.animation_button.setEnabled(True)
+        self.button_animation_equal.setEnabled(True)
     # 调整动画在界面图框中的位置
     def resize_event(self, event):
         self.gif_label.resize(event.size())
     # 绘制磨头中心轨迹线
     def middle_line_figure_plot(self):
-        belt_speed=float(self.belt_speed.text())
-        beam_speed=float(self.beam_speed.text())
-        constant_time=float(self.constant_time.text())
-        stay_time=float(self.stay_time.text())
-        a_speed=float(self.a_speed.text())
-        num=math.ceil(float(self.num.text()))
-        between=float(self.between.text())
+        belt_speed=float(self.lineEdit_belt_speed.text())
+        beam_speed=float(self.lineEdit_beam_swing_speed.text())
+        constant_time=float(self.lineEdit_beam_constant_time.text())
+        stay_time=float(self.lineEdit_stay_time.text())
+        a_speed=float(self.lineEdit_accelerate.text())
+        num=math.ceil(float(self.lineEdit_num.text()))
+        between=float(self.lineEdit_between.text())
         mid_var=middle_line_plot(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between)
         mid_var.figure_plot()
