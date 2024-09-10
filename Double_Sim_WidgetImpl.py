@@ -1,8 +1,9 @@
 import math
+import os
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPixmap, QMovie
-from PySide6.QtWidgets import QWidget, QLabel
+from PySide6.QtWidgets import QWidget, QLabel, QMessageBox
 from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -20,9 +21,9 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
 
         self.setAttribute(Qt.WA_StyledBackground)  # 禁止父窗口样式影响子控件样式
 
-        # self.simulation_button.setText("开始翻译")
-        # self.simulation_button.setFixedSize(100, 32)
-        # self.simulation_button.clicked.connect(self.onStartTrans)
+        self.reCalcFlag = True
+        self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
+        self.loadParameter()  # 在初始化时加载设置
 
         # 界面分割图片元素
         self.label_top.setText('')
@@ -57,6 +58,7 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
         self.button_middle_line_equal.clicked.connect(self.middle_line_figure_plot_equal)  # 磨头中心线绘制按钮
         self.button_middle_line_cross.clicked.connect(self.middle_line_figure_plot_cross)  # 磨头中心线绘制按钮
         self.button_middle_line_order.clicked.connect(self.middle_line_figure_plot_order)  # 磨头中心线绘制按钮
+        self.button_save_parameter.clicked.connect(self.saveParameter)
         # 在程序中创建一个显示图框 播放gif动画
         self.gif_label = QLabel(self.widget)
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -102,6 +104,10 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
         self.button_middle_line_order.setStyleSheet(qss_Button)
         self.button_middle_line_equal.setStyleSheet(qss_Button)
         self.button_save_parameter.setStyleSheet(qss_Button)
+
+        self.line_edits = [self.lineEdit_between, self.lineEdit_beam_constant_time, self.lineEdit_belt_speed, self.lineEdit_between_beam,
+                           self.lineEdit_stay_time, self.lineEdit_beam_swing_speed, self.lineEdit_grind_size, self.lineEdit_num,
+                           self.lineEdit_accelerate, self.lineEdit_radius, self.lineEdit_delay_time]
 
 
     # 轨迹参数计算（节能计算）
@@ -185,58 +191,136 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
         self.button_simulation_equal.setEnabled(True)
         self.button_simulation_order.setEnabled(True)
         self.button_simulation_order.setEnabled(True)
+    def on_Find_Label_Name(self, lineedit_name):
 
+        # 构造对应的Label的objectName
+        label_object_name = lineedit_name.replace("lineedit", "label")
+
+        # 根据objectName找到对应的Label
+        label = self.findChild(QLabel, label_object_name)
+
+        if label:
+            return label.text()
+    def on_button_clicked(self):
+        for line_edit in self.line_edits:
+            if not line_edit.text().strip():  # 如果任何一个LineEdit为空
+                textname = self.on_Find_Label_Name(line_edit.objectName())
+                QMessageBox.warning(self, "警告", f"{textname}输入框必须填写数据！")
+                return False
+        return True
+
+    def check_animation_gif(self, animation_name):
+        # 定义文件路径
+        file_path = os.path.join(os.getcwd(), 'animation', animation_name + '.gif')
+
+        # 判断文件是否存在
+        return os.path.isfile(file_path)
+    def needReCalculation(self):
+        if self.reCalcFlag:
+            return True
+        else:
+            return False
     # 轨迹动画生成子线程
     def start_computation_trajectory_animation_cross(self):
-        self.trajectory_animation_thread = Animation_produce_cross(float(self.lineEdit_belt_speed.text()),
-                                                            float(self.lineEdit_beam_swing_speed.text()),
-                                                            float(self.lineEdit_beam_constant_time.text()),
-                                                            float(self.lineEdit_stay_time.text()),
-                                                            float(self.lineEdit_accelerate.text()),
-                                                            float(self.lineEdit_radius.text()),
-                                                            float(self.lineEdit_between.text()),
-                                                            float(self.lineEdit_between_beam.text()),
-                                                            math.ceil(float(self.lineEdit_num.text())),
-                                                            )
-        self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
-        self.button_animation_cross.setEnabled(False)
-        # 运行子线程
-        self.trajectory_animation_thread.start()
+        if not self.on_button_clicked():
+            return
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
+        animation_name = ('DoubleSimCrossAnimation-' +
+                          self.lineEdit_belt_speed.text() + '_' + self.lineEdit_beam_swing_speed.text() + '_' + self.lineEdit_beam_constant_time.text() + '_' +
+                          self.lineEdit_stay_time.text() + '_' +
+                          self.lineEdit_accelerate.text() + '_' +
+                          self.lineEdit_num.text() + '_' +
+                          self.lineEdit_radius.text() + '_' + self.lineEdit_between.text() + '_' +
+                          self.lineEdit_between_beam.text())
+
+        if not self.check_animation_gif(animation_name):
+            self.trajectory_animation_thread = Animation_produce_cross(float(self.lineEdit_belt_speed.text()),
+                                                                float(self.lineEdit_beam_swing_speed.text()),
+                                                                float(self.lineEdit_beam_constant_time.text()),
+                                                                float(self.lineEdit_stay_time.text()),
+                                                                float(self.lineEdit_accelerate.text()),
+                                                                float(self.lineEdit_radius.text()),
+                                                                float(self.lineEdit_between.text()),
+                                                                float(self.lineEdit_between_beam.text()),
+                                                                math.ceil(float(self.lineEdit_num.text())),
+                                                                 animation_name
+                                                                )
+            self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
+            self.button_animation_cross.setEnabled(False)
+            # 运行子线程
+            self.trajectory_animation_thread.start()
+        else:
+            self.trajectory_animation_ready(animation_name)
     def start_computation_trajectory_animation_order(self):
-        self.trajectory_animation_thread = Animation_produce_order(float(self.lineEdit_belt_speed.text()),
-                                                            float(self.lineEdit_beam_swing_speed.text()),
-                                                            float(self.lineEdit_beam_constant_time.text()),
-                                                            float(self.lineEdit_stay_time.text()),
-                                                            float(self.lineEdit_accelerate.text()),
-                                                            float(self.lineEdit_radius.text()),
-                                                            float(self.lineEdit_between.text()),
-                                                            float(self.lineEdit_between_beam.text()),
-                                                            math.ceil(float(self.lineEdit_num.text())),
-                                                            float(self.lineEdit_delay_time.text())
-                                                            )
-        self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
-        self.button_animation_order.setEnabled(False)
-        # 运行子线程
-        self.trajectory_animation_thread.start()
+        if not self.on_button_clicked():
+            return
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
+        animation_name = ('DoubleSimOrderAnimation-' +
+                          self.lineEdit_belt_speed.text() + '_' + self.lineEdit_beam_swing_speed.text() + '_' + self.lineEdit_beam_constant_time.text() + '_' +
+                          self.lineEdit_stay_time.text() + '_' +
+                          self.lineEdit_accelerate.text() + '_' +
+                          self.lineEdit_radius.text() + '_' +
+                          self.lineEdit_between.text() + '_' +
+                          self.lineEdit_between_beam.text() + '_' + self.lineEdit_num.text() + '_' +
+                          self.lineEdit_delay_time.text())
+
+        if not self.check_animation_gif(animation_name):
+            self.trajectory_animation_thread = Animation_produce_order(float(self.lineEdit_belt_speed.text()),
+                                                                float(self.lineEdit_beam_swing_speed.text()),
+                                                                float(self.lineEdit_beam_constant_time.text()),
+                                                                float(self.lineEdit_stay_time.text()),
+                                                                float(self.lineEdit_accelerate.text()),
+                                                                float(self.lineEdit_radius.text()),
+                                                                float(self.lineEdit_between.text()),
+                                                                float(self.lineEdit_between_beam.text()),
+                                                                math.ceil(float(self.lineEdit_num.text())),
+                                                                float(self.lineEdit_delay_time.text())
+                                                                )
+            self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
+            self.button_animation_order.setEnabled(False)
+            # 运行子线程
+            self.trajectory_animation_thread.start()
+        else:
+            self.trajectory_animation_ready(animation_name)
     def start_computation_trajectory_animation_equal(self):
-        self.trajectory_animation_thread = Animation_produce_equal(float(self.lineEdit_belt_speed.text()),
-                                                                   float(self.lineEdit_beam_swing_speed.text()),
-                                                                   float(self.lineEdit_beam_constant_time.text()),
-                                                                   float(self.lineEdit_stay_time.text()),
-                                                                   float(self.lineEdit_accelerate.text()),
-                                                                   float(self.lineEdit_radius.text()),
-                                                                   float(self.lineEdit_between.text()),
-                                                                   float(self.lineEdit_between_beam.text()),
-                                                                   math.ceil(float(self.lineEdit_num.text())),
-                                                                   )
-        self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
-        self.button_animation_equal.setEnabled(False)
-        # 运行子线程
-        self.trajectory_animation_thread.start()
-    def trajectory_animation_ready(self,str_22):
+        if not self.on_button_clicked():
+            return
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
+        animation_name = ('DoubleSimEqualAnimation-' +
+                          self.lineEdit_belt_speed.text() + '_' + self.lineEdit_beam_swing_speed.text() + '_' + self.lineEdit_beam_constant_time.text() + '_' +
+                          self.lineEdit_stay_time.text() + '_' +
+                          self.lineEdit_accelerate.text() + '_' +
+                          self.lineEdit_radius.text() + '_' +
+                          self.lineEdit_between.text() + '_' +
+                          self.lineEdit_between_beam.text() + '_' + self.lineEdit_num.text())
+
+        if not self.check_animation_gif(animation_name):
+            self.trajectory_animation_thread = Animation_produce_equal(float(self.lineEdit_belt_speed.text()),
+                                                                       float(self.lineEdit_beam_swing_speed.text()),
+                                                                       float(self.lineEdit_beam_constant_time.text()),
+                                                                       float(self.lineEdit_stay_time.text()),
+                                                                       float(self.lineEdit_accelerate.text()),
+                                                                       float(self.lineEdit_radius.text()),
+                                                                       float(self.lineEdit_between.text()),
+                                                                       float(self.lineEdit_between_beam.text()),
+                                                                       math.ceil(float(self.lineEdit_num.text())),
+                                                                       )
+            self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
+            self.button_animation_equal.setEnabled(False)
+            # 运行子线程
+            self.trajectory_animation_thread.start()
+        else:
+            self.trajectory_animation_ready(animation_name)
+    def trajectory_animation_ready(self,animation_name):
         # 加载GIF动画
-        print(str_22)
-        self.movie = QMovie("animation.gif")
+        print(animation_name)
+        self.movie = QMovie('./animation/' + animation_name + '.gif')
         #self.movie.setloopCount(1)  # 设置只播放一次
         self.gif_label.setMovie(self.movie)
         self.movie.start()
@@ -281,3 +365,31 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
         delay_tome = float(self.lineEdit_delay_time.text())
         mid_var=middle_line_plot_order(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between,between_beam,delay_tome)
         mid_var.figure_plot()
+
+    def saveParameter(self):
+        """保存各个LineEdit控件的数据到配置文件"""
+        self.settings.setValue("lineEdit_between4", self.lineEdit_between.text())
+        self.settings.setValue("lineEdit_beam_constant_time4", self.lineEdit_beam_constant_time.text())
+        self.settings.setValue("lineEdit_belt_speed4", self.lineEdit_belt_speed.text())
+        self.settings.setValue("lineEdit_between_beam4", self.lineEdit_between_beam.text())
+        self.settings.setValue("lineEdit_stay_time4", self.lineEdit_stay_time.text())
+        self.settings.setValue("lineEdit_beam_swing_speed4", self.lineEdit_beam_swing_speed.text())
+        self.settings.setValue("lineEdit_grind_size4", self.lineEdit_grind_size.text())
+        self.settings.setValue("lineEdit_num4", self.lineEdit_num.text())
+        self.settings.setValue("lineEdit_accelerate4", self.lineEdit_accelerate.text())
+        self.settings.setValue("lineEdit_radius4", self.lineEdit_radius.text())
+        self.settings.setValue("lineEdit_delay_time4", self.lineEdit_delay_time.text())
+
+    def loadParameter(self):
+        """加载配置文件中的数据到各个LineEdit控件"""
+        self.lineEdit_between.setText(self.settings.value("lineEdit_between4", ""))
+        self.lineEdit_beam_constant_time.setText(self.settings.value("lineEdit_beam_constant_time4", ""))
+        self.lineEdit_belt_speed.setText(self.settings.value("lineEdit_belt_speed4", ""))
+        self.lineEdit_between_beam.setText(self.settings.value("lineEdit_between_beam4", ""))
+        self.lineEdit_stay_time.setText(self.settings.value("lineEdit_stay_time4", ""))
+        self.lineEdit_beam_swing_speed.setText(self.settings.value("lineEdit_beam_swing_speed4", ""))
+        self.lineEdit_grind_size.setText(self.settings.value("lineEdit_grind_size4", ""))
+        self.lineEdit_num.setText(self.settings.value("lineEdit_num4", ""))
+        self.lineEdit_accelerate.setText(self.settings.value("lineEdit_accelerate4", ""))
+        self.lineEdit_radius.setText(self.settings.value("lineEdit_radius4", ""))
+        self.lineEdit_delay_time.setText(self.settings.value("lineEdit_delay_time4", ""))

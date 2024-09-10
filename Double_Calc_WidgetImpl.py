@@ -1,8 +1,9 @@
 import math
+import os
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPixmap, QMovie
-from PySide6.QtWidgets import QWidget, QLabel
+from PySide6.QtWidgets import QWidget, QLabel, QMessageBox
 from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -22,6 +23,9 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
 
         self.setAttribute(Qt.WA_StyledBackground)  # 禁止父窗口样式影响子控件样式
 
+        self.reCalcFlag = True
+        self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
+        self.loadParameter()  # 在初始化时加载设置
         # 界面分割图片元素
         self.label_top.setText('')
         pixmap = QPixmap(":double")  # 替换为实际图片路径
@@ -57,6 +61,7 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         self.button_middle_line_order.clicked.connect(self.middle_line_figure_plot_order)  # 顺序摆轨迹中心线绘制
         self.button_middle_line_order_define.clicked.connect(
             self.middle_line_figure_plot_order_selfdefine)  # 顺序摆(自定义)中心线绘制
+        self.button_save_parameter.clicked.connect(self.saveParameter)
         # 在程序中创建一个显示图框 播放gif动画
         self.gif_label = QLabel(self.widget)
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -101,8 +106,14 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         self.button_selfdefine_calculate.setStyleSheet(qss_Button)
         self.button_save_parameter.setStyleSheet(qss_Button)
 
+        self.line_edits = [self.lineEdit_between, self.lineEdit_grind_size, self.lineEdit_belt_speed, self.lineEdit_accelerate,
+                           self.lineEdit_between_beam, self.lineEdit_radius, self.lineEdit_ceramic_width, self.lineEdit_overlap,
+                           self.lineEdit_beam_speed_up, self.lineEdit_group_count]
+
     # 轨迹参数计算（节能计算）
     def energy_calculate(self):
+        if not self.on_button_clicked():
+            return
         v1=float(self.lineEdit_belt_speed.text())
         ceramic_width=float(self.lineEdit_ceramic_width.text())
         between=float(self.lineEdit_between.text())
@@ -118,6 +129,7 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         self.lineEdit_num.setText(str(result[0, 4]))
         self.lineEdit_delay_time.setText(str(result[0,5]))
         self.lineEdit_swing.setText(str(result[0, 6]))
+        self.initReCalculation()
     # 轨迹参数计算（高效计算）
     def efficient_calculate(self):       # 高效计算
         v1=float(self.lineEdit_belt_speed.text())
@@ -135,6 +147,7 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         self.lineEdit_num.setText(str(result[1, 4]))
         self.lineEdit_delay_time.setText(str(result[1, 5]))
         self.lineEdit_swing.setText(str(result[1, 6]))
+        self.initReCalculation()
      # 自定义计算
     def define_calculate(self):
         v1 = float(self.lineEdit_belt_speed.text())
@@ -153,6 +166,7 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         self.lineEdit_delay_time.setText(str(result[0, 5]))
         self.lineEdit_self_delay_time.setText(str(result[0, 6]))
         self.lineEdit_swing.setText(str(result[0, 7]))
+        self.initReCalculation()
     # 抛磨量分布仿真子线程
     def start_computation_Polishing_distribution_order(self):      # 抛磨量分布仿真子线程
         # 创建子线程
@@ -211,27 +225,68 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         self.button_simulation_order.setEnabled(True)
         self.button_simulation_order.setEnabled(True)
         self.button_simulation_order_define.setEnabled(True)
+    def on_button_clicked(self):
+        for line_edit in self.line_edits:
+            if not line_edit.text().strip():  # 如果任何一个LineEdit为空
+                textname = self.on_Find_Label_Name(line_edit.objectName())
+                QMessageBox.warning(self, "警告", f"{textname}输入框必须填写数据！")
+                return False
+        return True
+    def needReCalculation(self):
+        if self.reCalcFlag:
+            return True
+        else:
+            return False
+    def initReCalculation(self):
+        self.reCalcFlag = False
+    def on_Find_Label_Name(self, lineedit_name):
+
+        # 构造对应的Label的objectName
+        label_object_name = lineedit_name.replace("lineedit", "label")
+
+        # 根据objectName找到对应的Label
+        label = self.findChild(QLabel, label_object_name)
+
+        if label:
+            return label.text()
     # 轨迹动画生成子线程
     def start_computation_trajectory_animation_order(self):
-        self.trajectory_animation_thread = Animation_produce_order(float(self.lineEdit_belt_speed.text()),
-                                                            float(self.lineEdit_beam_swing_speed.text()),
-                                                            float(self.lineEdit_beam_constant_time.text()),
-                                                            float(self.lineEdit_stay_time.text()),
-                                                            float(self.lineEdit_accelerate.text()),
-                                                            float(self.lineEdit_radius.text()),
-                                                            float(self.lineEdit_between.text()),
-                                                            float(self.lineEdit_between_beam.text()),
-                                                            math.ceil(float(self.lineEdit_num.text())),
-                                                            float(self.lineEdit_delay_time.text())
-                                                            )
-        self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
-        self.button_animation_order.setEnabled(False)
-        # 运行子线程
-        self.trajectory_animation_thread.start()
-    def trajectory_animation_ready(self,str_22):
+        if not self.on_button_clicked():
+            return
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
+        animation_name = ('DoubleCalcAnimation-' +
+                          self.lineEdit_belt_speed.text() + '_' + self.lineEdit_beam_swing_speed.text() + '_' + self.lineEdit_beam_constant_time.text() + '_' +
+                          self.lineEdit_stay_time.text() + '_' +
+                          self.lineEdit_accelerate.text() + '_' +
+                          self.lineEdit_radius.text() + '_' + self.lineEdit_between.text() + '_' +
+                          self.lineEdit_between_beam.text() + '_' + self.lineEdit_num.text() + '_' +
+                          self.lineEdit_delay_time.text())
+
+        if not self.check_animation_gif(animation_name):
+            self.trajectory_animation_thread = Animation_produce_order(float(self.lineEdit_belt_speed.text()),
+                                                                float(self.lineEdit_beam_swing_speed.text()),
+                                                                float(self.lineEdit_beam_constant_time.text()),
+                                                                float(self.lineEdit_stay_time.text()),
+                                                                float(self.lineEdit_accelerate.text()),
+                                                                float(self.lineEdit_radius.text()),
+                                                                float(self.lineEdit_between.text()),
+                                                                float(self.lineEdit_between_beam.text()),
+                                                                math.ceil(float(self.lineEdit_num.text())),
+                                                                float(self.lineEdit_delay_time.text()),
+                                                                animation_name
+                                                                )
+            self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
+            self.button_animation_order.setEnabled(False)
+            # 运行子线程
+            self.trajectory_animation_thread.start()
+        else:
+            self.trajectory_animation_ready(animation_name)
+    def trajectory_animation_ready(self,animation_name):
         # 加载GIF动画
-        print(str_22)
-        self.movie = QMovie("animation.gif")
+        print(animation_name)
+        self.movie = QMovie('./animation/' + animation_name + '.gif')
         #self.movie.setloopCount(1)  # 设置只播放一次
         self.gif_label.setMovie(self.movie)
         self.movie.start()
@@ -239,6 +294,14 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
     # 调整动画在界面图框中的位置
     def resize_event(self, event):
         self.gif_label.resize(event.size())
+
+    def check_animation_gif(self, animation_name):
+        # 定义文件路径
+        file_path = os.path.join(os.getcwd(), 'animation', animation_name + '.gif')
+
+        # 判断文件是否存在
+        return os.path.isfile(file_path)
+
     # 绘制磨头中心轨迹线
     def middle_line_figure_plot_order(self):
         belt_speed=float(self.lineEdit_belt_speed.text())
@@ -265,3 +328,31 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         group = float(self.lineEdit_group_count.text())
         mid_var=middle_line_plot_self_define_order(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between,between_beam,delay_time,group)
         mid_var.figure_plot()
+
+    def saveParameter(self):
+        """保存各个LineEdit控件的数据到配置文件"""
+        self.settings.setValue("lineEdit_between3", self.lineEdit_between.text())
+        self.settings.setValue("lineEdit_grind_size3", self.lineEdit_grind_size.text())
+        self.settings.setValue("lineEdit_belt_speed3", self.lineEdit_belt_speed.text())
+        self.settings.setValue("lineEdit_accelerate3", self.lineEdit_accelerate.text())
+        self.settings.setValue("lineEdit_between_beam3", self.lineEdit_between_beam.text())
+        self.settings.setValue("lineEdit_radius3", self.lineEdit_radius.text())
+        self.settings.setValue("lineEdit_ceramic_width3", self.lineEdit_ceramic_width.text())
+        self.settings.setValue("lineEdit_overlap3", self.lineEdit_overlap.text())
+        self.settings.setValue("lineEdit_self_define_num3", self.lineEdit_self_define_num.text())
+        self.settings.setValue("lineEdit_beam_speed_up3", self.lineEdit_beam_speed_up.text())
+        self.settings.setValue("lineEdit_group_count3", self.lineEdit_group_count.text())
+
+    def loadParameter(self):
+        """加载配置文件中的数据到各个LineEdit控件"""
+        self.lineEdit_between.setText(self.settings.value("lineEdit_between3", ""))
+        self.lineEdit_grind_size.setText(self.settings.value("lineEdit_grind_size3", ""))
+        self.lineEdit_belt_speed.setText(self.settings.value("lineEdit_belt_speed3", ""))
+        self.lineEdit_accelerate.setText(self.settings.value("lineEdit_accelerate3", ""))
+        self.lineEdit_between_beam.setText(self.settings.value("lineEdit_between_beam3", ""))
+        self.lineEdit_radius.setText(self.settings.value("lineEdit_radius3", ""))
+        self.lineEdit_ceramic_width.setText(self.settings.value("lineEdit_ceramic_width3", ""))
+        self.lineEdit_overlap.setText(self.settings.value("lineEdit_overlap3", ""))
+        self.lineEdit_self_define_num.setText(self.settings.value("lineEdit_self_define_num3", ""))
+        self.lineEdit_beam_speed_up.setText(self.settings.value("lineEdit_beam_speed_up3", ""))
+        self.lineEdit_group_count.setText(self.settings.value("lineEdit_group_count3", ""))

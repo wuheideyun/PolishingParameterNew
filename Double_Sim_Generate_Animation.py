@@ -7,7 +7,7 @@ import time as te
 from PySide6.QtCore import QThread, Signal
 class Animation_produce_cross(QThread):
     result_ready = Signal(str)
-    def __init__(self,v1, v2, t1, t2, a, R, between,beam_between,num,animation_name):
+    def __init__(self,v1, v2, t1, t2, a, R, between,beam_between,num, animation_name):
         # 参数赋值
         super().__init__()
         self.animation_name = animation_name
@@ -165,7 +165,7 @@ class Animation_produce_cross(QThread):
 
 class Animation_produce_order(QThread):
     result_ready = Signal(str)
-    def __init__(self,v1,v2,t1,t2,a,R,between,beam_between,num,delay_time,animation_name):
+    def __init__(self,v1,v2,t1,t2,a,R,between,beam_between,num,delay_time, animation_name):
         # 参数赋值
         super().__init__()
         self.animation_name = animation_name
@@ -316,7 +316,7 @@ class Animation_produce_order(QThread):
 
 class Animation_produce_equal(QThread):
     result_ready = Signal(str)
-    def __init__(self,v1, v2, t1, t2, a, R, between,beam_between,num,animation_name):
+    def __init__(self,v1, v2, t1, t2, a, R, between,beam_between,num, animation_name):
         # 参数赋值
         super().__init__()
         self.animation_name = animation_name
@@ -465,7 +465,7 @@ class Animation_produce_equal(QThread):
 # 待做
 class Animation_produce_order_define(QThread):
     result_ready = Signal(str)
-    def __init__(self,v1,v2,t1,t2,a,R,between,beam_between,num,delay_time,group,animation_name):
+    def __init__(self,v1,v2,t1,t2,a,R,between,beam_between,num,delay_time,group, animation_name):
         # 参数赋值
         super().__init__()
         self.animation_name = animation_name

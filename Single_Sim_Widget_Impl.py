@@ -1,6 +1,6 @@
 import math
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPixmap, QMovie
 from PySide6.QtWidgets import QWidget, QLabel
 from matplotlib import pyplot as plt
@@ -20,6 +20,8 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
 
         self.setAttribute(Qt.WA_StyledBackground)  # 禁止父窗口样式影响子控件样式
 
+        self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
+        self.loadParameter()  # 在初始化时加载设置
         # 运行逻辑
         # 按钮操作
         # 动画按钮(同步摆动画)
@@ -38,6 +40,7 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
         self.button_middle_line_equal.clicked.connect(self.middle_line_figure_plot_equal)  # 同步摆轨迹中心线绘制按钮
         self.button_middle_line_cross.clicked.connect(self.middle_line_figure_plot_cross)  # 交叉摆轨迹中心线绘制按钮
         self.button_middle_line_order.clicked.connect(self.middle_line_figure_plot_order)  # 顺序摆轨迹中心线绘制按钮
+        self.button_save_parameter.clicked.connect(self.saveParameter)
         # 在程序中创建一个显示图框 播放gif动画
         self.gif_label = QLabel(self.widget)
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -277,3 +280,33 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
         delay_time = float(self.lineEdit_delay_time.text())
         mid_var=middle_line_plot_order(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between_beam,delay_time)
         mid_var.figure_plot()
+
+    def saveParameter(self):
+        """保存各个LineEdit控件的数据到配置文件"""
+        self.settings.setValue("lineEdit_beam_between6", self.lineEdit_beam_between.text())
+        self.settings.setValue("lineEdit_grind_size6", self.lineEdit_grind_size.text())
+        self.settings.setValue("lineEdit_belt_speed6", self.lineEdit_belt_speed.text())
+        self.settings.setValue("lineEdit_beam_constant_time6", self.lineEdit_beam_constant_time.text())
+        self.settings.setValue("lineEdit_radius6", self.lineEdit_radius.text())
+        self.settings.setValue("lineEdit_ceramic_width6", self.lineEdit_ceramic_width.text())
+        self.settings.setValue("lineEdit_beam_swing_speed6", self.lineEdit_beam_swing_speed.text())
+        self.settings.setValue("lineEdit_stay_time6", self.lineEdit_stay_time.text())
+        self.settings.setValue("lineEdit_delay_time6", self.lineEdit_delay_time.text())
+        self.settings.setValue("lineEdit_accelerate6", self.lineEdit_accelerate.text())
+        self.settings.setValue("lineEdit_num6", self.lineEdit_num.text())
+        self.settings.setValue("lineEdit_coefficient6", self.lineEdit_coefficient.text())
+
+    def loadParameter(self):
+        """加载配置文件中的数据到各个LineEdit控件"""
+        self.lineEdit_beam_between.setText(self.settings.value("lineEdit_beam_between6", ""))
+        self.lineEdit_grind_size.setText(self.settings.value("lineEdit_grind_size6", ""))
+        self.lineEdit_belt_speed.setText(self.settings.value("lineEdit_belt_speed6", ""))
+        self.lineEdit_beam_constant_time.setText(self.settings.value("lineEdit_beam_constant_time6", ""))
+        self.lineEdit_radius.setText(self.settings.value("lineEdit_radius6", ""))
+        self.lineEdit_ceramic_width.setText(self.settings.value("lineEdit_ceramic_width6", ""))
+        self.lineEdit_beam_swing_speed.setText(self.settings.value("lineEdit_beam_swing_speed6", ""))
+        self.lineEdit_stay_time.setText(self.settings.value("lineEdit_stay_time6", ""))
+        self.lineEdit_delay_time.setText(self.settings.value("lineEdit_delay_time6", ""))
+        self.lineEdit_accelerate.setText(self.settings.value("lineEdit_accelerate6", ""))
+        self.lineEdit_num.setText(self.settings.value("lineEdit_num6", ""))
+        self.lineEdit_coefficient.setText(self.settings.value("lineEdit_coefficient6", ""))

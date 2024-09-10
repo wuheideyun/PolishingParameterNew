@@ -1,8 +1,9 @@
 import math
+import os
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPixmap, QMovie
-from PySide6.QtWidgets import QWidget, QLabel
+from PySide6.QtWidgets import QWidget, QLabel, QMessageBox
 from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -17,8 +18,11 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         super().__init__()
         self.setupUi(w)
 
+        self.reCalcFlag = True
         self.setAttribute(Qt.WA_StyledBackground)  # 禁止父窗口样式影响子控件样式
 
+        self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
+        self.loadParameter()  # 在初始化时加载设置
         # 界面分割图片元素
         self.label_top.setText('')
         pixmap = QPixmap(":equal")  # 替换为实际图片路径
@@ -47,6 +51,7 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         self.button_animation_equal.clicked.connect(self.start_computation_trajectory_animation)  # 动画按钮
         self.button_simulation_equal.clicked.connect(self.start_computation_Polishing_distribution)  # 抛磨量分布仿真按钮
         self.button_middle_line_equal.clicked.connect(self.middle_line_figure_plot)  # 磨头中心线绘制按钮
+        self.button_save_parameter.clicked.connect(self.saveParameter)
         # 在程序中创建一个显示图框 播放gif动画
         self.gif_label = QLabel(self.widget)
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -86,6 +91,10 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         self.button_simulation_equal.setStyleSheet(qss_Button)
         self.button_save_parameter.setStyleSheet(qss_Button)
 
+        self.line_edits = [self.lineEdit_between, self.lineEdit_accelerate, self.lineEdit_belt_speed, self.lineEdit_beam_swing_speed,
+                           self.lineEdit_grind_size, self.lineEdit_num, self.lineEdit_stay_time, self.lineEdit_beam_constant_time,
+                           self.lineEdit_radius]
+
     # 抛磨量分布仿真子线程
     def start_computation_Polishing_distribution(self):      # 抛磨量分布仿真子线程
         # 创建子线程
@@ -121,23 +130,67 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         self.button_simulation_equal.setEnabled(True)
     # 轨迹动画生成子线程
     def start_computation_trajectory_animation(self):
-        self.trajectory_animation_thread = Animation_produce(float(self.lineEdit_belt_speed.text()),
-                                                            float(self.lineEdit_beam_swing_speed.text()),
-                                                            float(self.lineEdit_beam_constant_time.text()),
-                                                            float(self.lineEdit_stay_time.text()),
-                                                            float(self.lineEdit_accelerate.text()),
-                                                            float(self.lineEdit_radius.text()),
-                                                            float(self.lineEdit_between.text()),
-                                                            math.ceil(float(self.lineEdit_num.text()))
-                                                            )
-        self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
-        self.button_animation_equal.setEnabled(False)
-        # 运行子线程
-        self.trajectory_animation_thread.start()
-    def trajectory_animation_ready(self,str_222):
+        if not self.on_button_clicked():
+            return
+        animation_name = ('EqualSimAnimation-' +
+                          self.lineEdit_belt_speed.text() + '_' + self.lineEdit_beam_swing_speed.text() + '_' + self.lineEdit_beam_constant_time.text() + '_' +
+                          self.lineEdit_stay_time.text() + '_' +
+                          self.lineEdit_accelerate.text() + '_' +
+                          self.lineEdit_radius.text() + '_' + self.lineEdit_between.text() + '_' +
+                          self.lineEdit_num.text())
+
+        if not self.check_animation_gif(animation_name):
+            self.trajectory_animation_thread = Animation_produce(float(self.lineEdit_belt_speed.text()),
+                                                                float(self.lineEdit_beam_swing_speed.text()),
+                                                                float(self.lineEdit_beam_constant_time.text()),
+                                                                float(self.lineEdit_stay_time.text()),
+                                                                float(self.lineEdit_accelerate.text()),
+                                                                float(self.lineEdit_radius.text()),
+                                                                float(self.lineEdit_between.text()),
+                                                                math.ceil(float(self.lineEdit_num.text())),
+                                                                 animation_name
+                                                                )
+            self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
+            self.button_animation_equal.setEnabled(False)
+            # 运行子线程
+            self.trajectory_animation_thread.start()
+        else:
+            self.trajectory_animation_ready(animation_name)
+
+    def check_animation_gif(self, animation_name):
+        # 定义文件路径
+        file_path = os.path.join(os.getcwd(), 'animation', animation_name + '.gif')
+
+        # 判断文件是否存在
+        return os.path.isfile(file_path)
+
+    def needReCalculation(self):
+        if self.reCalcFlag:
+            return True
+        else:
+            return False
+    def on_Find_Label_Name(self, lineedit_name):
+
+        # 构造对应的Label的objectName
+        label_object_name = lineedit_name.replace("lineEdit", "label")
+
+        # 根据objectName找到对应的Label
+        label = self.findChild(QLabel, label_object_name)
+
+        if label:
+            return label.text()
+
+    def on_button_clicked(self):
+        for line_edit in self.line_edits:
+            if not line_edit.text().strip():  # 如果任何一个LineEdit为空
+                textname = self.on_Find_Label_Name(line_edit.objectName())
+                QMessageBox.warning(self, "警告", f"{textname}输入框必须填写数据！")
+                return False
+        return True
+    def trajectory_animation_ready(self,animation_name):
         # 加载GIF动画
-        print(str_222)
-        self.movie = QMovie("./animation.gif")
+        print(animation_name)
+        self.movie = QMovie('./animation/' + animation_name + '.gif')
         #self.movie.setloopCount(1)  # 设置只播放一次
         self.gif_label.setMovie(self.movie)
         self.movie.start()
@@ -156,3 +209,29 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         between=float(self.lineEdit_between.text())
         mid_var=middle_line_plot(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between)
         mid_var.figure_plot()
+
+    def saveParameter(self):
+        """保存各个LineEdit控件的数据到配置文件"""
+        self.settings.setValue("lineEdit_between2", self.lineEdit_between.text())
+        self.settings.setValue("lineEdit_grind_size2", self.lineEdit_grind_size.text())
+        self.settings.setValue("lineEdit_radius2", self.lineEdit_radius.text())
+        self.settings.setValue("lineEdit_accelerate2", self.lineEdit_accelerate.text())
+        self.settings.setValue("lineEdit_num2", self.lineEdit_num.text())
+        self.settings.setValue("lineEdit_belt_speed2", self.lineEdit_belt_speed.text())
+        self.settings.setValue("lineEdit_stay_time2", self.lineEdit_stay_time.text())
+        self.settings.setValue("lineEdit_coefficient2", self.lineEdit_coefficient.text())
+        self.settings.setValue("lineEdit_beam_swing_speed2", self.lineEdit_beam_swing_speed.text())
+        self.settings.setValue("lineEdit_beam_constant_time2", self.lineEdit_beam_constant_time.text())
+
+    def loadParameter(self):
+        """加载配置文件中的数据到各个LineEdit控件"""
+        self.lineEdit_between.setText(self.settings.value("lineEdit_between2", ""))
+        self.lineEdit_grind_size.setText(self.settings.value("lineEdit_grind_size2", ""))
+        self.lineEdit_radius.setText(self.settings.value("lineEdit_radius2", ""))
+        self.lineEdit_accelerate.setText(self.settings.value("lineEdit_accelerate2", ""))
+        self.lineEdit_num.setText(self.settings.value("lineEdit_num2", ""))
+        self.lineEdit_belt_speed.setText(self.settings.value("lineEdit_belt_speed2", ""))
+        self.lineEdit_stay_time.setText(self.settings.value("lineEdit_stay_time2", ""))
+        self.lineEdit_coefficient.setText(self.settings.value("lineEdit_coefficient2", ""))
+        self.lineEdit_beam_swing_speed.setText(self.settings.value("lineEdit_beam_swing_speed2", ""))
+        self.lineEdit_beam_constant_time.setText(self.settings.value("lineEdit_beam_constant_time2", ""))

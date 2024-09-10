@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1017, 686)
+        MainWindow.resize(1026, 686)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -293,7 +293,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1017, 33))
+        self.menubar.setGeometry(QRect(0, 0, 1026, 33))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -314,7 +314,7 @@ class Ui_MainWindow(object):
         self.label_overlap.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u8f68\u8ff9\u91cd\u53e0\u91cf\uff1a</p></body></html>", None))
         self.button_animation_order_define.setText(QCoreApplication.translate("MainWindow", u"\u987a\u5e8f\u6446\u52a8\u753b\uff08\u81ea\u5b9a\u4e49\u6a21\u5f0f\uff09", None))
         self.lineEdit_between.setText("")
-        self.lineEdit_num.setText(QCoreApplication.translate("MainWindow", u"4", None))
+        self.lineEdit_num.setText("")
         self.label_grind_size.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u78e8\u5757\u5c3a\u5bf8\uff1a</p></body></html>", None))
         self.lineEdit_group_count.setText(QCoreApplication.translate("MainWindow", u"3", None))
         self.label_belt_speed.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u76ae\u5e26\u901f\u5ea6\uff1a</p></body></html>", None))

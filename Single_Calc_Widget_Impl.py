@@ -1,6 +1,6 @@
 import math
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPixmap, QMovie
 from PySide6.QtWidgets import QWidget, QLabel
 from matplotlib import pyplot as plt
@@ -22,6 +22,9 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
 
         self.setAttribute(Qt.WA_StyledBackground)  # 禁止父窗口样式影响子控件样式
 
+        self.reCalcFlag = True
+        self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
+        self.loadParameter()  # 在初始化时加载设置
         # 运行逻辑
         # 按钮操作
         self.button_energy_calculate.clicked.connect(self.energy_calculate)  # 节能计算
@@ -40,6 +43,7 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         self.button_middle_line_order.clicked.connect(self.middle_line_figure_plot_order)  # 顺序摆轨迹中心线绘制按钮
         self.button_middle_line_order_define.clicked.connect(
             self.middle_line_figure_plot_order_selfdefine)  # 顺序摆(自定义)中心线绘制按钮
+        self.button_save_parameter.clicked.connect(self.saveParameter)
         # 在程序中创建一个显示图框 播放gif动画
         self.gif_label = QLabel(self.widget)
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -294,3 +298,28 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         mid_var=middle_line_plot_self_define_order(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between,between_beam,delay_time,group)
         mid_var.figure_plot()
 
+    def saveParameter(self):
+        """保存各个LineEdit控件的数据到配置文件"""
+        self.settings.setValue("lineEdit_beam_between5", self.lineEdit_beam_between.text())
+        self.settings.setValue("lineEdit_grind_size5", self.lineEdit_grind_size.text())
+        self.settings.setValue("lineEdit_belt_speed5", self.lineEdit_belt_speed.text())
+        self.settings.setValue("lineEdit_accelerate5", self.lineEdit_accelerate.text())
+        self.settings.setValue("lineEdit_num_set5", self.lineEdit_num_set.text())
+        self.settings.setValue("lineEdit_radius5", self.lineEdit_radius.text())
+        self.settings.setValue("lineEdit_ceramic_width5", self.lineEdit_ceramic_width.text())
+        self.settings.setValue("lineEdit_beam_speed_up5", self.lineEdit_beam_speed_up.text())
+        self.settings.setValue("lineEdit_overlap5", self.lineEdit_overlap.text())
+        self.settings.setValue("lineEdit_group_count5", self.lineEdit_group_count.text())
+
+    def loadParameter(self):
+        """加载配置文件中的数据到各个LineEdit控件"""
+        self.lineEdit_beam_between.setText(self.settings.value("lineEdit_beam_between5", ""))
+        self.lineEdit_grind_size.setText(self.settings.value("lineEdit_grind_size5", ""))
+        self.lineEdit_belt_speed.setText(self.settings.value("lineEdit_belt_speed5", ""))
+        self.lineEdit_accelerate.setText(self.settings.value("lineEdit_accelerate5", ""))
+        self.lineEdit_num_set.setText(self.settings.value("lineEdit_num_set5", ""))
+        self.lineEdit_radius.setText(self.settings.value("lineEdit_radius5", ""))
+        self.lineEdit_ceramic_width.setText(self.settings.value("lineEdit_ceramic_width5", ""))
+        self.lineEdit_beam_speed_up.setText(self.settings.value("lineEdit_beam_speed_up5", ""))
+        self.lineEdit_overlap.setText(self.settings.value("lineEdit_overlap5", ""))
+        self.lineEdit_group_count.setText(self.settings.value("lineEdit_group_count5", ""))

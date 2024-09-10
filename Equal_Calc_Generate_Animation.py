@@ -7,7 +7,6 @@ import time as te
 from PySide6.QtCore import QThread, Signal
 class Animation_produce(QThread):
     result_ready = Signal(str)
-
     def __init__(self, v1, v2, t1, t2, a, R, between, num, animation_name):
         # 参数赋值
         super().__init__()
