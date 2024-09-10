@@ -8,7 +8,6 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import Single_Sim
 from Single_Sim_Generate_Animation import Animation_produce_cross, Animation_produce_order, Animation_produce_equal
-from Single_Sim_Middle_Line_Plot import middle_line_plot_equal, middle_line_plot_cross, middle_line_plot_order
 from Single_Sim_Polishing_Distribution_Simulation import Polishing_distribution_Thread_equal, \
     Polishing_distribution_Thread_order, Polishing_distribution_Thread_cross
 
@@ -67,44 +66,6 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
         self.label_bottom.setPixmap(pixmap)
         # 如果需要，可以让图片自适应 QLabel 的大小
         self.label_bottom.setScaledContents(True)
-
-
-        qss_TextEdit = """
-            QTextEdit {
-                border: 1px solid #CAD0EE; 
-                border-radius: 2px; /* 轻微的圆角边框 */
-            }
-        """
-
-        qss_Button = """
-            QPushButton {
-                background-color: rgb(0, 200, 0); /* 按钮的默认背景色为绿色 */
-                color: white; /* 设置按钮文字颜色为白色 */
-                border: none; /* 移除边框 */
-                padding: 3px; /* 内边距 */
-                font-size: 12px; /* 文字大小 */
-                border-radius:5px;
-            }
-
-            QPushButton:hover {
-                 background-color: #45A049; /* 鼠标悬停时按钮的背景色变深 */
-            }
-
-            QPushButton:pressed {
-                background-color: #397d3c; /* 鼠标按下时按钮的背景色更深 */
-            }
-        """
-
-        self.button_animation_order.setStyleSheet(qss_Button)
-        self.button_simulation_order.setStyleSheet(qss_Button)
-        self.button_middle_line_order.setStyleSheet(qss_Button)
-        self.button_middle_line_cross.setStyleSheet(qss_Button)
-        self.button_animation_cross.setStyleSheet(qss_Button)
-        self.button_simulation_cross.setStyleSheet(qss_Button)
-        self.button_middle_line_equal.setStyleSheet(qss_Button)
-        self.button_animation_equal.setStyleSheet(qss_Button)
-        self.button_simulation_equal.setStyleSheet(qss_Button)
-        self.button_save_parameter.setStyleSheet(qss_Button)
 
     # 抛磨量分布仿真子线程
     # 同步摆抛磨量分布仿真子线程

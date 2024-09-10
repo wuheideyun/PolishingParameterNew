@@ -82,39 +82,6 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         # 如果需要，可以让图片自适应 QLabel 的大小
         self.label_bottom.setScaledContents(True)
 
-        qss_TextEdit = """
-            QTextEdit {
-                border: 1px solid #CAD0EE; 
-                border-radius: 2px; /* 轻微的圆角边框 */
-            }
-        """
-
-        qss_Button = """
-            QPushButton {
-                background-color: rgb(0, 200, 0); /* 按钮的默认背景色为绿色 */
-                color: white; /* 设置按钮文字颜色为白色 */
-                border: none; /* 移除边框 */
-                padding: 3px; /* 内边距 */
-                font-size: 12px; /* 文字大小 */
-                border-radius:5px;
-            }
-
-            QPushButton:hover {
-                 background-color: #45A049; /* 鼠标悬停时按钮的背景色变深 */
-            }
-
-            QPushButton:pressed {
-                background-color: #397d3c; /* 鼠标按下时按钮的背景色更深 */
-            }
-        """
-
-        self.button_energy_calculate.setStyleSheet(qss_Button)
-        self.button_animation_equal.setStyleSheet(qss_Button)
-        self.button_efficient_calculate.setStyleSheet(qss_Button)
-        self.button_middle_line_equal.setStyleSheet(qss_Button)
-        self.button_simulation_equal.setStyleSheet(qss_Button)
-        self.button_save_parameter.setStyleSheet(qss_Button)
-
     def add_text_change_monitor(self, line_edit):
         """为QLineEdit控件添加内容变化监控"""
         line_edit.textChanged.connect(self.on_text_changed)

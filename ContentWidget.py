@@ -24,13 +24,47 @@ class ContentWidget(QWidget):
         self.setAttribute(Qt.WA_StyledBackground)  # 禁止父窗口样式影响子控件样式
 
         self.setStyleSheet('''
-                            QWidget {
-                                background-color: white;
-                                border: none;
-                                border-bottom-right-radius:10px solid #cccccc;
-                                border-top-right-radius:10px solid #cccccc;
-                            }
-                        ''')
+            QWidget {
+                background-color: white;
+                border: none;
+                border-bottom-right-radius:10px solid #cccccc;
+                border-top-right-radius:10px solid #cccccc;
+            }
+            QLineEdit {
+                font-size: 13px;
+                font-family: "Microsoft YaHei";
+                border: none;  
+                border-bottom: 1px solid rgb(200, 200, 200);  
+                
+            }
+            QTextEdit {
+                border: 1px solid #CAD0EE; 
+                border-radius: 2px; /* 轻微的圆角边框 */
+            }
+            QPushButton {
+                background-color: rgb(0, 200, 0); /* 按钮的默认背景色为绿色 */
+                color: white; /* 设置按钮文字颜色为白色 */
+                border: none; /* 移除边框 */
+                padding: 3px; /* 内边距 */
+                font-size: 12px; /* 文字大小 */
+                border-radius:5px;
+            }
+            
+            QPushButton:hover {
+                background-color: #45A049; /* 鼠标悬停时按钮的背景色变深 */
+            }
+            QPushButton:pressed {
+                background-color: #397d3c; /* 鼠标按下时按钮的背景色更深 */
+            } 
+            
+            QCheckBox::indicator:unchecked{ 
+                image:url(:CkClose); 
+            } 
+            QCheckBox::indicator:checked { 
+                image: url(:CkOpen); 
+            }
+            '''
+        )
 
         mainVLay = QVBoxLayout()
         self.stackedWidget = QStackedWidget()
