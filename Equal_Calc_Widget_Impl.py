@@ -50,6 +50,8 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         # self.simulation_button.setFixedSize(100, 32)
         # self.simulation_button.clicked.connect(self.onStartTrans)
 
+
+        # 界面分割图片元素
         self.label_top.setText('')
         pixmap = QPixmap(":equal")  # 替换为实际图片路径
         self.label_top.setPixmap(pixmap)
