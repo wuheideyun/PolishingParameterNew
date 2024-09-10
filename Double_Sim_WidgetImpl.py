@@ -2,10 +2,10 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget
 
-import double_sim
+import Double_Sim
 
 
-class DoubleSimWidgetImpl(QWidget, double_sim.Ui_MainWindow):
+class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
     def __init__(self, w):
         super().__init__()
         self.setupUi(w)
@@ -34,6 +34,7 @@ class DoubleSimWidgetImpl(QWidget, double_sim.Ui_MainWindow):
         self.label_bottom.setPixmap(pixmap)
         # 如果需要，可以让图片自适应 QLabel 的大小
         self.label_bottom.setScaledContents(True)
+
 
         qss_TextEdit = """
             QTextEdit {
