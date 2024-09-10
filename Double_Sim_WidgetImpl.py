@@ -101,6 +101,7 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
         self.button_middle_line_cross.setStyleSheet(qss_Button)
         self.button_middle_line_order.setStyleSheet(qss_Button)
         self.button_middle_line_equal.setStyleSheet(qss_Button)
+        self.button_save_parameter.setStyleSheet(qss_Button)
 
 
     # 轨迹参数计算（节能计算）

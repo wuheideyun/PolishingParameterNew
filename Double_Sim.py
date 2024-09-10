@@ -48,10 +48,10 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_belt_speed, 1, 6, 1, 1)
 
-        self.label_mod_size = QLabel(self.centralwidget)
-        self.label_mod_size.setObjectName(u"label_mod_size")
+        self.label_grind_size = QLabel(self.centralwidget)
+        self.label_grind_size.setObjectName(u"label_grind_size")
 
-        self.gridLayout.addWidget(self.label_mod_size, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_grind_size, 3, 0, 1, 1)
 
         self.widget = QWidget(self.centralwidget)
         self.widget.setObjectName(u"widget")
@@ -210,6 +210,11 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_middle, 9, 0, 1, 8)
 
+        self.button_save_parameter = QPushButton(self.centralwidget)
+        self.button_save_parameter.setObjectName(u"button_save_parameter")
+
+        self.gridLayout.addWidget(self.button_save_parameter, 4, 2, 1, 1)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -230,7 +235,7 @@ class Ui_MainWindow(object):
         self.label_radius.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5934\u534a\u5f84\uff1a</p></body></html>", None))
         self.lineEdit_radius.setText(QCoreApplication.translate("MainWindow", u"260", None))
         self.label_belt_speed.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u76ae\u5e26\u901f\u5ea6\uff1a</p></body></html>", None))
-        self.label_mod_size.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5757\u5c3a\u5bf8\uff1a</p></body></html>", None))
+        self.label_grind_size.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5757\u5c3a\u5bf8\uff1a</p></body></html>", None))
         self.label_beam_between.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u6a2a\u6881\u95f4\u8ddd\uff1a</p></body></html>", None))
         self.label_beam_swing_speed.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u6a2a\u6881\u6446\u52a8\u901f\u5ea6\uff1a</p></body></html>", None))
         self.button_animation_order.setText(QCoreApplication.translate("MainWindow", u"\u987a\u5e8f\u6446\u52a8\u753b", None))
@@ -260,5 +265,6 @@ class Ui_MainWindow(object):
         self.button_simulation_cross.setText(QCoreApplication.translate("MainWindow", u"\u4ea4\u53c9\u629b\u78e8\u91cf\u5206\u5e03\u4eff\u771f", None))
         self.label_beam_constant_time.setText(QCoreApplication.translate("MainWindow", u"\u6a2a\u6881\u5300\u901f\u6446\u52a8\u65f6\u95f4\uff1a", None))
         self.label_middle.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.button_save_parameter.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58\u53c2\u6570", None))
     # retranslateUi
 

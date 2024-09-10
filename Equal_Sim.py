@@ -44,12 +44,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_grind_size, 1, 3, 1, 1)
 
-        self.lineEdit_coefficient = QLineEdit(self.centralwidget)
-        self.lineEdit_coefficient.setObjectName(u"lineEdit_coefficient")
-        self.lineEdit_coefficient.setEnabled(True)
-
-        self.gridLayout.addWidget(self.lineEdit_coefficient, 4, 6, 1, 1)
-
         self.label_radius = QLabel(self.centralwidget)
         self.label_radius.setObjectName(u"label_radius")
 
@@ -155,11 +149,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.lineEdit_radius, 1, 6, 1, 1)
 
-        self.label_coefficient = QLabel(self.centralwidget)
-        self.label_coefficient.setObjectName(u"label_coefficient")
-
-        self.gridLayout.addWidget(self.label_coefficient, 4, 5, 1, 1)
-
         self.label_bottom = QLabel(self.centralwidget)
         self.label_bottom.setObjectName(u"label_bottom")
         self.label_bottom.setMinimumSize(QSize(500, 0))
@@ -171,6 +160,22 @@ class Ui_MainWindow(object):
         self.lineEdit_between.setObjectName(u"lineEdit_between")
 
         self.gridLayout.addWidget(self.lineEdit_between, 1, 1, 1, 2)
+
+        self.label_coefficient = QLabel(self.centralwidget)
+        self.label_coefficient.setObjectName(u"label_coefficient")
+
+        self.gridLayout.addWidget(self.label_coefficient, 3, 5, 1, 1)
+
+        self.lineEdit_coefficient = QLineEdit(self.centralwidget)
+        self.lineEdit_coefficient.setObjectName(u"lineEdit_coefficient")
+        self.lineEdit_coefficient.setEnabled(True)
+
+        self.gridLayout.addWidget(self.lineEdit_coefficient, 3, 6, 1, 1)
+
+        self.button_save_parameter = QPushButton(self.centralwidget)
+        self.button_save_parameter.setObjectName(u"button_save_parameter")
+
+        self.gridLayout.addWidget(self.button_save_parameter, 4, 5, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -191,7 +196,6 @@ class Ui_MainWindow(object):
         self.label_num.setText(QCoreApplication.translate("MainWindow", u"\u540c\u7c92\u5ea6\u78e8\u5934\u6570\u76ee\uff1a", None))
         self.lineEdit_num.setText(QCoreApplication.translate("MainWindow", u"5", None))
         self.label_grind_size.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5757\u5c3a\u5bf8\uff1a</p></body></html>", None))
-        self.lineEdit_coefficient.setText("")
         self.label_radius.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5934\u534a\u5f84\uff1a</p></body></html>", None))
         self.lineEdit_beam_swing_speed.setText(QCoreApplication.translate("MainWindow", u"500", None))
         self.button_middle_line_equal.setText(QCoreApplication.translate("MainWindow", u"\u540c\u6b65\u6446\u8f68\u8ff9\u4e2d\u5fc3\u7ebf\u7ed8\u5236", None))
@@ -211,8 +215,10 @@ class Ui_MainWindow(object):
         self.label_accelerate.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u52a0\u901f\u5ea6\u5927\u5c0f\uff1a</p></body></html>", None))
         self.label_between.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5934\u95f4\u8ddd\uff1a</p></body></html>", None))
         self.lineEdit_radius.setText(QCoreApplication.translate("MainWindow", u"270", None))
-        self.label_coefficient.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u5747\u5300\u7cfb\u6570\uff1a</p></body></html>", None))
         self.label_bottom.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.lineEdit_between.setText(QCoreApplication.translate("MainWindow", u"600", None))
+        self.label_coefficient.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u5747\u5300\u7cfb\u6570\uff1a</p></body></html>", None))
+        self.lineEdit_coefficient.setText("")
+        self.button_save_parameter.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58\u53c2\u6570", None))
     # retranslateUi
 

@@ -69,13 +69,6 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="0" colspan="2">
-     <widget class="QPushButton" name="button_energy_calculate">
-      <property name="text">
-       <string>节能计算</string>
-      </property>
-     </widget>
-    </item>
     <item row="4" column="5" colspan="4">
      <widget class="QPushButton" name="button_animation_order_define">
       <property name="text">
@@ -135,13 +128,6 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="0" colspan="2">
-     <widget class="QPushButton" name="button_selfdefine_calculate">
-      <property name="text">
-       <string>自定义计算</string>
-      </property>
-     </widget>
-    </item>
     <item row="6" column="14">
      <widget class="QLabel" name="label_coefficient">
       <property name="text">
@@ -191,13 +177,6 @@
      <widget class="QLineEdit" name="lineEdit_delay_time">
       <property name="text">
        <string/>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="2" colspan="2">
-     <widget class="QPushButton" name="button_efficient_calculate">
-      <property name="text">
-       <string>高效计算</string>
       </property>
      </widget>
     </item>
@@ -390,6 +369,34 @@
       </property>
       <property name="text">
        <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="4">
+     <widget class="QPushButton" name="button_selfdefine_calculate">
+      <property name="text">
+       <string>自定义计算</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="3">
+     <widget class="QPushButton" name="button_efficient_calculate">
+      <property name="text">
+       <string>高效计算</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QPushButton" name="button_energy_calculate">
+      <property name="text">
+       <string>节能计算</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QPushButton" name="button_save_parameter">
+      <property name="text">
+       <string>保存参数</string>
       </property>
      </widget>
     </item>

@@ -39,16 +39,6 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="6">
-     <widget class="QLineEdit" name="lineEdit_coefficient">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="5">
      <widget class="QLabel" name="label_radius">
       <property name="text">
@@ -213,13 +203,6 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="5">
-     <widget class="QLabel" name="label_coefficient">
-      <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;均匀系数：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-     </widget>
-    </item>
     <item row="8" column="0" colspan="7">
      <widget class="QLabel" name="label_bottom">
       <property name="minimumSize">
@@ -243,6 +226,30 @@
      <widget class="QLineEdit" name="lineEdit_between">
       <property name="text">
        <string>600</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="5">
+     <widget class="QLabel" name="label_coefficient">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;均匀系数：&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="6">
+     <widget class="QLineEdit" name="lineEdit_coefficient">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="5">
+     <widget class="QPushButton" name="button_save_parameter">
+      <property name="text">
+       <string>保存参数</string>
       </property>
      </widget>
     </item>

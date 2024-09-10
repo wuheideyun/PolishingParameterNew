@@ -102,6 +102,7 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         self.button_efficient_calculate.setStyleSheet(qss_Button)
         self.button_selfdefine_calculate.setStyleSheet(qss_Button)
         self.button_simulation_order_define.setStyleSheet(qss_Button)
+        self.button_save_parameter.setStyleSheet(qss_Button)
 
     # 轨迹参数计算（节能计算）
     def energy_calculate(self):

@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap, QMovie
-from PySide6.QtWidgets import QWidget, QLabel
+from PySide6.QtWidgets import QWidget, QLabel, QMessageBox
 import math
 
 from matplotlib import pyplot as plt
@@ -108,6 +108,7 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         self.button_efficient_calculate.setStyleSheet(qss_Button)
         self.button_middle_line_equal.setStyleSheet(qss_Button)
         self.button_simulation_equal.setStyleSheet(qss_Button)
+        self.button_save_parameter.setStyleSheet(qss_Button)
 
     def add_text_change_monitor(self, line_edit):
         """为QLineEdit控件添加内容变化监控"""
@@ -117,9 +118,38 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         """当LineEdit内容发生变化时触发的回调函数"""
         # print(f"内容发生变化: {text}")
         self.reCalcFlag = True
+    def on_button_clicked(self):
+        for line_edit in self.line_edits:
+            if not line_edit.text().strip():  # 如果任何一个LineEdit为空
+                textname = self.on_Find_Label_Name(line_edit.objectName())
+                QMessageBox.warning(self, "警告", f"{textname}输入框必须填写数据！")
+                return False
+        return True
+
+    def on_Find_Label_Name(self, lineedit_name):
+
+        # 构造对应的Label的objectName
+        label_object_name = lineedit_name.replace("lineEdit", "label")
+
+        # 根据objectName找到对应的Label
+        label = self.findChild(QLabel, label_object_name)
+
+        if label:
+            return label.text()
+
+    def initReCalculation(self):
+        self.reCalcFlag = False
+
+    def needReCalculation(self):
+        if self.reCalcFlag:
+            return True
+        else:
+            return False
 
     # 轨迹参数计算（节能计算）
     def energy_calculate(self):
+        if not self.on_button_clicked():
+            return
         v1=float(self.lineEdit_belt_speed.text())
         ceramic_width=float(self.lineEdit_ceramic_width.text())
         between=float(self.lineEdit_between.text())
@@ -133,8 +163,11 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         self.lineEdit_stay_time.setText(str(result[0, 3]))
         self.lineEdit_beam_constant_time.setText(str(result[0, 2]))
         self.lineEdit_swing.setText(str(result[0, 5]))
+        self.initReCalculation()
     # 轨迹参数计算（高效计算）
     def efficient_calculate(self):       # 高效计算
+        if not self.on_button_clicked():
+            return
         v1=float(self.lineEdit_belt_speed.text())
         ceramic_width=float(self.lineEdit_ceramic_width.text())
         between=float(self.lineEdit_between.text())
@@ -148,8 +181,12 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         self.lineEdit_stay_time.setText(str(result[1, 3]))
         self.lineEdit_beam_constant_time.setText(str(result[1, 2]))
         self.lineEdit_swing.setText(str(result[1, 5]))
+        self.initReCalculation()
     # 抛磨量分布仿真子线程
     def start_computation_Polishing_distribution(self):      # 抛磨量分布仿真子线程
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
         # 创建子线程
         self.Polishing_distribution_thread = Polishing_distribution_Thread(float(self.lineEdit_belt_speed.text()),
                                                                            float(self.lineEdit_beam_swing_speed.text()),
@@ -182,6 +219,9 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         self.button_simulation_equal.setEnabled(True)
     # 轨迹动画生成子线程
     def start_computation_trajectory_animation(self):
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
         self.trajectory_animation_thread = Animation_produce(float(self.lineEdit_belt_speed.text()),
                                                             float(self.lineEdit_beam_swing_speed.text()),
                                                             float(self.lineEdit_beam_constant_time.text()),
@@ -208,6 +248,9 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         self.gif_label.resize(event.size())
     # 绘制磨头中心轨迹线
     def middle_line_figure_plot(self):
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
         belt_speed=float(self.lineEdit_belt_speed.text())
         beam_speed=float(self.lineEdit_beam_swing_speed.text())
         constant_time=float(self.lineEdit_beam_constant_time.text())

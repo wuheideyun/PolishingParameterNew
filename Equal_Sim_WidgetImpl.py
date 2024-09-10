@@ -84,6 +84,7 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         self.button_animation_equal.setStyleSheet(qss_Button)
         self.button_middle_line_equal.setStyleSheet(qss_Button)
         self.button_simulation_equal.setStyleSheet(qss_Button)
+        self.button_save_parameter.setStyleSheet(qss_Button)
 
     # 抛磨量分布仿真子线程
     def start_computation_Polishing_distribution(self):      # 抛磨量分布仿真子线程

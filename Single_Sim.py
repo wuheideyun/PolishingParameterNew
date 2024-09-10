@@ -220,6 +220,11 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_bottom, 9, 0, 1, 9)
 
+        self.button_save_parameter = QPushButton(self.centralwidget)
+        self.button_save_parameter.setObjectName(u"button_save_parameter")
+
+        self.gridLayout.addWidget(self.button_save_parameter, 4, 0, 1, 1)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -271,5 +276,6 @@ class Ui_MainWindow(object):
         self.lineEdit_belt_speed.setText(QCoreApplication.translate("MainWindow", u"240.37", None))
         self.button_animation_cross.setText(QCoreApplication.translate("MainWindow", u"\u4ea4\u53c9\u6446\u52a8\u753b", None))
         self.label_bottom.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.button_save_parameter.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58\u53c2\u6570", None))
     # retranslateUi
 

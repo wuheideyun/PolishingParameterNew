@@ -296,6 +296,13 @@
       </property>
      </widget>
     </item>
+    <item row="4" column="2">
+     <widget class="QPushButton" name="button_save_parameter">
+      <property name="text">
+       <string>保存参数</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">

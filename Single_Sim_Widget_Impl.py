@@ -101,6 +101,7 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
         self.button_middle_line_equal.setStyleSheet(qss_Button)
         self.button_animation_equal.setStyleSheet(qss_Button)
         self.button_simulation_equal.setStyleSheet(qss_Button)
+        self.button_save_parameter.setStyleSheet(qss_Button)
 
     # 抛磨量分布仿真子线程
     # 同步摆抛磨量分布仿真子线程
