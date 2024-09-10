@@ -178,7 +178,7 @@ class Ui_MainWindow(object):
         self.label_top = QLabel(self.centralwidget)
         self.label_top.setObjectName(u"label_top")
         self.label_top.setMinimumSize(QSize(500, 0))
-        self.label_top.setMaximumSize(QSize(16777215, 25))
+        self.label_top.setMaximumSize(QSize(16777215, 50))
 
         self.gridLayout.addWidget(self.label_top, 0, 0, 1, 17)
 

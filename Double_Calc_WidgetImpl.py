@@ -24,7 +24,7 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
 
         # 界面分割图片元素
         self.label_top.setText('')
-        pixmap = QPixmap(":equal")  # 替换为实际图片路径
+        pixmap = QPixmap(":double")  # 替换为实际图片路径
         self.label_top.setPixmap(pixmap)
         # 如果需要，可以让图片自适应 QLabel 的大小
         self.label_top.setScaledContents(True)
