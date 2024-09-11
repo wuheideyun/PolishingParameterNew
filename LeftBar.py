@@ -13,9 +13,10 @@ item 高 32 + 5 * 2，宽10 + 32 + 60 + 10
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter, QColor
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QSpacerItem, QSizePolicy, QCheckBox, QListWidget, QListWidgetItem, \
-    QPushButton, QHBoxLayout
+    QPushButton, QHBoxLayout, QDialog, QMessageBox
 
 from AIBoxWidget import AIBoxWidget
+from ConfirmDialog import ConfirmDialog
 from CustomListItem import CustomListItem
 from ImageTextButton import ImageTextButton
 from LoginDialog import LoginDialog
@@ -25,10 +26,11 @@ class LeftBar(QWidget):
     sig_ListIndex = Signal(int)
     sig_runse1 = Signal()
 
+    sig_login_action = Signal(bool)
     def __init__(self):
         super().__init__()
         self.setMouseTracking(True)
-
+        self.loginDialog = LoginDialog()
         item_w = 111
         w = item_w + 40
         self.setFixedWidth(w)
@@ -217,13 +219,25 @@ class LeftBar(QWidget):
         # 假设你有一个QListWidget实例叫做myListWidget
         self.listWidget.setStyleSheet(style_sheet)
 
+
+        self.loginDialog.sig_login_success.connect(self.loginSuccess)
+        self.loginDialog.sig_login_failure.connect(self.loginFailure)
+
     def onRunse(self):
         self.sig_runse1.emit()
 
     def OnShowLoginDlg(self):
-        loginDialog = LoginDialog()
-        loginDialog.exec()
+        if self.vipInfo.text() == "退出登录":
 
+            """弹出确认对话框"""
+            reply = QMessageBox.question(self, "确认", "你确定要继续吗？",
+                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                self.sig_login_action.emit(False)
+                self.vipInfo.setText('会员登录')
+
+        else:
+            self.loginDialog.open_login()
     def item_clicked(self, item):
         # 重置所有项的自定义属性
         for index in range(self.listWidget.count()):
@@ -238,6 +252,11 @@ class LeftBar(QWidget):
         # 更新样式
         self.update_stylesheet()
 
+    def loginSuccess(self):
+        self.vipInfo.setText('退出登录')
+        self.sig_login_action.emit(True)
+    def loginFailure(self):
+        self.sig_login_action.emit(False)
     def update_stylesheet(self):
         # 定义样式表
         stylesheet = """

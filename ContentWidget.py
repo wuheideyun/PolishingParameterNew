@@ -105,7 +105,10 @@ class ContentWidget(QWidget):
         self.stackedWidget.addWidget(self.wSingleCalc)
         self.stackedWidget.addWidget(self.wSingleSim)
 
+
         mainVLay.addWidget(self.stackedWidget)
+
+        self.stackedWidget.setVisible(False)
 
         self.setLayout(mainVLay)
 
@@ -113,6 +116,9 @@ class ContentWidget(QWidget):
 
     def gotoPage(self, index = 0):
         self.stackedWidget.setCurrentIndex(index)
+
+    def setStackedWidgetVisible(self,flag):
+        self.stackedWidget.setVisible(flag)
 
     def paintEvent(self, event):
         opt = QStyleOption()

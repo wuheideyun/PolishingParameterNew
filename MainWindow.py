@@ -34,9 +34,10 @@ class MainWindow(QMainWindow):
         mainHLay.setSpacing(0)
         mainHLay.setContentsMargins(0, 0, 0, 0)
 
-        leftBar = LeftBar()
-        mainHLay.addWidget(leftBar)
-        leftBar.sig_runse1.connect(self.onRunse)
+        self.leftBar = LeftBar()
+        mainHLay.addWidget(self.leftBar)
+        self.leftBar.sig_login_action.connect(self.showStackWidget)
+        self.leftBar.sig_runse1.connect(self.onRunse)
 
         vLay = QVBoxLayout()
         vLay.setSpacing(0)
@@ -63,7 +64,7 @@ class MainWindow(QMainWindow):
         # 最后，设置窗口的中央部件
         self.setCentralWidget(self.centralWidget)
 
-        leftBar.sig_ListIndex.connect(self.changeContentPage)
+        self.leftBar.sig_ListIndex.connect(self.changeContentPage)
 
         ####################################################
         # 这里5距离是指窗口setContentsMargins的大小
@@ -114,6 +115,12 @@ class MainWindow(QMainWindow):
 
     def onRunse(self):
         QMessageBox.information(None, '提示', '智能润色')
+
+    def showStackWidget(self,flag):
+        if flag:
+            self.contentWidget.setStackedWidgetVisible(True)
+        else:
+            self.contentWidget.setStackedWidgetVisible(False)
 
     def eventFilter(self, obj, event):
         # 事件过滤器,用于解决鼠标进入其它控件后还原为标准鼠标样式

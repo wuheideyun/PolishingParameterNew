@@ -3,12 +3,14 @@
 登录窗口
 
 '''
+import sqlite3
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QSettings
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QCheckBox, QGridLayout, \
     QSpacerItem, QSizePolicy, QMessageBox
 
+from DatabaseHelper import DatabaseHelper
 from FrameLessDialog import FrameLessDialog
 from ImageButton import ImageButton
 from LoginEdit import LoginEdit
@@ -16,16 +18,19 @@ from PopupMessageBox import PopupMessageBox
 
 
 class LoginDialog(FrameLessDialog):
+    sig_login_success = Signal()
+    sig_login_failure = Signal()
     def __init__(self):
         super().__init__()
-
+        self.db = DatabaseHelper('database.db')
+        print('Initializing')
         self.setWindowTitle("登录")
-
         self.setFixedSize(1224, 590)
         # self.setWindowFlag(Qt.FramelessWindowHint)
-
+        self.saved_username = ""
         outHLay = QHBoxLayout()
 
+        self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
         kedaLabel = QLabel()
         kedaLabel.setFixedSize(1000, 666)
         keda_pixmap = QPixmap(":keda")  # 替换为实际图片路径
@@ -37,7 +42,7 @@ class LoginDialog(FrameLessDialog):
         hlay1 = QHBoxLayout()
 
         self.btnClose = ImageButton(":close16", 16, 16)
-        self.btnClose.clicked.connect(self.close)
+        self.btnClose.clicked.connect(self.btn_close)
 
         hlay1.addStretch()
         hlay1.addWidget(self.btnClose)
@@ -89,12 +94,12 @@ class LoginDialog(FrameLessDialog):
 
         gridLayout.addWidget(self.passwordEdit, 1, 0, 1, 2)  # 第1行，第0列，占1行，占2列
 
-        self.checkBoxAutoLogin = QCheckBox("自动登录")
-        self.checkBoxAutoLogin.setFixedSize(80, 18)
+        # self.checkBoxAutoLogin = QCheckBox("自动登录")
+        # self.checkBoxAutoLogin.setFixedSize(80, 18)
+        #
+        # gridLayout.addWidget(self.checkBoxAutoLogin, 2, 0)
 
-        gridLayout.addWidget(self.checkBoxAutoLogin, 2, 0)
-
-        self.checkBoxRemember = QCheckBox("记住密码")
+        self.checkBoxRemember = QCheckBox("记住账号")
         self.checkBoxRemember.setFixedSize(80, 18)
 
         gridLayout.addWidget(self.checkBoxRemember, 2, 1, alignment=Qt.AlignRight)
@@ -111,7 +116,6 @@ class LoginDialog(FrameLessDialog):
         self.btnLogin = QPushButton("登 录")
         self.btnLogin.setFixedSize(328, 48)
 
-        self.sig_Login = Signal()
         self.btnLogin.clicked.connect(self.OnLogin)
 
         self.btnLogin.setStyleSheet("""
@@ -199,11 +203,31 @@ class LoginDialog(FrameLessDialog):
         outHLay.addLayout(mainVLay)
 
         self.setLayout(outHLay)
+        self.checkBoxRemember.checkStateChanged.connect(self.changecheckBoxRemember)
+        self.load_saved_credentials()
+
+    def btn_close(self):
+        self.changecheckBoxRemember()
+        self.close()
+
+    def changecheckBoxRemember(self):
+        """checkbox状态改变时，记录状态"""
+        if self.checkBoxRemember.isChecked():
+            self.settings.setValue("Remember", "True")
+            self.settings.setValue("userName", self.userNameEdit.text())
+        else:
+            self.settings.setValue("Remember", "False")
+
+    def load_saved_credentials(self):
+        if self.settings.value("Remember", "") == 'True':
+            """加载保存的账号信息"""
+            self.userNameEdit.setText(self.settings.value("userName", ""))
+
 
     def OnLogin(self):
         username = self.userNameEdit.text()
         password = self.passwordEdit.text()
-
+        self.save_username()
         # 实际项目里登录使用http post
 
         if username == "" or password == "":
@@ -211,6 +235,41 @@ class LoginDialog(FrameLessDialog):
             msgbox.exec()
             return
 
-        if username == "admin" and password == "123456":
+        if self.db.verify_login('users', username, password):
             QMessageBox.information(self, "提示", "登录成功")
+            self.sig_login_success.emit()
             self.accept()
+        else:
+            QMessageBox.information(self, "提示", "用户名或密码错误")
+
+            self.sig_login_failure.emit()
+
+    def open_login(self):
+        self.passwordEdit.setText('')
+        flag = self.settings.value("Remember", "")
+        if flag == 'True':
+            self.checkBoxRemember.setChecked(True)
+        else:
+            self.checkBoxRemember.setChecked(False)
+        """打开登录界面时的逻辑"""
+        if not self.checkBoxRemember.isChecked():
+            # 如果没有勾选保存账号，清除账号输入框
+            self.userNameEdit.clear()
+        self.exec()
+
+    def save_username(self):
+        """保存账号信息到配置文件"""
+        if self.checkBoxRemember.isChecked():
+            self.settings.setValue("Remember", 'True')
+        else:
+            self.settings.setValue("Remember", 'False')
+        """保存账号的逻辑"""
+        if self.checkBoxRemember.isChecked():
+            # 如果checkbox为true，保存当前输入的账号
+            self.settings.setValue("userName", self.userNameEdit.text())
+            self.saved_username = self.userNameEdit.text()
+        else:
+            # 如果checkbox为false，不保存账号
+            self.saved_username = ""
+            self.settings.setValue("userName", '')
+        self.close()
