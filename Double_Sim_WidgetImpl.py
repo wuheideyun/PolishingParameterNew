@@ -186,9 +186,6 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
     def start_computation_trajectory_animation_cross(self):
         if not self.on_button_clicked():
             return
-        if self.needReCalculation():
-            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
-            return
         animation_name = ('DoubleSimCrossAnimation-' +
                           self.lineEdit_belt_speed.text() + '_' + self.lineEdit_beam_swing_speed.text() + '_' + self.lineEdit_beam_constant_time.text() + '_' +
                           self.lineEdit_stay_time.text() + '_' +
@@ -217,9 +214,6 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
             self.trajectory_animation_ready(animation_name)
     def start_computation_trajectory_animation_order(self):
         if not self.on_button_clicked():
-            return
-        if self.needReCalculation():
-            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
             return
         animation_name = ('DoubleSimOrderAnimation-' +
                           self.lineEdit_belt_speed.text() + '_' + self.lineEdit_beam_swing_speed.text() + '_' + self.lineEdit_beam_constant_time.text() + '_' +
@@ -250,9 +244,6 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
             self.trajectory_animation_ready(animation_name)
     def start_computation_trajectory_animation_equal(self):
         if not self.on_button_clicked():
-            return
-        if self.needReCalculation():
-            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
             return
         animation_name = ('DoubleSimEqualAnimation-' +
                           self.lineEdit_belt_speed.text() + '_' + self.lineEdit_beam_swing_speed.text() + '_' + self.lineEdit_beam_constant_time.text() + '_' +
