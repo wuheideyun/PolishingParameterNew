@@ -234,7 +234,8 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
                                                                 float(self.lineEdit_between.text()),
                                                                 float(self.lineEdit_between_beam.text()),
                                                                 math.ceil(float(self.lineEdit_num.text())),
-                                                                float(self.lineEdit_delay_time.text())
+                                                                float(self.lineEdit_delay_time.text()),
+                                                                animation_name
                                                                 )
             self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
             self.button_animation_order.setEnabled(False)
@@ -263,6 +264,7 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
                                                                        float(self.lineEdit_between.text()),
                                                                        float(self.lineEdit_between_beam.text()),
                                                                        math.ceil(float(self.lineEdit_num.text())),
+                                                                       animation_name
                                                                        )
             self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
             self.button_animation_equal.setEnabled(False)
