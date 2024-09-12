@@ -5,7 +5,8 @@
 '''
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter
-from PySide6.QtWidgets import QWidget, QStackedWidget, QVBoxLayout, QStyleOption, QStyle, QMainWindow
+from PySide6.QtWidgets import QWidget, QStackedWidget, QVBoxLayout, QStyleOption, QStyle, QMainWindow, QStatusBar, \
+    QSizePolicy
 
 from Double_Calc_WidgetImpl import DoubleCalcWidgetImpl
 from Double_Sim_WidgetImpl import DoubleSimWidgetImpl
@@ -106,10 +107,20 @@ class ContentWidget(QWidget):
         self.stackedWidget.addWidget(self.wSingleSim)
 
 
+
         mainVLay.addWidget(self.stackedWidget)
 
-        self.stackedWidget.setVisible(False)
+        # self.stackedWidget.setVisible(False)
 
+        self.statusBar = QStatusBar()
+        self.statusBar.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.statusBar.showMessage("欢迎使用，请登录！")
+        # 获取状态栏的合适高度
+        recommended_height = self.statusBar.sizeHint().height()
+
+        # 设置状态栏的高度为推荐高度
+        self.statusBar.setFixedHeight(recommended_height)
+        mainVLay.addWidget(self.statusBar)
         self.setLayout(mainVLay)
 
         self.gotoPage(0)

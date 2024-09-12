@@ -230,12 +230,11 @@ class LeftBar(QWidget):
         if self.vipInfo.text() == "退出登录":
 
             """弹出确认对话框"""
-            reply = QMessageBox.question(self, "确认", "你确定要继续吗？",
+            reply = QMessageBox.question(self, "确认", "你确定要退出登录吗？",
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.Yes:
                 self.sig_login_action.emit(False)
                 self.vipInfo.setText('会员登录')
-
         else:
             self.loginDialog.open_login()
     def item_clicked(self, item):

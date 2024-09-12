@@ -6,7 +6,9 @@
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter, QColor, QEnterEvent
-from PySide6.QtWidgets import QMainWindow, QHBoxLayout, QVBoxLayout, QWidget, QMessageBox
+from PySide6.QtWidgets import QMainWindow, QHBoxLayout, QVBoxLayout, QWidget, QMessageBox, QToolBar, QSizePolicy
+
+from BottomStatusBar import BottomStatusBar
 from ContentWidget import ContentWidget
 from LeftBar import LeftBar
 from TitleBar import TitleBar
@@ -40,6 +42,7 @@ class MainWindow(QMainWindow):
         self.leftBar.sig_runse1.connect(self.onRunse)
 
         vLay = QVBoxLayout()
+        vLay.setContentsMargins(0,0,0,0)
         vLay.setSpacing(0)
         self.titleBar = TitleBar()
         vLay.addWidget(self.titleBar)
@@ -51,13 +54,12 @@ class MainWindow(QMainWindow):
 
         self.contentWidget = ContentWidget()
         vLay.addWidget(self.contentWidget)
-
         mainHLay.addLayout(vLay)
 
         # 创建一个QWidget作为中央部件
         self.centralWidget = QWidget()
         self.centralWidget.setMouseTracking(True)  # 给QMainWindow中间控件设置鼠标跟踪，不然无法监控拉伸时鼠标的样式
-
+        self.centralWidget.setContentsMargins(0, 0, 0, 0)
         # 将布局设置给中央部件
         self.centralWidget.setLayout(mainHLay)
 
@@ -65,6 +67,17 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.centralWidget)
 
         self.leftBar.sig_ListIndex.connect(self.changeContentPage)
+
+        # self.statusBar = BottomStatusBar()
+        # self.setStatusBar(self.statusBar)
+        # self.statusBar.setStyleSheet('''
+        #     background-color: rgb(255, 255, 255);
+        #     color: rgb(0, 0, 0);
+        #     radius: 15px;
+        # ''')
+        # self.statusBar.setContentsMargins(150,0,0,0)
+        # self.statusBar.contentsMargins()
+        # self.statusBar.showMessage('Status')
 
         ####################################################
         # 这里5距离是指窗口setContentsMargins的大小
