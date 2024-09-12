@@ -149,6 +149,7 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
         cax = divider.append_axes("right", size="5%", pad=0.1)
         plt.colorbar(im, cax=cax)
         plt.show()  # 显示函数图像
+        self.lineEdit_coefficient.setText(str(result))
         #equal_coefficient
         self.button_simulation_equal.setEnabled(True)
         self.button_simulation_cross.setEnabled(True)
