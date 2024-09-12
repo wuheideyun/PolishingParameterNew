@@ -13,7 +13,7 @@ import Equal_Calc_Parameter_Calculate
 from Equal_Calc_Polishing_Distribution_Simulation import Polishing_distribution_Thread
 from Equal_Calc_Generate_Animation import Animation_produce
 from Equal_Calc_Middle_Line_Plot import middle_line_plot
-
+from Public_Polishing_Distribution_Plot import polishing_distribution_Plot
 
 class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
     def __init__(self, w):
@@ -174,6 +174,7 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def Polishing_distribution_ready(self,object_matrix, result):     # 子线程回调函数
+        '''
         # 在主线程中绘图
         plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
         plt.rcParams['axes.unicode_minus'] = False  # 避免坐标轴不能正常的显示负号
@@ -187,6 +188,8 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         cax = divider.append_axes("right", size="5%", pad=0.1)
         plt.colorbar(im, cax=cax)
         plt.show()  # 显示函数图像
+        '''
+        polishing_distribution_Plot(object_matrix)
         self.lineEdit_coefficient.setText(result)
         self.button_simulation_equal.setEnabled(True)
     # 轨迹动画生成子线程

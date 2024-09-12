@@ -14,7 +14,7 @@ from Single_Calc_Middle_Line_Plot import middle_line_plot_order, middle_line_plo
 from Single_Calc_Polishing_Distribution_Simulation import Polishing_distribution_Thread_order, \
     Polishing_distribution_Thread_order_unequal
 from Single_Calc_Self_Define_Calculate import self_define_calculate
-
+from Public_Polishing_Distribution_Plot import polishing_distribution_Plot
 
 class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
     def __init__(self, w):
@@ -181,6 +181,7 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def Polishing_distribution_ready(self,object_matrix, result):     # 子线程回调函数
+        '''
         # 在主线程中绘图
         plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
         plt.rcParams['axes.unicode_minus'] = False  # 避免坐标轴不能正常的显示负号
@@ -194,7 +195,9 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         cax = divider.append_axes("right", size="5%", pad=0.1)
         plt.colorbar(im, cax=cax)
         plt.show()  # 显示函数图像
+        '''
         #equal_coefficient
+        polishing_distribution_Plot(object_matrix)
         self.button_simulation_order.setEnabled(True)
         self.button_simulation_order_define.setEnabled(True)
         self.lineEdit_coefficient.setText(result)
