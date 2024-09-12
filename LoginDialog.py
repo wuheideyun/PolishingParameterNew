@@ -23,17 +23,20 @@ class LoginDialog(FrameLessDialog):
     def __init__(self):
         super().__init__()
         self.db = DatabaseHelper('database.db')
-        print('Initializing')
         self.setWindowTitle("登录")
-        self.setFixedSize(1224, 590)
-        # self.setWindowFlag(Qt.FramelessWindowHint)
-        self.saved_username = ""
-        outHLay = QHBoxLayout()
+        self.setFixedSize(1100, 450)
 
         self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
+
+
+
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.saved_username = ""
+        outHLay = QHBoxLayout()
+        outHLay.setContentsMargins(0, 0, 20, 0)
         kedaLabel = QLabel()
-        kedaLabel.setFixedSize(1000, 666)
         keda_pixmap = QPixmap(":keda")  # 替换为实际图片路径
+        kedaLabel.setScaledContents(True)
         kedaLabel.setPixmap(keda_pixmap)
         outHLay.addWidget(kedaLabel)
 
@@ -46,11 +49,11 @@ class LoginDialog(FrameLessDialog):
 
         hlay1.addStretch()
         hlay1.addWidget(self.btnClose)
-
+        hlay1.setContentsMargins(0, 0, 0, 0)
         mainVLay.addLayout(hlay1)
         # self.btnClose.move(500, 10)
 
-        mainVLay.addSpacerItem(QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Fixed))
+        mainVLay.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Fixed))
 
         logoLabel = QLabel("")
         logoLabel.setFixedSize(302, 48)
@@ -63,6 +66,7 @@ class LoginDialog(FrameLessDialog):
 
         hlay2 = QHBoxLayout()
         hlay2.addWidget(logoLabel)
+        hlay2.setContentsMargins(0, 0, 0, 0)
         mainVLay.addLayout(hlay2)
 
         textLabel = QLabel("欢迎登录")
@@ -77,10 +81,10 @@ class LoginDialog(FrameLessDialog):
 
         hlay3 = QHBoxLayout()
         hlay3.addWidget(textLabel)
-        mainVLay.addSpacerItem(QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Fixed))
+        mainVLay.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Fixed))
         mainVLay.addLayout(hlay3)
-
-        mainVLay.addSpacerItem(QSpacerItem(20, 10, QSizePolicy.Minimum, QSizePolicy.Fixed))
+        mainVLay.setContentsMargins(0, 0, 0, 0)
+        mainVLay.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Fixed))
         gridLayout = QGridLayout()
 
         self.userNameEdit = LoginEdit(":login_user")
@@ -105,12 +109,12 @@ class LoginDialog(FrameLessDialog):
         gridLayout.addWidget(self.checkBoxRemember, 2, 1, alignment=Qt.AlignRight)
 
         hlay4 = QHBoxLayout()
-        hlay4.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        hlay4.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
         hlay4.addLayout(gridLayout)
-        hlay4.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        hlay4.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
         mainVLay.addLayout(hlay4)
 
-        mainVLay.addSpacerItem(QSpacerItem(20, 30, QSizePolicy.Minimum, QSizePolicy.Fixed))
+        mainVLay.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Fixed))
 
         hlay5 = QHBoxLayout()
         self.btnLogin = QPushButton("登 录")
@@ -199,7 +203,7 @@ class LoginDialog(FrameLessDialog):
         # hlay8.addWidget(self.btnQQLogin)
         #
         # mainVLay.addLayout(hlay8)
-        mainVLay.setContentsMargins(30, 30, 30, 30)
+        mainVLay.setContentsMargins(0, 0, 0, 0)
         outHLay.addLayout(mainVLay)
 
         self.setLayout(outHLay)

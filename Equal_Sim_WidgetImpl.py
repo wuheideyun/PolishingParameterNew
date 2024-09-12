@@ -42,9 +42,6 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         # 如果需要，可以让图片自适应 QLabel 的大小
         self.label_bottom.setScaledContents(True)
 
-        # self.button_simulation_equal.setText("开始翻译")
-        # self.button_simulation_equal.setFixedSize(100, 32)
-        # self.button_simulation_equal.clicked.connect(self.onStartTrans)
 
         # 运行逻辑
         # 按钮操作
@@ -52,6 +49,7 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         self.button_simulation_equal.clicked.connect(self.start_computation_Polishing_distribution)  # 抛磨量分布仿真按钮
         self.button_middle_line_equal.clicked.connect(self.middle_line_figure_plot)  # 磨头中心线绘制按钮
         self.button_save_parameter.clicked.connect(self.saveParameter)
+
         # 在程序中创建一个显示图框 播放gif动画
         self.gif_label = QLabel(self.widget)
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)

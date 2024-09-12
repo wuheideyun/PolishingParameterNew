@@ -6,8 +6,8 @@
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter, QColor, QEnterEvent
-from PySide6.QtWidgets import QMainWindow, QHBoxLayout, QVBoxLayout, QWidget, QMessageBox, QToolBar, QSizePolicy
-
+from PySide6.QtWidgets import QMainWindow, QHBoxLayout, QVBoxLayout, QWidget, QMessageBox, QToolBar, QSizePolicy, \
+    QStatusBar
 
 from ContentWidget import ContentWidget
 from LeftBar import LeftBar
@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("科达系统")
 
         # self.setStyleSheet('''
-        #     background-color:white;
+        #     background-color:blue;
         #     border-radius:10px;
         # ''')
 
@@ -38,28 +38,52 @@ class MainWindow(QMainWindow):
 
         self.leftBar = LeftBar()
         mainHLay.addWidget(self.leftBar)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.leftBar.sizePolicy().hasHeightForWidth())
+        self.leftBar.setSizePolicy(sizePolicy)
+
         self.leftBar.sig_login_action.connect(self.showStackWidget)
-        self.leftBar.sig_runse1.connect(self.onRunse)
 
         vLay = QVBoxLayout()
         vLay.setContentsMargins(0,0,0,0)
         vLay.setSpacing(0)
         self.titleBar = TitleBar()
         vLay.addWidget(self.titleBar)
-
+        sizePolicy.setHeightForWidth(self.titleBar.sizePolicy().hasHeightForWidth())
+        self.titleBar.setSizePolicy(sizePolicy)
         self.titleBar.sig_Min.connect(self.onMin)
         self.titleBar.sig_Normal.connect(self.onNormal)
         self.titleBar.sig_Max.connect(self.onMax)
         self.titleBar.sig_Close.connect(self.onClose)
 
         self.contentWidget = ContentWidget()
+
         vLay.addWidget(self.contentWidget)
+        sizePolicy.setHeightForWidth(self.contentWidget.sizePolicy().hasHeightForWidth())
+        self.contentWidget.setSizePolicy(sizePolicy)
+
+        self.statusBar = QStatusBar()
+        self.statusBar.showMessage("欢迎使用，请登录！")
+        vLay.addWidget(self.statusBar)
+
+
         mainHLay.addLayout(vLay)
 
         # 创建一个QWidget作为中央部件
         self.centralWidget = QWidget()
         self.centralWidget.setMouseTracking(True)  # 给QMainWindow中间控件设置鼠标跟踪，不然无法监控拉伸时鼠标的样式
         self.centralWidget.setContentsMargins(0, 0, 0, 0)
+        self.centralWidget.setStyleSheet('''
+            QWidget {
+                margin: 0;
+                padding: 0px;
+                border: none;
+            }
+        ''')
+        sizePolicy.setHeightForWidth(self.centralWidget.sizePolicy().hasHeightForWidth())
+        self.centralWidget.setSizePolicy(sizePolicy)
         # 将布局设置给中央部件
         self.centralWidget.setLayout(mainHLay)
 
@@ -126,14 +150,14 @@ class MainWindow(QMainWindow):
         # 移动窗口到上述位置
         self.move(int(x_position), int(y_position))
 
-    def onRunse(self):
-        QMessageBox.information(None, '提示', '智能润色')
-
     def showStackWidget(self,flag):
         if flag:
             self.contentWidget.setStackedWidgetVisible(True)
+
+            self.statusBar.showMessage("已登录！")
         else:
             self.contentWidget.setStackedWidgetVisible(False)
+            self.statusBar.showMessage("欢迎使用，请登录！")
 
     def eventFilter(self, obj, event):
         # 事件过滤器,用于解决鼠标进入其它控件后还原为标准鼠标样式

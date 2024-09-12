@@ -30,17 +30,23 @@ class ContentWidget(QWidget):
                 border: none;
                 border-bottom-right-radius:10px solid #cccccc;
                 border-top-right-radius:10px solid #cccccc;
+                margin: 0;
+                padding: 0px;
             }
             QLineEdit {
                 font-size: 13px;
                 font-family: "Microsoft YaHei";
                 border: none;  
                 border-bottom: 1px solid rgb(200, 200, 200);  
+                margin: 0;
+                padding: 0;
                 
             }
             QTextEdit {
                 border: 1px solid #CAD0EE; 
                 border-radius: 2px; /* 轻微的圆角边框 */
+                margin: 0;
+                padding: 0;
             }
             QPushButton {
                 background-color: rgb(0, 200, 0); /* 按钮的默认背景色为绿色 */
@@ -49,6 +55,8 @@ class ContentWidget(QWidget):
                 padding: 3px; /* 内边距 */
                 font-size: 12px; /* 文字大小 */
                 border-radius:5px;
+                margin: 0;
+                padding: 0;
             }
             
             QPushButton:hover {
@@ -68,30 +76,42 @@ class ContentWidget(QWidget):
         )
 
         mainVLay = QVBoxLayout()
+        mainVLay.setContentsMargins(0, 0, 0, 0)
+        mainVLay.setSpacing(0)
         self.stackedWidget = QStackedWidget()
-
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.stackedWidget.sizePolicy().hasHeightForWidth())
+        self.stackedWidget.setSizePolicy(sizePolicy)
         # 创建页面
         # self.page0 = QWidget()
 
         # 同步摆计算界面
         self.wEqual = QMainWindow()
+        self.wEqual.setContentsMargins(0, 0, 0, 0)
         self.wEqualWidgetImpl = EqualWidgetImpl(self.wEqual)
 
         # 同步摆仿真界面
         self.wEqualSim = QMainWindow()
+        self.wEqualSim.setContentsMargins(0, 0, 0, 0)
         self.wEqualSimWidgetImpl = EqualSimWidgetImpl(self.wEqualSim)
 
         # 双头摆计算界面
         self.wDoubleCalc = QMainWindow()
+        self.wDoubleCalc.setContentsMargins(0, 0, 0, 0)
         self.wDoubleCalcWidgetImpl = DoubleCalcWidgetImpl(self.wDoubleCalc)
         # 双头摆仿真界面
         self.wDoubleSim = QMainWindow()
+        self.wDoubleSim.setContentsMargins(0, 0, 0, 0)
         self.wDoubleSimWidgetImpl = DoubleSimWidgetImpl(self.wDoubleSim)
         # 单头摆计算界面
         self.wSingleCalc = QMainWindow()
+        self.wSingleCalc.setContentsMargins(0, 0, 0, 0)
         self.wSingleCalcWidgetImpl = SingleCalcWidgetImpl(self.wSingleCalc)
         # 单头摆仿真界面
         self.wSingleSim = QMainWindow()
+        self.wSingleSim.setContentsMargins(0, 0, 0, 0)
         self.wSingleSimWidgetImpl = SingleSimWidgetImpl(self.wSingleSim)
 
         # self.wTrans = QWidget()
@@ -110,11 +130,9 @@ class ContentWidget(QWidget):
 
         mainVLay.addWidget(self.stackedWidget)
 
-        # self.stackedWidget.setVisible(False)
+        self.stackedWidget.setVisible(False)
 
-        self.statusBar = QStatusBar()
-        self.statusBar.showMessage("欢迎使用，请登录！")
-        mainVLay.addWidget(self.statusBar)
+
         self.setLayout(mainVLay)
 
         self.gotoPage(0)
