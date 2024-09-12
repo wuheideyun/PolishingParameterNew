@@ -269,10 +269,10 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
             self.trajectory_animation_thread.start()
         else:
             self.trajectory_animation_ready(animation_name)
-    def trajectory_animation_ready(self,str_22):
+    def trajectory_animation_ready(self,animation_name):
         # 加载GIF动画
-        print(str_22)
-        self.movie = QMovie("animation.gif")
+        print(animation_name)
+        self.movie = QMovie('./animation/' + animation_name + '.gif')
         #self.movie.setloopCount(1)  # 设置只播放一次
         self.gif_label.setMovie(self.movie)
         self.movie.start()
