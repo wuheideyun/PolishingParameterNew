@@ -53,7 +53,7 @@ def log_equal_simulation(button_name,between,grind_size,belt_speed,accelerate,ra
     # 设置 logger，分别记录到不同的文件
     param_logger = setup_logger('param_logger', param_change_log_path)
     # 记录 按键操作 和 参数变更前后数值
-    param_logger.info(f"---------------------double_Parameter_Simulation---------------------\n"
+    param_logger.info(f"---------------------Equal_Parameter_Simulation---------------------\n"
                       f"The user enters parameter information:\n"
                       f"{'belt_speed:':^20} {belt_speed:^6} {'beam_swing_speed:':^20} {beam_swing_speed:^6f} {'beam_constant_time:':^20} {beam_constant_time:^6.2f} {'stay_time:':^20} {stay_time:^6.2f}"
                       f"{'accelerate:':^20} {accelerate:^6} {'num:':^20} {num:^6}\n"
@@ -70,7 +70,7 @@ def log_double_cal_parm_change(button_name,between,grind_size,belt_speed,acceler
     # 设置 logger，分别记录到不同的文件
     param_logger = setup_logger('param_logger', param_change_log_path)
     # 记录 按键操作 和 参数变更前后数值
-    param_logger.info(f"---------------------Equal_Parameter_Calculate---------------------\n"
+    param_logger.info(f"---------------------Double_Parameter_Calculate---------------------\n"
                       f"The user enters parameter information:\n"
                       f"{'between:':^20} {between:^6} {'geind_size:':^20} {grind_size:^6} {'belt_speed:':^20} {belt_speed:^6} {'accelerate:':^20} {accelerate:^6} \n"
                       f"{'radius:':^20} {radius:^6} {'cerimatic_width:':^20} {cerimatic_width:^6} {'beam_speed_up:':^20} {beam_speed_up:^6} {'overlap:':^20} {overlap:^6} {'beam_between:':^20} {beam_between:^6}\n"
@@ -89,14 +89,14 @@ def log_double_simulation(button_name,belt_speed,beam_swing_speed,beam_constant_
     # 设置 logger，分别记录到不同的文件
     param_logger = setup_logger('param_logger', param_change_log_path)
     # 记录 按键操作 和 参数变更前后数值
-    param_logger.info(f"---------------------double_Parameter_Simulation---------------------\n"
+    param_logger.info(f"---------------------Double_Parameter_Simulation---------------------\n"
                       f"The user enters parameter information:\n"
                       f"{'belt_speed:':^20} {belt_speed:^6} {'beam_swing_speed:':^20} {beam_swing_speed:^6f} {'beam_constant_time:':^20} {beam_constant_time:^6.2f} {'stay_time:':^20} {stay_time:^6.2f}"
                       f"{'accelerate:':^20} {accelerate:^6} {'delay_time:':^20} {delay_time:^6} {'num:':^20} {num:^6}\n"
                       f"{'between:':^20} {between: ^ 6} {'beam_between:':^20} {beam_between: ^ 6} {'radius:':^20} {radius:^6} {'geind_size:': ^ 20} {grind_size: ^ 6} \n"
                       f"User clicks button:{button_name}\n")
 
-# 参数变更日志记录函数封装----双头摆计算系统----
+# 参数变更日志记录函数封装----单头摆计算系统----
 def log_single_cal_parm_change(button_name,between,grind_size,belt_speed,accelerate,radius,cerimatic_width,beam_speed_up,overlap,beam_between,num_set,group_count,
                            beam_swing_speed,beam_constant_time,stay_time,num,swing,delay_time):
     # 获取每日文件夹路径
@@ -106,7 +106,7 @@ def log_single_cal_parm_change(button_name,between,grind_size,belt_speed,acceler
     # 设置 logger，分别记录到不同的文件
     param_logger = setup_logger('param_logger', param_change_log_path)
     # 记录 按键操作 和 参数变更前后数值
-    param_logger.info(f"---------------------Equal_Parameter_Calculate---------------------\n"
+    param_logger.info(f"---------------------Single_Parameter_Calculate---------------------\n"
                       f"The user enters parameter information:\n"
                       f"{'beam_between:':^20} {beam_between:^6} {'geind_size:':^20} {grind_size:^6} {'belt_speed:':^20} {belt_speed:^6} {'accelerate:':^20} {accelerate:^6} \n"
                       f"{'radius:':^20} {radius:^6} {'cerimatic_width:':^20} {cerimatic_width:^6} {'beam_speed_up:':^20} {beam_speed_up:^6} {'overlap:':^20} {overlap:^6}\n"
@@ -115,7 +115,7 @@ def log_single_cal_parm_change(button_name,between,grind_size,belt_speed,acceler
                       f"{'beam_swing_speed:':^20} {beam_swing_speed:^6.2f} {'beam_constant_time:':^20} {beam_constant_time:^6.2f} {'stay_time:':^20} {stay_time:^6.2f} {'num:':^20} {num:^6.2f}\n"
                       f"{'swing:':^20} {swing:^6.2f} {'delay_time:':^20} {delay_time:^6.2f} {'between:':^20} {between:^6.2f}\n")
 
-# 参数变更日志记录函数封装----双头摆仿真系统----
+# 参数变更日志记录函数封装----单头摆仿真系统----
 def log_single_simulation(button_name,belt_speed,beam_swing_speed,beam_constant_time,stay_time,accelerate,num,
                          beam_between,grind_size,radius,delay_time):
     # 获取每日文件夹路径
@@ -125,7 +125,7 @@ def log_single_simulation(button_name,belt_speed,beam_swing_speed,beam_constant_
     # 设置 logger，分别记录到不同的文件
     param_logger = setup_logger('param_logger', param_change_log_path)
     # 记录 按键操作 和 参数变更前后数值
-    param_logger.info(f"---------------------double_Parameter_Simulation---------------------\n"
+    param_logger.info(f"---------------------Single_Parameter_Simulation---------------------\n"
                       f"The user enters parameter information:\n"
                       f"{'belt_speed:':^20} {belt_speed:^6} {'beam_swing_speed:':^20} {beam_swing_speed:^6f} {'beam_constant_time:':^20} {beam_constant_time:^6.2f} {'stay_time:':^20} {stay_time:^6.2f}"
                       f"{'accelerate:':^20} {accelerate:^6} {'delay_time:':^20} {delay_time:^6} {'num:':^20} {num:^6}\n"
