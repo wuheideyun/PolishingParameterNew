@@ -28,11 +28,6 @@ class Ui_MainWindow(object):
         self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.lineEdit_group_count = QLineEdit(self.centralwidget)
-        self.lineEdit_group_count.setObjectName(u"lineEdit_group_count")
-
-        self.gridLayout.addWidget(self.lineEdit_group_count, 4, 8, 1, 1)
-
         self.lineEdit_between_beam = QLineEdit(self.centralwidget)
         self.lineEdit_between_beam.setObjectName(u"lineEdit_between_beam")
 
@@ -53,40 +48,15 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_ceramic_width, 2, 6, 1, 1)
 
-        self.button_energy_calculate = QPushButton(self.centralwidget)
-        self.button_energy_calculate.setObjectName(u"button_energy_calculate")
-
-        self.gridLayout.addWidget(self.button_energy_calculate, 4, 3, 1, 1)
-
         self.lineEdit_belt_speed = QLineEdit(self.centralwidget)
         self.lineEdit_belt_speed.setObjectName(u"lineEdit_belt_speed")
 
         self.gridLayout.addWidget(self.lineEdit_belt_speed, 1, 7, 1, 1)
 
-        self.button_efficient_calculate = QPushButton(self.centralwidget)
-        self.button_efficient_calculate.setObjectName(u"button_efficient_calculate")
-
-        self.gridLayout.addWidget(self.button_efficient_calculate, 4, 5, 1, 1)
-
-        self.label_beam_speed_up = QLabel(self.centralwidget)
-        self.label_beam_speed_up.setObjectName(u"label_beam_speed_up")
-
-        self.gridLayout.addWidget(self.label_beam_speed_up, 4, 0, 1, 1)
-
-        self.button_selfdefine_calculate = QPushButton(self.centralwidget)
-        self.button_selfdefine_calculate.setObjectName(u"button_selfdefine_calculate")
-
-        self.gridLayout.addWidget(self.button_selfdefine_calculate, 4, 10, 1, 1)
-
         self.label_stay_time = QLabel(self.centralwidget)
         self.label_stay_time.setObjectName(u"label_stay_time")
 
         self.gridLayout.addWidget(self.label_stay_time, 14, 0, 1, 2)
-
-        self.label_group_count = QLabel(self.centralwidget)
-        self.label_group_count.setObjectName(u"label_group_count")
-
-        self.gridLayout.addWidget(self.label_group_count, 4, 7, 1, 1)
 
         self.label_beam_constant_time = QLabel(self.centralwidget)
         self.label_beam_constant_time.setObjectName(u"label_beam_constant_time")
@@ -144,11 +114,6 @@ class Ui_MainWindow(object):
         self.lineEdit_delay_time.setObjectName(u"lineEdit_delay_time")
 
         self.gridLayout.addWidget(self.lineEdit_delay_time, 14, 8, 1, 1)
-
-        self.button_animation_order = QPushButton(self.centralwidget)
-        self.button_animation_order.setObjectName(u"button_animation_order")
-
-        self.gridLayout.addWidget(self.button_animation_order, 6, 6, 1, 1)
 
         self.label_middle = QLabel(self.centralwidget)
         self.label_middle.setObjectName(u"label_middle")
@@ -209,40 +174,10 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.lineEdit_num, 13, 8, 1, 1)
 
-        self.lineEdit_self_define_num = QLineEdit(self.centralwidget)
-        self.lineEdit_self_define_num.setObjectName(u"lineEdit_self_define_num")
-
-        self.gridLayout.addWidget(self.lineEdit_self_define_num, 3, 8, 1, 1)
-
-        self.button_save_parameter = QPushButton(self.centralwidget)
-        self.button_save_parameter.setObjectName(u"button_save_parameter")
-
-        self.gridLayout.addWidget(self.button_save_parameter, 3, 3, 1, 1)
-
-        self.lineEdit_beam_speed_up = QLineEdit(self.centralwidget)
-        self.lineEdit_beam_speed_up.setObjectName(u"lineEdit_beam_speed_up")
-
-        self.gridLayout.addWidget(self.lineEdit_beam_speed_up, 4, 1, 1, 2)
-
-        self.label_self_define_num = QLabel(self.centralwidget)
-        self.label_self_define_num.setObjectName(u"label_self_define_num")
-
-        self.gridLayout.addWidget(self.label_self_define_num, 3, 7, 1, 1)
-
         self.label_belt_speed = QLabel(self.centralwidget)
         self.label_belt_speed.setObjectName(u"label_belt_speed")
 
         self.gridLayout.addWidget(self.label_belt_speed, 1, 6, 1, 1)
-
-        self.label_overlap = QLabel(self.centralwidget)
-        self.label_overlap.setObjectName(u"label_overlap")
-
-        self.gridLayout.addWidget(self.label_overlap, 3, 0, 1, 1)
-
-        self.lineEdit_overlap = QLineEdit(self.centralwidget)
-        self.lineEdit_overlap.setObjectName(u"lineEdit_overlap")
-
-        self.gridLayout.addWidget(self.lineEdit_overlap, 3, 1, 1, 2)
 
         self.lineEdit_self_delay_time = QLineEdit(self.centralwidget)
         self.lineEdit_self_delay_time.setObjectName(u"lineEdit_self_delay_time")
@@ -275,6 +210,81 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.widget, 10, 0, 1, 11)
 
+        self.label_self_define_num = QLabel(self.centralwidget)
+        self.label_self_define_num.setObjectName(u"label_self_define_num")
+
+        self.gridLayout.addWidget(self.label_self_define_num, 3, 6, 1, 1)
+
+        self.lineEdit_self_define_num = QLineEdit(self.centralwidget)
+        self.lineEdit_self_define_num.setObjectName(u"lineEdit_self_define_num")
+
+        self.gridLayout.addWidget(self.lineEdit_self_define_num, 3, 7, 1, 1)
+
+        self.label_group_count = QLabel(self.centralwidget)
+        self.label_group_count.setObjectName(u"label_group_count")
+
+        self.gridLayout.addWidget(self.label_group_count, 4, 6, 1, 1)
+
+        self.lineEdit_group_count = QLineEdit(self.centralwidget)
+        self.lineEdit_group_count.setObjectName(u"lineEdit_group_count")
+
+        self.gridLayout.addWidget(self.lineEdit_group_count, 4, 7, 1, 1)
+
+        self.label_overlap = QLabel(self.centralwidget)
+        self.label_overlap.setObjectName(u"label_overlap")
+
+        self.gridLayout.addWidget(self.label_overlap, 2, 8, 1, 1)
+
+        self.lineEdit_overlap = QLineEdit(self.centralwidget)
+        self.lineEdit_overlap.setObjectName(u"lineEdit_overlap")
+
+        self.gridLayout.addWidget(self.lineEdit_overlap, 2, 10, 1, 1)
+
+        self.label_beam_speed_up = QLabel(self.centralwidget)
+        self.label_beam_speed_up.setObjectName(u"label_beam_speed_up")
+
+        self.gridLayout.addWidget(self.label_beam_speed_up, 3, 0, 1, 1)
+
+        self.lineEdit_beam_speed_up = QLineEdit(self.centralwidget)
+        self.lineEdit_beam_speed_up.setObjectName(u"lineEdit_beam_speed_up")
+
+        self.gridLayout.addWidget(self.lineEdit_beam_speed_up, 3, 2, 1, 1)
+
+        self.button_save_parameter = QPushButton(self.centralwidget)
+        self.button_save_parameter.setObjectName(u"button_save_parameter")
+
+        self.gridLayout.addWidget(self.button_save_parameter, 4, 0, 1, 1)
+
+        self.button_energy_calculate = QPushButton(self.centralwidget)
+        self.button_energy_calculate.setObjectName(u"button_energy_calculate")
+
+        self.gridLayout.addWidget(self.button_energy_calculate, 4, 2, 1, 1)
+
+        self.button_efficient_calculate = QPushButton(self.centralwidget)
+        self.button_efficient_calculate.setObjectName(u"button_efficient_calculate")
+
+        self.gridLayout.addWidget(self.button_efficient_calculate, 4, 3, 1, 1)
+
+        self.button_selfdefine_calculate = QPushButton(self.centralwidget)
+        self.button_selfdefine_calculate.setObjectName(u"button_selfdefine_calculate")
+
+        self.gridLayout.addWidget(self.button_selfdefine_calculate, 4, 8, 1, 1)
+
+        self.button_animation_order = QPushButton(self.centralwidget)
+        self.button_animation_order.setObjectName(u"button_animation_order")
+
+        self.gridLayout.addWidget(self.button_animation_order, 6, 5, 1, 1)
+
+        self.label_coefficient = QLabel(self.centralwidget)
+        self.label_coefficient.setObjectName(u"label_coefficient")
+
+        self.gridLayout.addWidget(self.label_coefficient, 3, 8, 1, 1)
+
+        self.lineEdit_coefficient = QLineEdit(self.centralwidget)
+        self.lineEdit_coefficient.setObjectName(u"lineEdit_coefficient")
+
+        self.gridLayout.addWidget(self.lineEdit_coefficient, 3, 10, 1, 1)
+
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -284,18 +294,12 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.lineEdit_group_count.setText(QCoreApplication.translate("MainWindow", u"3", None))
         self.lineEdit_between_beam.setText(QCoreApplication.translate("MainWindow", u"1906", None))
         self.button_middle_line_order_define.setText(QCoreApplication.translate("MainWindow", u"\u987a\u5e8f\u6446(\u81ea\u5b9a\u4e49)\u4e2d\u5fc3\u7ebf\u7ed8\u5236", None))
         self.button_simulation_order_define.setText(QCoreApplication.translate("MainWindow", u"\u987a\u5e8f\u6446(\u81ea\u5b9a\u4e49)\u6446\u629b\u78e8\u91cf\u5206\u5e03", None))
         self.label_ceramic_width.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u8fdb\u7816\u5bbd\u5ea6\uff1a</p></body></html>", None))
-        self.button_energy_calculate.setText(QCoreApplication.translate("MainWindow", u"\u8282\u80fd\u8ba1\u7b97", None))
         self.lineEdit_belt_speed.setText(QCoreApplication.translate("MainWindow", u"240.37", None))
-        self.button_efficient_calculate.setText(QCoreApplication.translate("MainWindow", u"\u9ad8\u6548\u8ba1\u7b97", None))
-        self.label_beam_speed_up.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u6a2a\u6881\u6446\u52a8\u901f\u5ea6\u4e0a\u9650\uff1a</p></body></html>", None))
-        self.button_selfdefine_calculate.setText(QCoreApplication.translate("MainWindow", u"\u81ea\u5b9a\u4e49\u8ba1\u7b97", None))
         self.label_stay_time.setText(QCoreApplication.translate("MainWindow", u"\u8fb9\u90e8\u505c\u7559\u65f6\u95f4", None))
-        self.label_group_count.setText(QCoreApplication.translate("MainWindow", u"\u7ec4\u6570\uff1a", None))
         self.label_beam_constant_time.setText(QCoreApplication.translate("MainWindow", u"\u6a2a\u6881\u5300\u901f\u6446\u52a8\u65f6\u95f4", None))
         self.label_delay_time.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u5ef6\u65f6\u65f6\u95f4\uff1a</p></body></html>", None))
         self.lineEdit_accelerate.setText(QCoreApplication.translate("MainWindow", u"650", None))
@@ -307,7 +311,6 @@ class Ui_MainWindow(object):
         self.label_num.setText(QCoreApplication.translate("MainWindow", u"\u540c\u7c92\u5ea6\u78e8\u5934\u6570\u76ee", None))
         self.label_bottom.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.lineEdit_delay_time.setText("")
-        self.button_animation_order.setText(QCoreApplication.translate("MainWindow", u"\u987a\u5e8f\u6446\u52a8\u753b", None))
         self.label_middle.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.lineEdit_grind_size.setText(QCoreApplication.translate("MainWindow", u"150", None))
         self.label_beam_swing_speed.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u6a2a\u6881\u6446\u52a8\u901f\u5ea6</p></body></html>", None))
@@ -319,15 +322,23 @@ class Ui_MainWindow(object):
         self.label_between.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5934\u95f4\u8ddd\uff1a</p></body></html>", None))
         self.lineEdit_stay_time.setText("")
         self.lineEdit_num.setText(QCoreApplication.translate("MainWindow", u"4", None))
-        self.button_save_parameter.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58\u53c2\u6570", None))
-        self.lineEdit_beam_speed_up.setText(QCoreApplication.translate("MainWindow", u"500", None))
-        self.label_self_define_num.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u5b9a\u5168\u8986\u76d6\u78e8\u5934\u6570\uff1a", None))
         self.label_belt_speed.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u76ae\u5e26\u901f\u5ea6\uff1a</p></body></html>", None))
-        self.label_overlap.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u8f68\u8ff9\u91cd\u53e0\u91cf\uff1a</p></body></html>", None))
-        self.lineEdit_overlap.setText(QCoreApplication.translate("MainWindow", u"10", None))
         self.lineEdit_self_delay_time.setText("")
         self.lineEdit_between.setText(QCoreApplication.translate("MainWindow", u"580", None))
         self.button_simulation_order.setText(QCoreApplication.translate("MainWindow", u"\u987a\u5e8f\u6446\u629b\u78e8\u91cf\u5206\u5e03\u4eff\u771f", None))
         self.label_radius.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5934\u534a\u5f84\uff1a</p></body></html>", None))
+        self.label_self_define_num.setText(QCoreApplication.translate("MainWindow", u"\u8bbe\u5b9a\u5168\u8986\u76d6\u78e8\u5934\u6570\uff1a", None))
+        self.label_group_count.setText(QCoreApplication.translate("MainWindow", u"\u7ec4\u6570\uff1a", None))
+        self.lineEdit_group_count.setText(QCoreApplication.translate("MainWindow", u"3", None))
+        self.label_overlap.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u8f68\u8ff9\u91cd\u53e0\u91cf\uff1a</p></body></html>", None))
+        self.lineEdit_overlap.setText(QCoreApplication.translate("MainWindow", u"10", None))
+        self.label_beam_speed_up.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u6a2a\u6881\u6446\u52a8\u901f\u5ea6\u4e0a\u9650\uff1a</p></body></html>", None))
+        self.lineEdit_beam_speed_up.setText(QCoreApplication.translate("MainWindow", u"500", None))
+        self.button_save_parameter.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58\u53c2\u6570", None))
+        self.button_energy_calculate.setText(QCoreApplication.translate("MainWindow", u"\u8282\u80fd\u8ba1\u7b97", None))
+        self.button_efficient_calculate.setText(QCoreApplication.translate("MainWindow", u"\u9ad8\u6548\u8ba1\u7b97", None))
+        self.button_selfdefine_calculate.setText(QCoreApplication.translate("MainWindow", u"\u81ea\u5b9a\u4e49\u8ba1\u7b97", None))
+        self.button_animation_order.setText(QCoreApplication.translate("MainWindow", u"\u987a\u5e8f\u6446\u52a8\u753b", None))
+        self.label_coefficient.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u5747\u5300\u7cfb\u6570\uff1a</p></body></html>", None))
     # retranslateUi
 
