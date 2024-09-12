@@ -34,7 +34,7 @@ class TitleBar(QWidget):
 
         self.setStyleSheet('''
                     QWidget {
-                        background-color: rgb(151, 145, 155);
+                        background-color: rgb(251, 245, 255);
                         border: none;
                         border-top-right-radius:10px solid #f00;
                     }

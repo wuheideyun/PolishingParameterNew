@@ -113,13 +113,7 @@ class ContentWidget(QWidget):
         # self.stackedWidget.setVisible(False)
 
         self.statusBar = QStatusBar()
-        self.statusBar.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.statusBar.showMessage("欢迎使用，请登录！")
-        # 获取状态栏的合适高度
-        recommended_height = self.statusBar.sizeHint().height()
-
-        # 设置状态栏的高度为推荐高度
-        self.statusBar.setFixedHeight(recommended_height)
         mainVLay.addWidget(self.statusBar)
         self.setLayout(mainVLay)
 

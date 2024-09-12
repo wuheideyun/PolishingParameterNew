@@ -232,16 +232,21 @@ class LoginDialog(FrameLessDialog):
 
         if username == "" or password == "":
             msgbox = PopupMessageBox("提示", "用户名或密码为空")
+            msgbox.setFixedSize(200,100)
             msgbox.exec()
+
+            self.sig_login_failure.emit()
             return
 
         if self.db.verify_login('users', username, password):
-            QMessageBox.information(self, "提示", "登录成功")
+            # QMessageBox.information(self, "提示", "登录成功")
+            msgbox = PopupMessageBox("提示", "登录成功!")
+            msgbox.setFixedSize(200, 100)
+            msgbox.exec()
             self.sig_login_success.emit()
             self.accept()
         else:
             QMessageBox.information(self, "提示", "用户名或密码错误")
-
             self.sig_login_failure.emit()
 
     def open_login(self):

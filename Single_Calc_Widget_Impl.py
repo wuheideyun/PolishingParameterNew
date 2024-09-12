@@ -1,8 +1,9 @@
 import math
+import os
 
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPixmap, QMovie
-from PySide6.QtWidgets import QWidget, QLabel
+from PySide6.QtWidgets import QWidget, QLabel, QMessageBox
 from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -71,9 +72,17 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         # 如果需要，可以让图片自适应 QLabel 的大小
         self.label_bottom.setScaledContents(True)
 
+        self.line_edits = [self.lineEdit_beam_between, self.lineEdit_grind_size, self.lineEdit_belt_speed,
+                           self.lineEdit_accelerate,
+                           self.lineEdit_num_set, self.lineEdit_radius, self.lineEdit_ceramic_width,
+                           self.lineEdit_beam_speed_up,
+                           self.lineEdit_overlap, self.lineEdit_group_count]
+
 
     # 轨迹参数计算（节能计算）
     def energy_calculate(self):
+        if not self.on_button_clicked():
+            return
         v1=float(self.lineEdit_belt_speed.text())
         ceramic_width=float(self.lineEdit_ceramic_width.text())
         beam_between=float(self.lineEdit_beam_between.text())
@@ -89,8 +98,11 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         self.lineEdit_delay_time.setText(str(result[0,5]))
         self.lineEdit_swing.setText(str(result[0, 6]))
         self.lineEdit_between.setText(str(result[0, 7]))
+        self.initReCalculation()
     # 轨迹参数计算（高效计算）
     def efficient_calculate(self):       # 高效计算
+        if not self.on_button_clicked():
+            return
         v1 = float(self.lineEdit_belt_speed.text())
         ceramic_width = float(self.lineEdit_ceramic_width.text())
         beam_between = float(self.lineEdit_beam_between.text())
@@ -107,6 +119,7 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         self.lineEdit_delay_time.setText(str(result[1, 5]))
         self.lineEdit_swing.setText(str(result[1, 6]))
         self.lineEdit_between.setText(str(result[0, 7]))
+        self.initReCalculation()
     # 轨迹参数计算（自定义计算）
     def define_calculate(self):
         v1 = float(self.lineEdit_belt_speed.text())
@@ -126,6 +139,7 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         self.lineEdit_delay_time.setText(str(result[0, 5]))
         self.lineEdit_swing.setText(str(result[0, 6]))
         self.lineEdit_between.setText(str(result[0, 7]))
+        self.initReCalculation()
     # 抛磨量分布仿真子线程
     # 顺序摆抛磨量分布仿真子线程
     def start_computation_Polishing_distribution_order(self):      # 抛磨量分布仿真子线程
@@ -187,40 +201,74 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
     # 轨迹动画生成子线程
     # 顺序摆动画
     def start_computation_trajectory_animation_order(self):
-        self.trajectory_animation_thread = Animation_produce_order(float(self.lineEdit_belt_speed.text()),
-                                                            float(self.lineEdit_beam_swing_speed.text()),
-                                                            float(self.lineEdit_beam_constant_time.text()),
-                                                            float(self.lineEdit_stay_time.text()),
-                                                            float(self.lineEdit_accelerate.text()),
-                                                            float(self.lineEdit_radius.text()),
-                                                            float(self.lineEdit_between.text()),
-                                                            float(self.lineEdit_beam_between.text()),
-                                                            math.ceil(float(self.lineEdit_num.text())),
-                                                            float(self.lineEdit_delay_time.text())
-                                                            )
-        self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
-        self.button_animation_order.setEnabled(False)
-        self.button_animation_order_define.setEnabled(False)
-        # 运行子线程
-        self.trajectory_animation_thread.start()
+        if not self.on_button_clicked():
+            return
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
+        animation_name = ('SingleCalcOrderAnimation-' +
+                          self.lineEdit_belt_speed.text() + '_' + self.lineEdit_beam_swing_speed.text() + '_' + self.lineEdit_beam_constant_time.text() + '_' +
+                          self.lineEdit_stay_time.text() + '_' +
+                          self.lineEdit_accelerate.text() + '_' +
+                          self.lineEdit_radius.text() + '_' + self.lineEdit_between.text() + '_' +
+                          self.lineEdit_beam_between.text() + '_' + self.lineEdit_num.text() + '_' +
+                          self.lineEdit_delay_time.text())
+
+        if not self.check_animation_gif(animation_name):
+            self.trajectory_animation_thread = Animation_produce_order(float(self.lineEdit_belt_speed.text()),
+                                                                float(self.lineEdit_beam_swing_speed.text()),
+                                                                float(self.lineEdit_beam_constant_time.text()),
+                                                                float(self.lineEdit_stay_time.text()),
+                                                                float(self.lineEdit_accelerate.text()),
+                                                                float(self.lineEdit_radius.text()),
+                                                                float(self.lineEdit_between.text()),
+                                                                float(self.lineEdit_beam_between.text()),
+                                                                math.ceil(float(self.lineEdit_num.text())),
+                                                                float(self.lineEdit_delay_time.text()),
+                                                                animation_name
+                                                                )
+            self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
+            self.button_animation_order.setEnabled(False)
+            self.button_animation_order_define.setEnabled(False)
+            # 运行子线程
+            self.trajectory_animation_thread.start()
+        else:
+            self.trajectory_animation_ready(animation_name)
     # 顺序摆动画（自定义模式）
     def start_computation_trajectory_animation_order_define(self):
-        self.trajectory_animation_thread = Animation_produce_order(float(self.lineEdit_belt_speed.text()),
-                                                            float(self.lineEdit_beam_swing_speed.text()),
-                                                            float(self.lineEdit_beam_constant_time.text()),
-                                                            float(self.lineEdit_stay_time.text()),
-                                                            float(self.lineEdit_accelerate.text()),
-                                                            float(self.lineEdit_radius.text()),
-                                                            float(self.lineEdit_between.text()),
-                                                            float(self.lineEdit_beam_between.text()),
-                                                            math.ceil(float(self.lineEdit_num_set.text())),
-                                                            float(self.lineEdit_delay_time.text())
-                                                            )
-        self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
-        self.button_animation_order.setEnabled(False)
-        self.button_animation_order_define.setEnabled(False)
-        # 运行子线程
-        self.trajectory_animation_thread.start()
+        if not self.on_button_clicked():
+            return
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
+        animation_name = ('SingleCalcOrderDefineAnimation-' +
+                          self.lineEdit_belt_speed.text() + '_' + self.lineEdit_beam_swing_speed.text() + '_' + self.lineEdit_beam_constant_time.text() + '_' +
+                          self.lineEdit_stay_time.text() + '_' +
+                          self.lineEdit_accelerate.text() + '_' +
+                          self.lineEdit_radius.text() + '_' + self.lineEdit_between.text() + '_' +
+                          self.lineEdit_beam_between.text() + '_' + self.lineEdit_num.text() + '_' +
+                          self.lineEdit_delay_time.text())
+
+        if not self.check_animation_gif(animation_name):
+            self.trajectory_animation_thread = Animation_produce_order(float(self.lineEdit_belt_speed.text()),
+                                                                float(self.lineEdit_beam_swing_speed.text()),
+                                                                float(self.lineEdit_beam_constant_time.text()),
+                                                                float(self.lineEdit_stay_time.text()),
+                                                                float(self.lineEdit_accelerate.text()),
+                                                                float(self.lineEdit_radius.text()),
+                                                                float(self.lineEdit_between.text()),
+                                                                float(self.lineEdit_beam_between.text()),
+                                                                math.ceil(float(self.lineEdit_num_set.text())),
+                                                                float(self.lineEdit_delay_time.text()),
+                                                                animation_name
+                                                                )
+            self.trajectory_animation_thread.result_ready.connect(self.trajectory_animation_ready)
+            self.button_animation_order.setEnabled(False)
+            self.button_animation_order_define.setEnabled(False)
+            # 运行子线程
+            self.trajectory_animation_thread.start()
+        else:
+            self.trajectory_animation_ready(animation_name)
     def trajectory_animation_ready(self,str_22):
         # 加载GIF动画
         print(str_22)
@@ -287,3 +335,36 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         self.lineEdit_beam_speed_up.setText(self.settings.value("lineEdit_beam_speed_up5", ""))
         self.lineEdit_overlap.setText(self.settings.value("lineEdit_overlap5", ""))
         self.lineEdit_group_count.setText(self.settings.value("lineEdit_group_count5", ""))
+
+    def on_button_clicked(self):
+        for line_edit in self.line_edits:
+            if not line_edit.text().strip():  # 如果任何一个LineEdit为空
+                textname = self.on_Find_Label_Name(line_edit.objectName())
+                QMessageBox.warning(self, "警告", f"{textname}输入框必须填写数据！")
+                return False
+        return True
+
+    def needReCalculation(self):
+        if self.reCalcFlag:
+            return True
+        else:
+            return False
+
+    def on_Find_Label_Name(self, lineedit_name):
+
+        # 构造对应的Label的objectName
+        label_object_name = lineedit_name.replace("lineEdit", "label")
+
+        # 根据objectName找到对应的Label
+        label = self.findChild(QLabel, label_object_name)
+
+        if label:
+            return label.text()
+    def initReCalculation(self):
+        self.reCalcFlag = False
+    def check_animation_gif(self, animation_name):
+        # 定义文件路径
+        file_path = os.path.join(os.getcwd(), 'animation', animation_name + '.gif')
+
+        # 判断文件是否存在
+        return os.path.isfile(file_path)
