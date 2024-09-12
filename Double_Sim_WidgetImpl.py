@@ -130,7 +130,7 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
                                                                            float(self.lineEdit_grind_size.text()))
         self.Polishing_distribution_thread.result_ready.connect(self.Polishing_distribution_ready)
         self.button_simulation_equal.setEnabled(False)
-        self.button_simulation_order.setEnabled(False)
+        self.button_simulation_cross.setEnabled(False)
         self.button_simulation_order.setEnabled(False)
 
         # 运行子线程
@@ -151,7 +151,7 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
         plt.show()  # 显示函数图像
         #equal_coefficient
         self.button_simulation_equal.setEnabled(True)
-        self.button_simulation_order.setEnabled(True)
+        self.button_simulation_cross.setEnabled(True)
         self.button_simulation_order.setEnabled(True)
     def on_Find_Label_Name(self, lineedit_name):
 

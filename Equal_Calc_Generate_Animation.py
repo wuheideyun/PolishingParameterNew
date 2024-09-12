@@ -32,7 +32,7 @@ class Animation_produce(QThread):
         self.fig = plt.figure('运行轨迹动画', figsize=(10, 4))
         self.ax = self.fig.add_subplot(111)  # 默认111代表1*1的图的第一个子图
         # 设置坐标轴范围
-        self.x_range = [-(self.num * between + 400), period * 3 * v1]
+        self.x_range = [-(self.num * between + 540), period * 3 * v1]
         self.ax.set_xlim(self.x_range)
         # y轴使用系数扩展显示范围
         self.y_range = [-0.5 * 1.3 * ((a * (v2 / a) ** 2 + v2 * t1) + 2 * R ),
@@ -42,11 +42,14 @@ class Animation_produce(QThread):
         # 设置坐标轴名称
         self.ax.set_xlabel('Tile feed direction')
         self.ax.set_ylabel('Beam swing direction')
+        # 单独隐藏刻度和标签
+        # self.ax.set_xticks([])         # 隐藏刻度
+        self.ax.set_xticklabels([])      # 隐藏刻度标签
         self.one_size = self.msize * self.v1
         # 标识符位置设定
-        self.grinding_num = self.ax.text(0.7, 0.92, '', transform=self.ax.transAxes, fontsize=10, )
-        self.xtext_ani = self.ax.text(0.7, 0.82, '', transform=self.ax.transAxes, fontsize=10)
-        self.ytext_ani = self.ax.text(0.7, 0.72, '', transform=self.ax.transAxes, fontsize=10)
+        self.grinding_num = self.ax.text(0.7, 0.90, '', transform=self.ax.transAxes, fontsize=10, )
+        #self.xtext_ani = self.ax.text(0.7, 0.82, '', transform=self.ax.transAxes, fontsize=10)
+        self.ytext_ani = self.ax.text(0.7, 0.78, '', transform=self.ax.transAxes, fontsize=10)
 
     def inner_cal_matrix(self):
         v1 = self.v1
@@ -126,7 +129,7 @@ class Animation_produce(QThread):
         self.ax.set_xlim(self.x_range)
         # 绘制x、y、num的标识(坐标信息相对不移动)
         self.grinding_num.set_text('Same_grinding_num=%.0f' % self.num)
-        self.xtext_ani.set_text('x_location=%.3f mm' % (-self.single_X_location[0, i]))
+        #self.xtext_ani.set_text('x_location=%.3f mm' % (-self.single_X_location[0, i]))
         self.ytext_ani.set_text(
             'y_location=%.3f mm' % (self.single_Y_location[0, i] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)))
         # 绘制抛光轨迹进行叠加
@@ -137,7 +140,8 @@ class Animation_produce(QThread):
                             radius=self.R, alpha=0.1, color=self.color_7[j])
             self.ax.add_patch(circle)
             patches.append(circle)
-        return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches
+        # return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches
+        return [self.grinding_num, self.ytext_ani] + patches
 
     def run(self):
         ani = animation.FuncAnimation(self.fig, self.update, frames=self.all_time_n, interval=100, repeat=False)

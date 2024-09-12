@@ -9,7 +9,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import Single_Calc
 import Single_Calc_Parameter_Calculate
-from Single_Calc_Generate_Animation import Animation_produce_order
+from Single_Calc_Generate_Animation import Animation_produce_order,Animation_produce_order_define
 from Single_Calc_Middle_Line_Plot import middle_line_plot_order, middle_line_plot_self_define_order
 from Single_Calc_Polishing_Distribution_Simulation import Polishing_distribution_Thread_order, \
     Polishing_distribution_Thread_order_unequal
@@ -250,7 +250,7 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
                           self.lineEdit_delay_time.text())
 
         if not self.check_animation_gif(animation_name):
-            self.trajectory_animation_thread = Animation_produce_order(float(self.lineEdit_belt_speed.text()),
+            self.trajectory_animation_thread = Animation_produce_order_define(float(self.lineEdit_belt_speed.text()),
                                                                 float(self.lineEdit_beam_swing_speed.text()),
                                                                 float(self.lineEdit_beam_constant_time.text()),
                                                                 float(self.lineEdit_stay_time.text()),

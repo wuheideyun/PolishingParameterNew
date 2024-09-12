@@ -150,7 +150,7 @@ class Animation_produce_order(QThread):
 
 class Animation_produce_order_define(QThread):
     result_ready = Signal(str)
-    def __init__(self,v1,v2,t1,t2,a,R,between,beam_between,num,delay_time,group,animation_name):
+    def __init__(self,v1,v2,t1,t2,a,R,between,beam_between,num,delay_time,animation_name):
         # 参数赋值
         super().__init__()
         self.animation_name = animation_name
@@ -160,7 +160,7 @@ class Animation_produce_order_define(QThread):
         self.t2=t2
         self.a=a
         self.R=R
-        self.group=group
+        #self.group=group
         self.between=between
         self.num=math.ceil(num)
         self.beam_between=beam_between
@@ -168,7 +168,7 @@ class Animation_produce_order_define(QThread):
         self.msize=0.15
         #delay_time=[0,3.1,7,10.1,14.01,17.11,18.6,21.7]
         self.delay_time=delay_time
-        delay_time_define=round(between/group/v1,2)
+        #delay_time_define=round(between/group/v1,2)
         self.delay_time_size=round(delay_time / self.msize)
         self.beam_between_cell = math.floor(beam_between / v1 / self.msize)  # 横梁步长
         self.cross_size=round((2 * round(v2/a,2) + t1 + t2)/self.msize)

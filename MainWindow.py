@@ -8,7 +8,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter, QColor, QEnterEvent
 from PySide6.QtWidgets import QMainWindow, QHBoxLayout, QVBoxLayout, QWidget, QMessageBox, QToolBar, QSizePolicy
 
-from BottomStatusBar import BottomStatusBar
+
 from ContentWidget import ContentWidget
 from LeftBar import LeftBar
 from TitleBar import TitleBar

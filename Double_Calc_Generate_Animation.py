@@ -39,7 +39,7 @@ class Animation_produce_order(QThread):
         self.fig = plt.figure('运行轨迹动画',figsize=(10, 4))
         self.ax = self.fig.add_subplot(111)  # 默认111代表1*1的图的第一个子图
         # 设置坐标轴范围
-        self.x_range = [-(self.num_two*between+(self.num_two-1)*(beam_between-between)+200),period * (self.n-2) * v1]
+        self.x_range = [-(self.num_two*between+(self.num_two-1)*(beam_between-delay_time*v1)+540),period * 3 * v1]
         self.ax.set_xlim(self.x_range)
         # 使用系数设定范围
         self.ax.set_ylim((-0.5 * 1.3 * ((a * (v2 / a) ** 2 + v2 * t1) + R ),
@@ -52,8 +52,8 @@ class Animation_produce_order(QThread):
         self.one_size=self.msize * self.v1
         # 标识符位置设定
         self.grinding_num = self.ax.text(0.7,0.90,'',transform=self.ax.transAxes,fontsize=10,)
-        self.xtext_ani = self.ax.text(0.7,0.80,'',transform=self.ax.transAxes,fontsize=10)
-        self.ytext_ani = self.ax.text(0.7,0.70,'',transform=self.ax.transAxes,fontsize=10)
+        #self.xtext_ani = self.ax.text(0.7,0.80,'',transform=self.ax.transAxes,fontsize=10)
+        self.ytext_ani = self.ax.text(0.7,0.78,'',transform=self.ax.transAxes,fontsize=10)
     def inner_cal_matrix(self):
         v1=self.v1
         v2=self.v2
@@ -133,7 +133,7 @@ class Animation_produce_order(QThread):
         self.ax.set_xlim(self.x_range)
         # 绘制x、y、num的标识(坐标信息相对不移动)
         self.grinding_num.set_text('Same_grinding_num=%.0f' % self.num)
-        self.xtext_ani.set_text('x_location=%.3f mm' % (self.single_X_location[0, j]))
+        #self.xtext_ani.set_text('x_location=%.3f mm' % (self.single_X_location[0, j]))
         self.ytext_ani.set_text('y_location=%.3f mm' % (self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)))
         # 绘制抛光轨迹进行叠加
         patches_1 = []
@@ -152,14 +152,14 @@ class Animation_produce_order(QThread):
                 self.ax.add_patch(circle_2)
                 patches_1.append(circle_1)
                 patches_2.append(circle_2)
-        return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches_1 + patches_2
+        #return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches_1 + patches_2
+        return [self.grinding_num, self.ytext_ani] + patches_1 + patches_2
     def run(self):
         ani = animation.FuncAnimation(self.fig,self.update,frames=self.all_time_n,interval=100, repeat=False)
         ani.save('animation/' + self.animation_name + '.gif', fps=30, writer='pillow')
         self.result_ready.emit(self.animation_name)
         plt.close(self.fig)
 # 自定义动画 待做
-
 class Animation_produce_equal(QThread):
     result_ready = Signal(str)
     def __init__(self,v1, v2, t1, t2, a, R, between,beam_between,num):
@@ -174,7 +174,7 @@ class Animation_produce_equal(QThread):
         self.between=between
         self.num=math.ceil(num)
         self.beam_between=beam_between
-        self.n=4
+        self.n=6
         self.msize=0.15
         self.beam_between_cell = math.floor(beam_between / v1 / self.msize)  # 横梁步长
         self.cross_size=round((2 * round(v2/a,2) + t1 + t2)/self.msize)
@@ -182,14 +182,16 @@ class Animation_produce_equal(QThread):
         period = round(4 * (v2 / a) + 2 * t1 + 2 * t2, 2)
         self.all_time_n = math.floor(period / self.msize) * self.n
         self.all_time_n_1 = math.floor(period / self.msize) * (self.n-1)
-        self.color_7 = ['red','orange','green','cyan','blue','purple','yellow']  # 红橙黄绿青蓝紫
+        self.color_7 = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple', 'yellow',
+                        'lightgreen','slategrey','cornflowerblue','navy','indigo','violet',
+                        'plum','oldlace','maroon','lightcyan','lightseagreen','seagreen','springgreen']
         # 计算矩阵
         self.single_X_location,self.single_Y_location=self.inner_cal_matrix()
         # 创建坐标绘图区
         self.fig = plt.figure('运行轨迹动画',figsize=(10, 4))
         self.ax = self.fig.add_subplot(111)  # 默认111代表1*1的图的第一个子图
         # 设置坐标轴范围
-        self.x_range = [-(self.num_two*between+(self.num_two-1)*(beam_between-between)+200),period * (self.n-2) * v1]
+        self.x_range = [-(self.num_two*between+(self.num_two-1)*(beam_between-between)+540),period * 3 * v1]
         #self.x_range=[-(30 + R), period * self.n * v1 + beam_between]
         self.ax.set_xlim(self.x_range)
         self.ax.set_ylim((-0.5 * (a * (v2 / a) ** 2 + v2 * t2) - R - 200,

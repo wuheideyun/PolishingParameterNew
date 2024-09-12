@@ -8,8 +8,7 @@ from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import Single_Sim
-from Double_Sim_Middle_Line_Plot import middle_line_plot_equal
-from Single_Calc_Middle_Line_Plot import middle_line_plot_order
+from Single_Sim_Middle_Line_Plot import middle_line_plot_order,middle_line_plot_equal,middle_line_plot_cross
 from Single_Sim_Generate_Animation import Animation_produce_cross, Animation_produce_order, Animation_produce_equal
 from Single_Sim_Polishing_Distribution_Simulation import Polishing_distribution_Thread_equal, \
     Polishing_distribution_Thread_order, Polishing_distribution_Thread_cross
