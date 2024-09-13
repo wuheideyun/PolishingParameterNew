@@ -15,7 +15,7 @@ from Single_Calc_Polishing_Distribution_Simulation import Polishing_distribution
     Polishing_distribution_Thread_order_unequal
 from Single_Calc_Self_Define_Calculate import self_define_calculate
 from Public_Polishing_Distribution_Plot import polishing_distribution_Plot
-
+from log_record_function import log_single_cal_parm_change
 class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
     def __init__(self, w):
         super().__init__()
@@ -98,6 +98,9 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         self.lineEdit_delay_time.setText(str(result[0,5]))
         self.lineEdit_swing.setText(str(result[0, 6]))
         self.lineEdit_between.setText(str(result[0, 7]))
+        log_single_cal_parm_change(self.button_energy_calculate.objectName(), self.lineEdit_between.text(), self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(), self.lineEdit_radius.text(), self.lineEdit_ceramic_width.text(),
+                                   self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(), self.lineEdit_beam_between.text(), self.lineEdit_num_set.text(), self.lineEdit_group_count.text(),
+                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(), self.lineEdit_stay_time.text(), self.lineEdit_num.text(), self.lineEdit_swing.text(), self.lineEdit_delay_time.text())
         self.initReCalculation()
     # 轨迹参数计算（高效计算）
     def efficient_calculate(self):       # 高效计算
@@ -119,6 +122,16 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         self.lineEdit_delay_time.setText(str(result[1, 5]))
         self.lineEdit_swing.setText(str(result[1, 6]))
         self.lineEdit_between.setText(str(result[0, 7]))
+        log_single_cal_parm_change(self.button_efficient_calculate.objectName(), self.lineEdit_between.text(),
+                                   self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(),
+                                   self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+                                   self.lineEdit_ceramic_width.text(),
+                                   self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                   self.lineEdit_beam_between.text(), self.lineEdit_num_set.text(),
+                                   self.lineEdit_group_count.text(),
+                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                                   self.lineEdit_stay_time.text(), self.lineEdit_num.text(), self.lineEdit_swing.text(),
+                                   self.lineEdit_delay_time.text())
         self.initReCalculation()
     # 轨迹参数计算（自定义计算）
     def define_calculate(self):
@@ -139,6 +152,16 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         self.lineEdit_delay_time.setText(str(result[0, 5]))
         self.lineEdit_swing.setText(str(result[0, 6]))
         self.lineEdit_between.setText(str(result[0, 7]))
+        log_single_cal_parm_change(self.button_selfdefine_calculate.objectName(), self.lineEdit_between.text(),
+                                   self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(),
+                                   self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+                                   self.lineEdit_ceramic_width.text(),
+                                   self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                   self.lineEdit_beam_between.text(), self.lineEdit_num_set.text(),
+                                   self.lineEdit_group_count.text(),
+                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                                   self.lineEdit_stay_time.text(), self.lineEdit_num.text(), self.lineEdit_swing.text(),
+                                   self.lineEdit_delay_time.text())
         self.initReCalculation()
     # 抛磨量分布仿真子线程
     # 顺序摆抛磨量分布仿真子线程
@@ -158,6 +181,16 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         self.Polishing_distribution_thread.result_ready.connect(self.Polishing_distribution_ready)
         self.button_simulation_order.setEnabled(False)
         self.button_simulation_order_define.setEnabled(False)
+        log_single_cal_parm_change(self.button_simulation_order.objectName(), self.lineEdit_between.text(),
+                                   self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(),
+                                   self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+                                   self.lineEdit_ceramic_width.text(),
+                                   self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                   self.lineEdit_beam_between.text(), self.lineEdit_num_set.text(),
+                                   self.lineEdit_group_count.text(),
+                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                                   self.lineEdit_stay_time.text(), self.lineEdit_num.text(), self.lineEdit_swing.text(),
+                                   self.lineEdit_delay_time.text())
         # 运行子线程
         self.Polishing_distribution_thread.start()
     # 顺序摆（自定义）抛磨量分布仿真子线程
@@ -178,6 +211,16 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         self.Polishing_distribution_thread.result_ready.connect(self.Polishing_distribution_ready)
         self.button_simulation_order.setEnabled(False)
         self.button_simulation_order_define.setEnabled(False)
+        log_single_cal_parm_change(self.button_simulation_order_define.objectName(), self.lineEdit_between.text(),
+                                   self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(),
+                                   self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+                                   self.lineEdit_ceramic_width.text(),
+                                   self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                   self.lineEdit_beam_between.text(), self.lineEdit_num_set.text(),
+                                   self.lineEdit_group_count.text(),
+                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                                   self.lineEdit_stay_time.text(), self.lineEdit_num.text(), self.lineEdit_swing.text(),
+                                   self.lineEdit_delay_time.text())
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def Polishing_distribution_ready(self,object_matrix, result):     # 子线程回调函数
@@ -237,6 +280,16 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
             self.trajectory_animation_thread.start()
         else:
             self.trajectory_animation_ready(animation_name)
+        log_single_cal_parm_change(self.button_animation_order.objectName(), self.lineEdit_between.text(),
+                                   self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(),
+                                   self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+                                   self.lineEdit_ceramic_width.text(),
+                                   self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                   self.lineEdit_beam_between.text(), self.lineEdit_num_set.text(),
+                                   self.lineEdit_group_count.text(),
+                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                                   self.lineEdit_stay_time.text(), self.lineEdit_num.text(), self.lineEdit_swing.text(),
+                                   self.lineEdit_delay_time.text())
     # 顺序摆动画（自定义模式）
     def start_computation_trajectory_animation_order_define(self):
         if not self.on_button_clicked():
@@ -272,6 +325,16 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
             self.trajectory_animation_thread.start()
         else:
             self.trajectory_animation_ready(animation_name)
+        log_single_cal_parm_change(self.button_animation_order_define.objectName(), self.lineEdit_between.text(),
+                                   self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(),
+                                   self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+                                   self.lineEdit_ceramic_width.text(),
+                                   self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                   self.lineEdit_beam_between.text(), self.lineEdit_num_set.text(),
+                                   self.lineEdit_group_count.text(),
+                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                                   self.lineEdit_stay_time.text(), self.lineEdit_num.text(), self.lineEdit_swing.text(),
+                                   self.lineEdit_delay_time.text())
     def trajectory_animation_ready(self,animation_name):
         # 加载GIF动画
         print(animation_name)
@@ -298,6 +361,16 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         delay_tome = float(self.lineEdit_delay_time.text())
         mid_var=middle_line_plot_order(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between,between_beam,delay_tome)
         mid_var.figure_plot()
+        log_single_cal_parm_change(self.button_middle_line_order.objectName(), self.lineEdit_between.text(),
+                                   self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(),
+                                   self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+                                   self.lineEdit_ceramic_width.text(),
+                                   self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                   self.lineEdit_beam_between.text(), self.lineEdit_num_set.text(),
+                                   self.lineEdit_group_count.text(),
+                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                                   self.lineEdit_stay_time.text(), self.lineEdit_num.text(), self.lineEdit_swing.text(),
+                                   self.lineEdit_delay_time.text())
     # 顺序摆（自定义）模式轨迹中心线
     def middle_line_figure_plot_order_selfdefine(self):
         belt_speed=float(self.lineEdit_belt_speed.text())
@@ -312,7 +385,16 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         group = float(self.lineEdit_group_count.text())
         mid_var=middle_line_plot_self_define_order(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between,between_beam,delay_time,group)
         mid_var.figure_plot()
-
+        log_single_cal_parm_change(self.button_middle_line_order_define.objectName(), self.lineEdit_between.text(),
+                                   self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(),
+                                   self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+                                   self.lineEdit_ceramic_width.text(),
+                                   self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                   self.lineEdit_beam_between.text(), self.lineEdit_num_set.text(),
+                                   self.lineEdit_group_count.text(),
+                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                                   self.lineEdit_stay_time.text(), self.lineEdit_num.text(), self.lineEdit_swing.text(),
+                                   self.lineEdit_delay_time.text())
     def saveParameter(self):
         """保存各个LineEdit控件的数据到配置文件"""
         self.settings.setValue("lineEdit_beam_between5", self.lineEdit_beam_between.text())

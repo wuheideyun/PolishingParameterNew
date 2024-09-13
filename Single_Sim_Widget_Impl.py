@@ -12,7 +12,7 @@ from Single_Sim_Middle_Line_Plot import middle_line_plot_order,middle_line_plot_
 from Single_Sim_Generate_Animation import Animation_produce_cross, Animation_produce_order, Animation_produce_equal
 from Single_Sim_Polishing_Distribution_Simulation import Polishing_distribution_Thread_equal, \
     Polishing_distribution_Thread_order, Polishing_distribution_Thread_cross
-
+from log_record_function import log_single_simulation
 
 class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
     def __init__(self, w):
@@ -94,6 +94,11 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
         self.button_simulation_equal.setEnabled(False)
         self.button_simulation_cross.setEnabled(False)
         self.button_simulation_order.setEnabled(False)
+        log_single_simulation(self.button_simulation_equal.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_beam_between.text(), self.lineEdit_grind_size.text(),
+                              self.lineEdit_radius.text(), self.lineEdit_delay_time.text())
         # 运行子线程
         self.Polishing_distribution_thread.start()
     # 顺序摆抛磨量分布仿真子线程
@@ -113,6 +118,11 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
         self.button_simulation_equal.setEnabled(False)
         self.button_simulation_cross.setEnabled(False)
         self.button_simulation_order.setEnabled(False)
+        log_single_simulation(self.button_simulation_order.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_beam_between.text(), self.lineEdit_grind_size.text(),
+                              self.lineEdit_radius.text(), self.lineEdit_delay_time.text())
         # 运行子线程
         self.Polishing_distribution_thread.start()
     # 交叉摆抛磨量分布仿真子线程
@@ -131,6 +141,11 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
         self.button_simulation_equal.setEnabled(False)
         self.button_simulation_order.setEnabled(False)
         self.button_simulation_cross.setEnabled(False)
+        log_single_simulation(self.button_simulation_cross.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_beam_between.text(), self.lineEdit_grind_size.text(),
+                              self.lineEdit_radius.text(), self.lineEdit_delay_time.text())
         # 运行子线程
         self.Polishing_distribution_thread.start()
     # 抛磨量分布仿真子线程回调函数
@@ -192,6 +207,11 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
             self.trajectory_animation_thread.start()
         else:
             self.trajectory_animation_ready(animation_name)
+        log_single_simulation(self.button_animation_cross.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_beam_between.text(), self.lineEdit_grind_size.text(),
+                              self.lineEdit_radius.text(), self.lineEdit_delay_time.text())
     def start_computation_trajectory_animation_order(self):
         if not self.on_button_clicked():
             return
@@ -223,6 +243,11 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
             self.trajectory_animation_thread.start()
         else:
             self.trajectory_animation_ready(animation_name)
+        log_single_simulation(self.button_animation_order.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_beam_between.text(), self.lineEdit_grind_size.text(),
+                              self.lineEdit_radius.text(), self.lineEdit_delay_time.text())
     def start_computation_trajectory_animation_equal(self):
         if not self.on_button_clicked():
             return
@@ -252,6 +277,8 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
             self.trajectory_animation_thread.start()
         else:
             self.trajectory_animation_ready(animation_name)
+        log_single_simulation(self.button_animation_equal.objectName(), self.lineEdit_belt_speed.text(), self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(), self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_beam_between.text(), self.lineEdit_grind_size.text(), self.lineEdit_radius.text(), self.lineEdit_delay_time.text())
     def trajectory_animation_ready(self,animation_name):
         # 加载GIF动画
         print(animation_name)
@@ -277,6 +304,11 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
         beam_between=float(self.lineEdit_beam_between.text())
         mid_var=middle_line_plot_equal(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,beam_between)
         mid_var.figure_plot()
+        log_single_simulation(self.button_middle_line_equal.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_beam_between.text(), self.lineEdit_grind_size.text(),
+                              self.lineEdit_radius.text(), self.lineEdit_delay_time.text())
     # 交叉摆模式轨迹中心线
     def middle_line_figure_plot_cross(self):
         belt_speed=float(self.lineEdit_belt_speed.text())
@@ -288,6 +320,11 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
         beam_between = float(self.lineEdit_beam_between.text())
         mid_var=middle_line_plot_cross(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,beam_between)
         mid_var.figure_plot()
+        log_single_simulation(self.button_middle_line_cross.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_beam_between.text(), self.lineEdit_grind_size.text(),
+                              self.lineEdit_radius.text(), self.lineEdit_delay_time.text())
     # 顺序摆模式轨迹中心线
     def middle_line_figure_plot_order(self):
         belt_speed=float(self.lineEdit_belt_speed.text())
@@ -300,7 +337,11 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
         delay_time = float(self.lineEdit_delay_time.text())
         mid_var=middle_line_plot_order(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between_beam,delay_time)
         mid_var.figure_plot()
-
+        log_single_simulation(self.button_middle_line_order.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_beam_between.text(), self.lineEdit_grind_size.text(),
+                              self.lineEdit_radius.text(), self.lineEdit_delay_time.text())
     def saveParameter(self):
         """保存各个LineEdit控件的数据到配置文件"""
         self.settings.setValue("lineEdit_beam_between6", self.lineEdit_beam_between.text())

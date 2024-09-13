@@ -12,7 +12,7 @@ from Double_Sim_Generate_Animation import Animation_produce_cross, Animation_pro
 from Double_Sim_Middle_Line_Plot import middle_line_plot_equal, middle_line_plot_cross, middle_line_plot_order
 from Double_Sim_Polishing_Distribution_Simulation import Polishing_distribution_Thread_equal, \
     Polishing_distribution_Thread_order, Polishing_distribution_Thread_cross
-
+from log_record_function import log_double_simulation
 
 class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
     def __init__(self, w):
@@ -93,7 +93,12 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
         self.button_simulation_equal.setEnabled(False)
         self.button_simulation_order.setEnabled(False)
         self.button_simulation_order.setEnabled(False)
-
+        log_double_simulation(self.button_simulation_equal.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_between.text(), self.lineEdit_between_beam.text(),
+                              self.lineEdit_grind_size.text(), self.lineEdit_radius.text(),
+                              self.lineEdit_delay_time.text())
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def start_computation_Polishing_distribution_order(self):      # 抛磨量分布仿真子线程
@@ -132,7 +137,12 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
         self.button_simulation_equal.setEnabled(False)
         self.button_simulation_cross.setEnabled(False)
         self.button_simulation_order.setEnabled(False)
-
+        log_double_simulation(self.button_simulation_cross.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_between.text(), self.lineEdit_between_beam.text(),
+                              self.lineEdit_grind_size.text(), self.lineEdit_radius.text(),
+                              self.lineEdit_delay_time.text())
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def Polishing_distribution_ready(self,object_matrix, result):     # 子线程回调函数
@@ -213,6 +223,8 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
             self.trajectory_animation_thread.start()
         else:
             self.trajectory_animation_ready(animation_name)
+        log_double_simulation(self.button_animation_cross.objectName(), self.lineEdit_belt_speed.text(), self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(), self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_between.text(), self.lineEdit_between_beam.text(), self.lineEdit_grind_size.text(), self.lineEdit_radius.text(), self.lineEdit_delay_time.text())
     def start_computation_trajectory_animation_order(self):
         if not self.on_button_clicked():
             return
@@ -244,6 +256,12 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
             self.trajectory_animation_thread.start()
         else:
             self.trajectory_animation_ready(animation_name)
+        log_double_simulation(self.button_animation_order.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_between.text(), self.lineEdit_between_beam.text(),
+                              self.lineEdit_grind_size.text(), self.lineEdit_radius.text(),
+                              self.lineEdit_delay_time.text())
     def start_computation_trajectory_animation_equal(self):
         if not self.on_button_clicked():
             return
@@ -273,6 +291,12 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
             self.trajectory_animation_thread.start()
         else:
             self.trajectory_animation_ready(animation_name)
+        log_double_simulation(self.button_animation_equal.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_between.text(), self.lineEdit_between_beam.text(),
+                              self.lineEdit_grind_size.text(), self.lineEdit_radius.text(),
+                              self.lineEdit_delay_time.text())
     def trajectory_animation_ready(self,animation_name):
         # 加载GIF动画
         print(animation_name)
@@ -309,6 +333,12 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
         between_beam = float(self.lineEdit_between_beam.text())
         mid_var=middle_line_plot_cross(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between,between_beam)
         mid_var.figure_plot()
+        log_double_simulation(self.button_middle_line_cross.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_between.text(), self.lineEdit_between_beam.text(),
+                              self.lineEdit_grind_size.text(), self.lineEdit_radius.text(),
+                              self.lineEdit_delay_time.text())
     def middle_line_figure_plot_order(self):
         belt_speed=float(self.lineEdit_belt_speed.text())
         beam_speed=float(self.lineEdit_beam_swing_speed.text())
@@ -321,7 +351,12 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
         delay_tome = float(self.lineEdit_delay_time.text())
         mid_var=middle_line_plot_order(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between,between_beam,delay_tome)
         mid_var.figure_plot()
-
+        log_double_simulation(self.button_middle_line_order.objectName(), self.lineEdit_belt_speed.text(),
+                              self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                              self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
+                              self.lineEdit_between.text(), self.lineEdit_between_beam.text(),
+                              self.lineEdit_grind_size.text(), self.lineEdit_radius.text(),
+                              self.lineEdit_delay_time.text())
     def saveParameter(self):
         """保存各个LineEdit控件的数据到配置文件"""
         self.settings.setValue("lineEdit_between4", self.lineEdit_between.text())

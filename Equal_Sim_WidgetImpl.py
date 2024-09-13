@@ -11,7 +11,7 @@ import Equal_Sim
 from Equal_Sim_Generate_Animation import Animation_produce
 from Equal_Sim_Middle_Line_Plot import middle_line_plot
 from Equal_Sim_Polishing_Distribution_Simulation import Polishing_distribution_Thread
-
+from log_record_function import log_equal_simulation
 
 class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
     def __init__(self, w):
@@ -76,6 +76,11 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
                                                                            float(self.lineEdit_radius.text()))
         self.Polishing_distribution_thread.result_ready.connect(self.Polishing_distribution_ready)
         self.button_simulation_equal.setEnabled(False)
+        log_equal_simulation(self.button_simulation_equal.objectName(), self.lineEdit_between.text(),
+                             self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(),
+                             self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+                             self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                             self.lineEdit_stay_time.text(), self.lineEdit_num.text())
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def Polishing_distribution_ready(self,object_matrix, result):     # 子线程回调函数
@@ -123,7 +128,8 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
             self.trajectory_animation_thread.start()
         else:
             self.trajectory_animation_ready(animation_name)
-
+        log_equal_simulation(self.button_animation_equal.objectName(), self.lineEdit_between.text(), self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+                             self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(), self.lineEdit_stay_time.text(), self.lineEdit_num.text())
     def check_animation_gif(self, animation_name):
         # 定义文件路径
         file_path = os.path.join(os.getcwd(), 'animation', animation_name + '.gif')
@@ -176,7 +182,11 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         between=float(self.lineEdit_between.text())
         mid_var=middle_line_plot(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between)
         mid_var.figure_plot()
-
+        log_equal_simulation(self.button_middle_line_equal.objectName(), self.lineEdit_between.text(),
+                             self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(),
+                             self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+                             self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                             self.lineEdit_stay_time.text(), self.lineEdit_num.text())
     def saveParameter(self):
         """保存各个LineEdit控件的数据到配置文件"""
         self.settings.setValue("lineEdit_between2", self.lineEdit_between.text())

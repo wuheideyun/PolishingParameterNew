@@ -14,7 +14,7 @@ from Equal_Calc_Polishing_Distribution_Simulation import Polishing_distribution_
 from Equal_Calc_Generate_Animation import Animation_produce
 from Equal_Calc_Middle_Line_Plot import middle_line_plot
 from Public_Polishing_Distribution_Plot import polishing_distribution_Plot
-
+from log_record_function import log_equal_cal_parm_change
 class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
     def __init__(self, w):
         super().__init__()
@@ -135,6 +135,15 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         self.lineEdit_stay_time.setText(str(result[0, 3]))
         self.lineEdit_beam_constant_time.setText(str(result[0, 2]))
         self.lineEdit_swing.setText(str(result[0, 5]))
+        log_equal_cal_parm_change(self.button_energy_calculate.objectName(), self.lineEdit_between.text(),
+                                  self.lineEdit_grind_size.text(),
+                                  self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(),
+                                  self.lineEdit_radius.text(),
+                                  self.lineEdit_ceramic_width.text(),
+                                  self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                  self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                                  self.lineEdit_stay_time.text(),
+                                  self.lineEdit_num.text(), self.lineEdit_swing.text())
         self.initReCalculation()
     # 轨迹参数计算（高效计算）
     def efficient_calculate(self):       # 高效计算
@@ -153,6 +162,12 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         self.lineEdit_stay_time.setText(str(result[1, 3]))
         self.lineEdit_beam_constant_time.setText(str(result[1, 2]))
         self.lineEdit_swing.setText(str(result[1, 5]))
+        log_equal_cal_parm_change(self.button_efficient_calculate.objectName(), self.lineEdit_between.text(), self.lineEdit_grind_size.text(),
+                                  self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+                                  self.lineEdit_ceramic_width.text(),
+                                  self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                  self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(), self.lineEdit_stay_time.text(),
+                                  self.lineEdit_num.text(), self.lineEdit_swing.text())
         self.initReCalculation()
     # 抛磨量分布仿真子线程
     def start_computation_Polishing_distribution(self):      # 抛磨量分布仿真子线程
@@ -173,6 +188,15 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         self.button_simulation_equal.setEnabled(False)
         # 运行子线程
         self.Polishing_distribution_thread.start()
+        log_equal_cal_parm_change(self.button_simulation_equal.objectName(), self.lineEdit_between.text(),
+                                  self.lineEdit_grind_size.text(),
+                                  self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(),
+                                  self.lineEdit_radius.text(),
+                                  self.lineEdit_ceramic_width.text(),
+                                  self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                  self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                                  self.lineEdit_stay_time.text(),
+                                  self.lineEdit_num.text(), self.lineEdit_swing.text())
     def Polishing_distribution_ready(self,object_matrix, result):     # 子线程回调函数
         '''
         # 在主线程中绘图
@@ -222,6 +246,15 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
             self.trajectory_animation_thread.start()
         else:
             self.trajectory_animation_ready(animation_name)
+        log_equal_cal_parm_change(self.button_animation_equal.objectName(), self.lineEdit_between.text(),
+                                  self.lineEdit_grind_size.text(),
+                                  self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(),
+                                  self.lineEdit_radius.text(),
+                                  self.lineEdit_ceramic_width.text(),
+                                  self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                  self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                                  self.lineEdit_stay_time.text(),
+                                  self.lineEdit_num.text(), self.lineEdit_swing.text())
 
     def trajectory_animation_ready(self,animation_name):
         # 加载GIF动画
@@ -248,7 +281,15 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         between=float(self.lineEdit_between.text())
         mid_var=middle_line_plot(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between)
         mid_var.figure_plot()
-
+        log_equal_cal_parm_change(self.button_middle_line_equal.objectName(), self.lineEdit_between.text(),
+                                  self.lineEdit_grind_size.text(),
+                                  self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(),
+                                  self.lineEdit_radius.text(),
+                                  self.lineEdit_ceramic_width.text(),
+                                  self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                  self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+                                  self.lineEdit_stay_time.text(),
+                                  self.lineEdit_num.text(), self.lineEdit_swing.text())
     def saveParameter(self):
         """保存各个LineEdit控件的数据到配置文件"""
         self.settings.setValue("lineEdit_between1", self.lineEdit_between.text())

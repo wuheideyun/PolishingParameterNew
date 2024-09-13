@@ -27,7 +27,7 @@ def setup_logger(log_name, log_file, level=logging.INFO):
         logger.addHandler(fh)
     return logger
 # 参数变更日志记录函数封装----同步摆计算系统----
-def log_equal_cal_parm_change(button_name,between,grind_size,belt_speed,accelerate,radius,cerimatic_width,beam_speed_up,overlap,
+def log_equal_cal_parm_change(button_name,between,grind_size,belt_speed,accelerate,radius,ceramic_width,beam_speed_up,overlap,
                            beam_swing_speed,beam_constant_time,stay_time,num,swing):
     # 获取每日文件夹路径
     folder_path = create_daily_log_folder()
@@ -39,9 +39,9 @@ def log_equal_cal_parm_change(button_name,between,grind_size,belt_speed,accelera
     param_logger.info(f"---------------------Equal_Parameter_Calculate---------------------\n"
                       f"The user enters parameter information:\n"
                       f"{'between:':^20} {between:^6} {'geind_size:':^20} {grind_size:^6} {'belt_speed:':^20} {belt_speed:^6} {'accelerate:':^20} {accelerate:^6} \n"
-                      f"{'radius:':^20} {radius:^6} {'cerimatic_width:':^20} {cerimatic_width:^6} {'beam_speed_up:':^20} {beam_speed_up:^6} {'overlap:':^20} {overlap:^6}\n"
+                      f"{'radius:':^20} {radius:^6} {'ceramic_width:':^20} {ceramic_width:^6} {'beam_speed_up:':^20} {beam_speed_up:^6} {'overlap:':^20} {overlap:^6}\n"
                       f"User clicks button:{button_name},the output parameter:\n"
-                      f"{'beam_swing_speed:':^20} {beam_swing_speed:^6.2f} {'beam_constant_time:':^20} {beam_constant_time:^6.2f} {'stay_time:':^20} {stay_time:^6.2f} {'num:':^20} {num:^6.2f} {'swing:':^20} {swing:^6.2f}\n")
+                      f"{'beam_swing_speed:':^20} {beam_swing_speed:^6} {'beam_constant_time:':^20} {beam_constant_time:^6} {'stay_time:':^20} {stay_time:^6} {'num:':^20} {num:^6} {'swing:':^20} {swing:^6}\n")
 
 # 参数变更日志记录函数封装----同步摆仿真系统----
 def log_equal_simulation(button_name,between,grind_size,belt_speed,accelerate,radius,
@@ -55,13 +55,13 @@ def log_equal_simulation(button_name,between,grind_size,belt_speed,accelerate,ra
     # 记录 按键操作 和 参数变更前后数值
     param_logger.info(f"---------------------Equal_Parameter_Simulation---------------------\n"
                       f"The user enters parameter information:\n"
-                      f"{'belt_speed:':^20} {belt_speed:^6} {'beam_swing_speed:':^20} {beam_swing_speed:^6f} {'beam_constant_time:':^20} {beam_constant_time:^6.2f} {'stay_time:':^20} {stay_time:^6.2f}"
+                      f"{'belt_speed:':^20} {belt_speed:^6} {'beam_swing_speed:':^20} {beam_swing_speed:^6} {'beam_constant_time:':^20} {beam_constant_time:^6} {'stay_time:':^20} {stay_time:^6}"
                       f"{'accelerate:':^20} {accelerate:^6} {'num:':^20} {num:^6}\n"
-                      f"{'between:':^20} {between: ^ 6} {'radius:':^20} {radius:^6} {'geind_size:': ^ 20} {grind_size: ^ 6} \n"
+                      f"{'between:':^20} {between:^6} {'radius:':^20} {radius:^6} {'geind_size:':^20} {grind_size:^6} \n"
                       f"User clicks button:{button_name}\n")
 
 # 参数变更日志记录函数封装----双头摆计算系统----
-def log_double_cal_parm_change(button_name,between,grind_size,belt_speed,accelerate,radius,cerimatic_width,beam_speed_up,overlap,beam_between,num_set,group_count,
+def log_double_cal_parm_change(button_name,between,grind_size,belt_speed,accelerate,radius,ceramic_width,beam_speed_up,overlap,beam_between,num_set,group_count,
                            beam_swing_speed,beam_constant_time,stay_time,num,swing,delay_time):
     # 获取每日文件夹路径
     folder_path = create_daily_log_folder()
@@ -73,11 +73,11 @@ def log_double_cal_parm_change(button_name,between,grind_size,belt_speed,acceler
     param_logger.info(f"---------------------Double_Parameter_Calculate---------------------\n"
                       f"The user enters parameter information:\n"
                       f"{'between:':^20} {between:^6} {'geind_size:':^20} {grind_size:^6} {'belt_speed:':^20} {belt_speed:^6} {'accelerate:':^20} {accelerate:^6} \n"
-                      f"{'radius:':^20} {radius:^6} {'cerimatic_width:':^20} {cerimatic_width:^6} {'beam_speed_up:':^20} {beam_speed_up:^6} {'overlap:':^20} {overlap:^6} {'beam_between:':^20} {beam_between:^6}\n"
+                      f"{'radius:':^20} {radius:^6} {'ceramic_width:':^20} {ceramic_width:^6} {'beam_speed_up:':^20} {beam_speed_up:^6} {'overlap:':^20} {overlap:^6} {'beam_between:':^20} {beam_between:^6}\n"
                       f"{'num_set:':^20} {num_set:^6} {'group_count:':^20} {group_count:^6}\n"
                       f"User clicks button:{button_name},the output parameter:\n"
-                      f"{'beam_swing_speed:':^20} {beam_swing_speed:^6.2f} {'beam_constant_time:':^20} {beam_constant_time:^6.2f} {'stay_time:':^20} {stay_time:^6.2f} {'num:':^20} {num:^6.2f}\n"
-                      f"{'swing:':^20} {swing:^6.2f} {'delay_time:':^20} {delay_time:^6.2f}\n")
+                      f"{'beam_swing_speed:':^20} {beam_swing_speed:^6} {'beam_constant_time:':^20} {beam_constant_time:^6} {'stay_time:':^20} {stay_time:^6} {'num:':^20} {num:^6}\n"
+                      f"{'swing:':^20} {swing:^6} {'delay_time:':^20} {delay_time:^6}\n")
 
 # 参数变更日志记录函数封装----双头摆仿真系统----
 def log_double_simulation(button_name,belt_speed,beam_swing_speed,beam_constant_time,stay_time,accelerate,num,
@@ -91,13 +91,13 @@ def log_double_simulation(button_name,belt_speed,beam_swing_speed,beam_constant_
     # 记录 按键操作 和 参数变更前后数值
     param_logger.info(f"---------------------Double_Parameter_Simulation---------------------\n"
                       f"The user enters parameter information:\n"
-                      f"{'belt_speed:':^20} {belt_speed:^6} {'beam_swing_speed:':^20} {beam_swing_speed:^6f} {'beam_constant_time:':^20} {beam_constant_time:^6.2f} {'stay_time:':^20} {stay_time:^6.2f}"
+                      f"{'belt_speed:':^20} {belt_speed:^6} {'beam_swing_speed:':^20} {beam_swing_speed:^6} {'beam_constant_time:':^20} {beam_constant_time:^6} {'stay_time:':^20} {stay_time:^6}"
                       f"{'accelerate:':^20} {accelerate:^6} {'delay_time:':^20} {delay_time:^6} {'num:':^20} {num:^6}\n"
-                      f"{'between:':^20} {between: ^ 6} {'beam_between:':^20} {beam_between: ^ 6} {'radius:':^20} {radius:^6} {'geind_size:': ^ 20} {grind_size: ^ 6} \n"
+                      f"{'between:':^20} {between:^6} {'beam_between:':^20} {beam_between:^6} {'radius:':^20} {radius:^6} {'geind_size:':^20} {grind_size:^6} \n"
                       f"User clicks button:{button_name}\n")
 
 # 参数变更日志记录函数封装----单头摆计算系统----
-def log_single_cal_parm_change(button_name,between,grind_size,belt_speed,accelerate,radius,cerimatic_width,beam_speed_up,overlap,beam_between,num_set,group_count,
+def log_single_cal_parm_change(button_name,between,grind_size,belt_speed,accelerate,radius,ceramic_width,beam_speed_up,overlap,beam_between,num_set,group_count,
                            beam_swing_speed,beam_constant_time,stay_time,num,swing,delay_time):
     # 获取每日文件夹路径
     folder_path = create_daily_log_folder()
@@ -109,11 +109,11 @@ def log_single_cal_parm_change(button_name,between,grind_size,belt_speed,acceler
     param_logger.info(f"---------------------Single_Parameter_Calculate---------------------\n"
                       f"The user enters parameter information:\n"
                       f"{'beam_between:':^20} {beam_between:^6} {'geind_size:':^20} {grind_size:^6} {'belt_speed:':^20} {belt_speed:^6} {'accelerate:':^20} {accelerate:^6} \n"
-                      f"{'radius:':^20} {radius:^6} {'cerimatic_width:':^20} {cerimatic_width:^6} {'beam_speed_up:':^20} {beam_speed_up:^6} {'overlap:':^20} {overlap:^6}\n"
+                      f"{'radius:':^20} {radius:^6} {'ceramic_width:':^20} {ceramic_width:^6} {'beam_speed_up:':^20} {beam_speed_up:^6} {'overlap:':^20} {overlap:^6}\n"
                       f"{'num_set:':^20} {num_set:^6} {'group_count:':^20} {group_count:^6}\n"
                       f"User clicks button:{button_name},the output parameter:\n"
-                      f"{'beam_swing_speed:':^20} {beam_swing_speed:^6.2f} {'beam_constant_time:':^20} {beam_constant_time:^6.2f} {'stay_time:':^20} {stay_time:^6.2f} {'num:':^20} {num:^6.2f}\n"
-                      f"{'swing:':^20} {swing:^6.2f} {'delay_time:':^20} {delay_time:^6.2f} {'between:':^20} {between:^6.2f}\n")
+                      f"{'beam_swing_speed:':^20} {beam_swing_speed:^6} {'beam_constant_time:':^20} {beam_constant_time:^6} {'stay_time:':^20} {stay_time:^6} {'num:':^20} {num:^6}\n"
+                      f"{'swing:':^20} {swing:^6} {'delay_time:':^20} {delay_time:^6} {'between:':^20} {between:^6}\n")
 
 # 参数变更日志记录函数封装----单头摆仿真系统----
 def log_single_simulation(button_name,belt_speed,beam_swing_speed,beam_constant_time,stay_time,accelerate,num,
@@ -127,11 +127,11 @@ def log_single_simulation(button_name,belt_speed,beam_swing_speed,beam_constant_
     # 记录 按键操作 和 参数变更前后数值
     param_logger.info(f"---------------------Single_Parameter_Simulation---------------------\n"
                       f"The user enters parameter information:\n"
-                      f"{'belt_speed:':^20} {belt_speed:^6} {'beam_swing_speed:':^20} {beam_swing_speed:^6f} {'beam_constant_time:':^20} {beam_constant_time:^6.2f} {'stay_time:':^20} {stay_time:^6.2f}"
+                      f"{'belt_speed:':^20} {belt_speed:^6} {'beam_swing_speed:':^20} {beam_swing_speed:^6} {'beam_constant_time:':^20} {beam_constant_time:^6} {'stay_time:':^20} {stay_time:^6}"
                       f"{'accelerate:':^20} {accelerate:^6} {'delay_time:':^20} {delay_time:^6} {'num:':^20} {num:^6}\n"
-                      f"{'beam_between:':^20} {beam_between: ^ 6} {'radius:':^20} {radius:^6} {'geind_size:': ^ 20} {grind_size: ^ 6} \n"
+                      f"{'beam_between:':^20} {beam_between:^6} {'radius:':^20} {radius:^6} {'geind_size:':^20} {grind_size:^6} \n"
                       f"User clicks button:{button_name}\n")
-# 按钮点击事件日志记录函数封装
+# 按钮  点击事件  日志记录函数封装
 def log_button_click(button_name):
     # 获取每日文件夹路径
     folder_path = create_daily_log_folder()
