@@ -5,6 +5,7 @@ from matplotlib.patches import Circle
 from matplotlib import animation
 import time as te
 from PySide6.QtCore import QThread, Signal
+from Public_Animation_Split import split_gif
 class Animation_produce_cross(QThread):
     result_ready = Signal(str)
     def __init__(self,v1, v2, t1, t2, a, R,beam_between,num,animation_name):
@@ -19,7 +20,7 @@ class Animation_produce_cross(QThread):
         self.R=R
         self.num=math.ceil(num)
         self.beam_between=beam_between
-        self.n=6
+        self.n=7
         self.msize=0.15
         self.beam_between_cell = math.floor(beam_between / v1 / self.msize)  # 横梁步长
         self.cross_size=round((2 * round(v2/a,2) + t1 + t2)/self.msize)
@@ -41,6 +42,9 @@ class Animation_produce_cross(QThread):
         # 设置坐标轴名称
         self.ax.set_xlabel('Tile feed direction')
         self.ax.set_ylabel('Beam swing direction')
+        # 单独隐藏刻度和标签
+        # self.ax.set_xticks([])         # 隐藏刻度
+        self.ax.set_xticklabels([])  # 隐藏刻度标签
         self.one_size=self.msize * self.v1
         # 标识符位置设定
         self.grinding_num = self.ax.text(0.7,0.90,'',transform=self.ax.transAxes,fontsize=10,)
@@ -146,6 +150,13 @@ class Animation_produce_cross(QThread):
     def run(self):
         ani = animation.FuncAnimation(self.fig,self.update,frames=self.all_time_n_1,interval=100, repeat=False)
         ani.save('animation/' + self.animation_name + '.gif', fps=30, writer='pillow')
+        # 动画分割
+        input_gif = 'animation/' + self.animation_name + '.gif'
+        split_frames = int(self.all_time_n / self.n * 4)
+        output_gif_1 = 'animation/' + self.animation_name + '_1' + '.gif'
+        output_gif_2 = 'animation/' + self.animation_name + '_2' + '.gif'
+        split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
+        
         self.result_ready.emit(self.animation_name)
         plt.close(self.fig)
 
@@ -188,6 +199,9 @@ class Animation_produce_order(QThread):
         # 设置坐标轴名称
         self.ax.set_xlabel('Tile feed direction')
         self.ax.set_ylabel('Beam swing direction')
+        # 单独隐藏刻度和标签
+        # self.ax.set_xticks([])         # 隐藏刻度
+        self.ax.set_xticklabels([])  # 隐藏刻度标签
         self.one_size=self.msize * self.v1
         # 标识符位置设定
         self.grinding_num = self.ax.text(0.7,0.90,'',transform=self.ax.transAxes,fontsize=10,)
@@ -288,6 +302,13 @@ class Animation_produce_order(QThread):
     def run(self):
         ani = animation.FuncAnimation(self.fig,self.update,frames=self.all_time_n,interval=100, repeat=False)
         ani.save('animation/' + self.animation_name + '.gif', fps=30, writer='pillow')
+        # 动画分割
+        input_gif = 'animation/' + self.animation_name + '.gif'
+        split_frames = int(self.all_time_n / self.n * 4)
+        output_gif_1 = 'animation/' + self.animation_name + '_1' + '.gif'
+        output_gif_2 = 'animation/' + self.animation_name + '_2' + '.gif'
+        split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
+        
         self.result_ready.emit(self.animation_name)
         plt.close(self.fig)
 
@@ -305,14 +326,13 @@ class Animation_produce_equal(QThread):
         self.R=R
         self.num=math.ceil(num)
         self.beam_between=beam_between
-        self.n=7
+        self.n=6
         self.msize=0.15
         self.beam_between_cell = math.floor(beam_between / v1 / self.msize)  # 横梁步长
         self.cross_size=round((2 * round(v2/a,2) + t1 + t2)/self.msize)
         #self.num_two = math.floor(num / 2)
         period = round(4 * (v2 / a) + 2 * t1 + 2 * t2, 2)
         self.all_time_n = math.floor(period / self.msize) * self.n
-        self.all_time_n_1 = math.floor(period / self.msize) * (self.n-1)
         self.color_7 = ['red', 'orange', 'green', 'cyan', 'blue', 'purple', 'yellow','lightgreen','slategrey','cornflowerblue','navy','indigo','violet','plum','oldlace','maroon','lightcyan','lightseagreen','seagreen','springgreen']  # 红橙黄绿青蓝紫
         # 计算矩阵
         self.single_X_location,self.single_Y_location=self.inner_cal_matrix()
@@ -329,6 +349,9 @@ class Animation_produce_equal(QThread):
         # 设置坐标轴名称
         self.ax.set_xlabel('Tile feed direction')
         self.ax.set_ylabel('Beam swing direction')
+        # 单独隐藏刻度和标签
+        # self.ax.set_xticks([])         # 隐藏刻度
+        self.ax.set_xticklabels([])  # 隐藏刻度标签
         self.one_size=self.msize * self.v1
         # 标识符位置设定
         self.grinding_num = self.ax.text(0.7,0.90,'',transform=self.ax.transAxes,fontsize=10,)
@@ -425,8 +448,15 @@ class Animation_produce_equal(QThread):
         #return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches
         return [self.grinding_num, self.ytext_ani] + patches
     def run(self):
-        ani = animation.FuncAnimation(self.fig,self.update,frames=self.all_time_n_1,interval=100, repeat=False)
+        ani = animation.FuncAnimation(self.fig,self.update,frames=self.all_time_n,interval=100, repeat=False)
         ani.save('animation/' + self.animation_name + '.gif', fps=30, writer='pillow')
+        # 动画分割
+        input_gif = 'animation/' + self.animation_name + '.gif'
+        split_frames = int(self.all_time_n / self.n * 4)
+        output_gif_1 = 'animation/' + self.animation_name + '_1' + '.gif'
+        output_gif_2 = 'animation/' + self.animation_name + '_2' + '.gif'
+        split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
+        
         self.result_ready.emit(self.animation_name)
         plt.close(self.fig)
 
@@ -446,7 +476,7 @@ class Animation_produce_order_define(QThread):
         self.between=between
         self.num=math.ceil(num)
         self.beam_between=beam_between
-        self.n=7
+        self.n=6
         self.msize=0.15
         self.delay_time=delay_time
         delay_time_define=round(between/group/v1,2)
@@ -474,6 +504,9 @@ class Animation_produce_order_define(QThread):
         # 设置坐标轴名称
         self.ax.set_xlabel('Tile feed direction')
         self.ax.set_ylabel('Beam swing direction')
+        # 单独隐藏刻度和标签
+        # self.ax.set_xticks([])         # 隐藏刻度
+        self.ax.set_xticklabels([])  # 隐藏刻度标签
         self.one_size=self.msize * self.v1
         # 标识符位置设定
         self.grinding_num = self.ax.text(0.7,0.92,'',transform=self.ax.transAxes,fontsize=10,)
@@ -576,5 +609,12 @@ class Animation_produce_order_define(QThread):
     def run(self):
         ani = animation.FuncAnimation(self.fig,self.update,frames=self.all_time_n,interval=100, repeat=False)
         ani.save('animation/' + self.animation_name + '.gif', fps=30, writer='pillow')
+        # 动画分割
+        input_gif = 'animation/' + self.animation_name + '.gif'
+        split_frames = int(self.all_time_n / self.n * 4)
+        output_gif_1 = 'animation/' + self.animation_name + '_1' + '.gif'
+        output_gif_2 = 'animation/' + self.animation_name + '_2' + '.gif'
+        split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
+        
         self.result_ready.emit(self.animation_name)
         plt.close(self.fig)

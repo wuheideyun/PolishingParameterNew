@@ -5,6 +5,7 @@ from matplotlib.patches import Circle
 from matplotlib import animation
 import time as te
 from PySide6.QtCore import QThread, Signal
+from Public_Animation_Split import split_gif
 class Animation_produce_order(QThread):
     result_ready = Signal(str)
     def __init__(self,v1,v2,t1,t2,a,R,between,beam_between,num,delay_time,animation_name):
@@ -44,6 +45,9 @@ class Animation_produce_order(QThread):
         # 设置坐标轴名称
         self.ax.set_xlabel('Tile feed direction')
         self.ax.set_ylabel('Beam swing direction')
+        # 单独隐藏刻度和标签
+        # self.ax.set_xticks([])         # 隐藏刻度
+        self.ax.set_xticklabels([])  # 隐藏刻度标签
         self.one_size=self.msize * self.v1
         # 标识符位置设定
         self.grinding_num = self.ax.text(0.7,0.92,'',transform=self.ax.transAxes,fontsize=10,)
@@ -145,6 +149,13 @@ class Animation_produce_order(QThread):
     def run(self):
         ani = animation.FuncAnimation(self.fig,self.update,frames=self.all_time_n,interval=100, repeat=False)
         ani.save('animation/' + self.animation_name + '.gif', fps=30, writer='pillow')
+        # 动画分割
+        input_gif = 'animation/' + self.animation_name + '.gif'
+        split_frames = int(self.all_time_n / self.n * 4)
+        output_gif_1 = 'animation/' + self.animation_name + '_1' + '.gif'
+        output_gif_2 = 'animation/' + self.animation_name + '_2' + '.gif'
+        split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
+
         self.result_ready.emit(self.animation_name)
         plt.close(self.fig)
 
@@ -193,6 +204,9 @@ class Animation_produce_order_define(QThread):
         # 设置坐标轴名称
         self.ax.set_xlabel('Tile feed direction')
         self.ax.set_ylabel('Beam swing direction')
+        # 单独隐藏刻度和标签
+        # self.ax.set_xticks([])         # 隐藏刻度
+        self.ax.set_xticklabels([])  # 隐藏刻度标签
         self.one_size=self.msize * self.v1
         # 标识符位置设定
         self.grinding_num = self.ax.text(0.7,0.92,'',transform=self.ax.transAxes,fontsize=10,)
@@ -293,5 +307,12 @@ class Animation_produce_order_define(QThread):
     def run(self):
         ani = animation.FuncAnimation(self.fig,self.update,frames=self.all_time_n,interval=100, repeat=False)
         ani.save('animation/' + self.animation_name + '.gif', fps=30, writer='pillow')
+        # 动画分割
+        input_gif = 'animation/' + self.animation_name + '.gif'
+        split_frames = int(self.all_time_n / self.n * 4)
+        output_gif_1 = 'animation/' + self.animation_name + '_1' + '.gif'
+        output_gif_2 = 'animation/' + self.animation_name + '_2' + '.gif'
+        split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
+
         self.result_ready.emit(self.animation_name)
         plt.close(self.fig)
