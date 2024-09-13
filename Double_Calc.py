@@ -132,13 +132,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_beam_swing_speed, 13, 3, 1, 2)
 
-        self.label_top = QLabel(self.centralwidget)
-        self.label_top.setObjectName(u"label_top")
-        self.label_top.setMinimumSize(QSize(500, 0))
-        self.label_top.setMaximumSize(QSize(16777215, 50))
-
-        self.gridLayout.addWidget(self.label_top, 0, 0, 1, 12)
-
         self.lineEdit_ceramic_width = QLineEdit(self.centralwidget)
         self.lineEdit_ceramic_width.setObjectName(u"lineEdit_ceramic_width")
 
@@ -285,6 +278,13 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.lineEdit_coefficient, 3, 10, 1, 1)
 
+        self.label_top = QLabel(self.centralwidget)
+        self.label_top.setObjectName(u"label_top")
+        self.label_top.setMinimumSize(QSize(500, 0))
+        self.label_top.setMaximumSize(QSize(16777215, 50))
+
+        self.gridLayout.addWidget(self.label_top, 0, 0, 1, 11)
+
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -314,7 +314,6 @@ class Ui_MainWindow(object):
         self.label_middle.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.lineEdit_grind_size.setText(QCoreApplication.translate("MainWindow", u"150", None))
         self.label_beam_swing_speed.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u6a2a\u6881\u6446\u52a8\u901f\u5ea6</p></body></html>", None))
-        self.label_top.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.lineEdit_ceramic_width.setText(QCoreApplication.translate("MainWindow", u"1800", None))
         self.label_grind_size.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5757\u5c3a\u5bf8\uff1a</p></body></html>", None))
         self.label_beam_between.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u6a2a\u6881\u95f4\u8ddd\uff1a</p></body></html>", None))
@@ -340,5 +339,6 @@ class Ui_MainWindow(object):
         self.button_selfdefine_calculate.setText(QCoreApplication.translate("MainWindow", u"\u81ea\u5b9a\u4e49\u8ba1\u7b97", None))
         self.button_animation_order.setText(QCoreApplication.translate("MainWindow", u"\u987a\u5e8f\u6446\u52a8\u753b", None))
         self.label_coefficient.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u5747\u5300\u7cfb\u6570\uff1a</p></body></html>", None))
+        self.label_top.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
     # retranslateUi
 
