@@ -64,6 +64,10 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         # 在程序中创建一个显示图框 播放gif动画
         self.gif_label = QLabel(self.widget)
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.gif_label.setStyleSheet('''
+            QLabel {
+                border-radius: 0px;
+            }''')
         # 调整gif_label的大小以适应widget
         self.gif_label.resize(self.widget.size())
         # 确保gif_label随widget大小变化而变化

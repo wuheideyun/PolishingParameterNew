@@ -36,6 +36,10 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         self.button_save_parameter.clicked.connect(self.saveParameter)
         # 在程序中创建一个显示图框 播放gif动画
         self.gif_label = QLabel(self.widget)
+        self.gif_label.setStyleSheet('''
+            QLabel {
+                border-radius: 0px;
+            }''')
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         # 调整gif_label的大小以适应widget
         self.gif_label.resize(self.widget.size())
