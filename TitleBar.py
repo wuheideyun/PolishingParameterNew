@@ -10,7 +10,7 @@
 
 from PySide6.QtCore import Signal, Qt, QPoint
 from PySide6.QtGui import QPainter, QColor, QIcon
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QVBoxLayout, QMenu
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QVBoxLayout, QMenu, QLabel
 
 from ImageButton import ImageButton
 from ImageTextButton import ImageTextButton
@@ -31,7 +31,6 @@ class TitleBar(QWidget):
         self.setMouseTracking(True)
 
         self.setAttribute(Qt.WA_StyledBackground)  # 禁止父窗口样式影响子控件样式
-
         self.setStyleSheet('''
                     QWidget {
                         background-color: rgb(251, 245, 255);
@@ -145,6 +144,9 @@ class TitleBar(QWidget):
         hlay = QHBoxLayout()
         hlay.setContentsMargins(0, 0, 0, 0)
 
+        label = QLabel()
+        label.setText("Copyright © 2024 科达制造股份有限公司")
+        hlay.addWidget(label)
         hlay.addStretch()
 
         hlay.addWidget(self.btnMenu)

@@ -55,6 +55,10 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
         self.gif_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         # 调整gif_label的大小以适应widget
         self.gif_label.resize(self.widget.size())
+        self.gif_label.setStyleSheet('''
+            QLabel {
+                border-radius: 0px;
+            }''')
         # 确保gif_label随widget大小变化而变化
         self.widget.resizeEvent = self.resize_event
 
