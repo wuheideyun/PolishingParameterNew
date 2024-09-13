@@ -232,7 +232,7 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
                           self.lineEdit_stay_time.text() + '_' +
                           self.lineEdit_accelerate.text() + '_' +
                           self.lineEdit_radius.text() + '_' + self.lineEdit_between.text() + '_' +
-                          self.lineEdit_num.text())
+                          self.lineEdit_num.text()+'_1')
         if not self.check_animation_gif(animation_name):
             self.trajectory_animation_thread = Animation_produce(float(self.lineEdit_belt_speed.text()),
                                                                 float(self.lineEdit_beam_swing_speed.text()),

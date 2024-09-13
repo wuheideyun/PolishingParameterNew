@@ -275,7 +275,7 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
                           self.lineEdit_accelerate.text() + '_' +
                           self.lineEdit_radius.text() + '_' + self.lineEdit_between.text() + '_' +
                           self.lineEdit_between_beam.text() + '_' + self.lineEdit_num.text() + '_' +
-                          self.lineEdit_delay_time.text())
+                          self.lineEdit_delay_time.text()+'_1')
 
         if not self.check_animation_gif(animation_name):
             self.trajectory_animation_thread = Animation_produce_order(float(self.lineEdit_belt_speed.text()),

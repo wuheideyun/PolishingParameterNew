@@ -1,0 +1,47 @@
+2024-09-13 15:00:24,318 - INFO - ---------------------Equal_Parameter_Calculate---------------------
+The user enters parameter information:
+      between:        700       geind_size:       170       belt_speed:       300       accelerate:       600   
+      radius:         270      ceramic_width:     1200     beam_speed_up:     500         overlap:         50  
+User clicks button:button_energy_calculate,the output parameter:
+ beam_swing_speed:   300.0  beam_constant_time:   2.55       stay_time:       2.33          num:          5.0          swing:        860.0 
+
+2024-09-13 15:00:25,852 - INFO - ---------------------Equal_Parameter_Calculate---------------------
+The user enters parameter information:
+      between:        700       geind_size:       170       belt_speed:       300       accelerate:       600   
+      radius:         270      ceramic_width:     1200     beam_speed_up:     500         overlap:         50  
+User clicks button:button_animation_equal,the output parameter:
+ beam_swing_speed:   300.0  beam_constant_time:   2.55       stay_time:       2.33          num:          5.0          swing:        860.0 
+
+2024-09-13 15:42:43,601 - INFO - ---------------------Double_Parameter_Calculate---------------------
+The user enters parameter information:
+      between:        580       geind_size:       150       belt_speed:      240.37     accelerate:       650   
+      radius:         260      ceramic_width:     1800     beam_speed_up:     500         overlap:         10      beam_between:      1906 
+      num_set:         1        group_count:       3   
+User clicks button:button_energy_calculate,the output parameter:
+ beam_swing_speed:   323.45 beam_constant_time:   3.83       stay_time:       2.41          num:          6.0  
+       swing:        1399.77     delay_time:       3.1  
+
+2024-09-13 15:42:44,432 - INFO - ---------------------Double_Parameter_Calculate---------------------
+The user enters parameter information:
+      between:        580       geind_size:       150       belt_speed:      240.37     accelerate:       650   
+      radius:         260      ceramic_width:     1800     beam_speed_up:     500         overlap:         10      beam_between:      1906 
+      num_set:         1        group_count:       3   
+User clicks button:button_energy_calculate,the output parameter:
+ beam_swing_speed:   323.45 beam_constant_time:   3.83       stay_time:       2.41          num:          6.0  
+       swing:        1399.77     delay_time:       3.1  
+
+2024-09-13 15:42:49,341 - INFO - ---------------------Double_Parameter_Calculate---------------------
+The user enters parameter information:
+      between:        580       geind_size:       150       belt_speed:      240.37     accelerate:       650   
+      radius:         260      ceramic_width:     1800     beam_speed_up:     500         overlap:         10      beam_between:      1906 
+      num_set:         1        group_count:       3   
+User clicks button:button_animation_order,the output parameter:
+ beam_swing_speed:   323.45 beam_constant_time:   3.83       stay_time:       2.41          num:          6.0  
+       swing:        1399.77     delay_time:       3.1  
+
+2024-09-13 16:06:29,136 - INFO - ---------------------Single_Parameter_Simulation---------------------
+The user enters parameter information:
+    belt_speed:      240.37  beam_swing_speed:    500   beam_constant_time:   1.5        stay_time:        1       accelerate:       650       delay_time:       0.5           num:           4   
+   beam_between:      800         radius:         260       geind_size:       150   
+User clicks button:button_animation_equal
+
