@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1088, 633)
+        MainWindow.resize(1091, 633)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -46,6 +46,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_num = QLineEdit(self.centralwidget)
         self.lineEdit_num.setObjectName(u"lineEdit_num")
+        self.lineEdit_num.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_num, 13, 9, 1, 1)
 
@@ -56,6 +57,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_delay_time = QLineEdit(self.centralwidget)
         self.lineEdit_delay_time.setObjectName(u"lineEdit_delay_time")
+        self.lineEdit_delay_time.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_delay_time, 14, 9, 1, 1)
 
@@ -86,6 +88,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_beam_constant_time = QLineEdit(self.centralwidget)
         self.lineEdit_beam_constant_time.setObjectName(u"lineEdit_beam_constant_time")
+        self.lineEdit_beam_constant_time.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_beam_constant_time, 13, 3, 1, 1)
 
@@ -96,6 +99,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_self_delay_time = QLineEdit(self.centralwidget)
         self.lineEdit_self_delay_time.setObjectName(u"lineEdit_self_delay_time")
+        self.lineEdit_self_delay_time.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_self_delay_time, 14, 11, 1, 1)
 
@@ -126,6 +130,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_beam_swing_speed = QLineEdit(self.centralwidget)
         self.lineEdit_beam_swing_speed.setObjectName(u"lineEdit_beam_swing_speed")
+        self.lineEdit_beam_swing_speed.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_beam_swing_speed, 13, 6, 1, 1)
 
@@ -136,6 +141,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_stay_time = QLineEdit(self.centralwidget)
         self.lineEdit_stay_time.setObjectName(u"lineEdit_stay_time")
+        self.lineEdit_stay_time.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_stay_time, 14, 3, 1, 1)
 
@@ -155,6 +161,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_swing = QLineEdit(self.centralwidget)
         self.lineEdit_swing.setObjectName(u"lineEdit_swing")
+        self.lineEdit_swing.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_swing, 14, 6, 1, 1)
 

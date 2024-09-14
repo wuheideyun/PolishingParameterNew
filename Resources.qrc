@@ -25,6 +25,7 @@
         <file alias="menu16">./Resources/menu16.svg</file>
         <file alias="login_logo">./Resources/LoginDlg/login_logo.svg</file>
         <file alias="login_logo2">./Resources/LoginDlg/login_logo2.jpg</file>
+        <file alias="login_logo3">./Resources/LoginDlg/login_logo3.jpg</file>
         <file alias="login_pwd">./Resources/LoginDlg/login_pwd.svg</file>
         <file alias="login_user">./Resources/LoginDlg/login_user.svg</file>
         <file alias="QQ">./Resources/LoginDlg/QQ.svg</file>

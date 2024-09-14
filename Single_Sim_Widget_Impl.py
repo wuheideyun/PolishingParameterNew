@@ -286,13 +286,22 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
     def trajectory_animation_ready(self,animation_name):
         # 加载GIF动画
         print(animation_name)
-        self.movie = QMovie('./animation/' + animation_name + '.gif')
+        self.movie = QMovie('./animation/' + animation_name + '_1.gif')
+        self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
+        self.movie.updated.connect(self.updated)
         #self.movie.setloopCount(1)  # 设置只播放一次
         self.gif_label.setMovie(self.movie)
         self.movie.start()
         self.button_animation_equal.setEnabled(True)
         self.button_animation_order.setEnabled(True)
         self.button_animation_cross.setEnabled(True)
+
+    def updated(self):
+        if self.movie.currentFrameNumber() == self.movie.frameCount() - 1:
+            self.movie.stop()
+            self.gif_label.setMovie(self.movie2)
+            self.movie2.start()
+
     # 调整动画在界面图框中的位置
     def resize_event(self, event):
         self.gif_label.resize(event.size())

@@ -32,6 +32,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.lineEdit_num = QLineEdit(self.centralwidget)
         self.lineEdit_num.setObjectName(u"lineEdit_num")
+        self.lineEdit_num.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_num, 6, 6, 1, 1)
 
@@ -88,6 +89,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_beam_constant_time = QLineEdit(self.centralwidget)
         self.lineEdit_beam_constant_time.setObjectName(u"lineEdit_beam_constant_time")
+        self.lineEdit_beam_constant_time.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_beam_constant_time, 5, 8, 1, 1)
 
@@ -98,6 +100,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_coefficient = QLineEdit(self.centralwidget)
         self.lineEdit_coefficient.setObjectName(u"lineEdit_coefficient")
+        self.lineEdit_coefficient.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_coefficient, 6, 8, 1, 1)
 
@@ -117,6 +120,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_stay_time = QLineEdit(self.centralwidget)
         self.lineEdit_stay_time.setObjectName(u"lineEdit_stay_time")
+        self.lineEdit_stay_time.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_stay_time, 5, 6, 1, 1)
 
@@ -127,6 +131,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_beam_swing_speed = QLineEdit(self.centralwidget)
         self.lineEdit_beam_swing_speed.setObjectName(u"lineEdit_beam_swing_speed")
+        self.lineEdit_beam_swing_speed.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_beam_swing_speed, 4, 6, 1, 1)
 
@@ -192,6 +197,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_swing = QLineEdit(self.centralwidget)
         self.lineEdit_swing.setObjectName(u"lineEdit_swing")
+        self.lineEdit_swing.setReadOnly(True)
 
         self.gridLayout.addWidget(self.lineEdit_swing, 4, 8, 1, 1)
 

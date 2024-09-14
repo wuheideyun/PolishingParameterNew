@@ -32,7 +32,7 @@ if exist "%cd%\%folder_to_delete2%" (
     echo folder %folder_to_delete2% dose not exist.
 )
 
-"C:\Users\pp\.conda\envs\pyside6\Scripts\pyinstaller.exe" -w main.py
+"C:\Users\pp\.conda\envs\pyside6\Scripts\pyinstaller.exe"   -w main.py
 
 REM Check whether the destination folder exists. If it does not exist, create it
 if not exist "%cd%\%target_folder%" (

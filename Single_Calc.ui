@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1145</width>
+    <width>1191</width>
     <height>686</height>
    </rect>
   </property>
@@ -74,6 +74,9 @@
       <property name="text">
        <string/>
       </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="2" column="13">
@@ -94,6 +97,9 @@
      <widget class="QLineEdit" name="lineEdit_num">
       <property name="text">
        <string/>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -122,6 +128,9 @@
      <widget class="QLineEdit" name="lineEdit_beam_swing_speed">
       <property name="text">
        <string/>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -224,7 +233,11 @@
      </widget>
     </item>
     <item row="6" column="18" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_coefficient"/>
+     <widget class="QLineEdit" name="lineEdit_coefficient">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="4" column="12" colspan="4">
      <widget class="QPushButton" name="button_simulation_order_define">
@@ -269,12 +282,19 @@
      </widget>
     </item>
     <item row="6" column="10" colspan="2">
-     <widget class="QLineEdit" name="lineEdit_swing"/>
+     <widget class="QLineEdit" name="lineEdit_swing">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="6" column="14" colspan="3">
      <widget class="QLineEdit" name="lineEdit_delay_time">
       <property name="text">
        <string/>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -327,6 +347,9 @@
       <property name="text">
        <string/>
       </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="4" column="5">
@@ -337,7 +360,11 @@
      </widget>
     </item>
     <item row="6" column="7">
-     <widget class="QLineEdit" name="lineEdit_self_delay_time"/>
+     <widget class="QLineEdit" name="lineEdit_self_delay_time">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="2" column="6">
      <widget class="QLineEdit" name="lineEdit_ceramic_width">
@@ -364,6 +391,9 @@
      <widget class="QLineEdit" name="lineEdit_stay_time">
       <property name="text">
        <string/>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>

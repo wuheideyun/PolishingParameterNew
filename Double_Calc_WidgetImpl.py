@@ -102,6 +102,8 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         self.initReCalculation()
     # 轨迹参数计算（高效计算）
     def efficient_calculate(self):       # 高效计算
+        if not self.on_button_clicked():
+            return
         v1=float(self.lineEdit_belt_speed.text())
         ceramic_width=float(self.lineEdit_ceramic_width.text())
         between=float(self.lineEdit_between.text())
@@ -130,6 +132,8 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         self.initReCalculation()
      # 自定义计算
     def define_calculate(self):
+        if not self.on_button_clicked():
+            return
         v1 = float(self.lineEdit_belt_speed.text())
         ceramic_width = float(self.lineEdit_ceramic_width.text())
         between = float(self.lineEdit_between.text())
@@ -159,6 +163,11 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         self.initReCalculation()
     # 抛磨量分布仿真子线程
     def start_computation_Polishing_distribution_order(self):      # 抛磨量分布仿真子线程
+        if not self.on_button_clicked():
+            return
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
         # 创建子线程
         self.Polishing_distribution_thread = Polishing_distribution_Thread_order(float(self.lineEdit_belt_speed.text()),
                                                                            float(self.lineEdit_beam_swing_speed.text()),
@@ -188,6 +197,11 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def start_computation_Polishing_distribution_order_define(self):      # 抛磨量分布仿真子线程
+        if not self.on_button_clicked():
+            return
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
         # 创建子线程
         self.Polishing_distribution_thread = Polishing_distribution_Thread_order_unequal(float(self.lineEdit_belt_speed.text()),
                                                                            float(self.lineEdit_beam_swing_speed.text()),
@@ -218,6 +232,11 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def Polishing_distribution_ready(self,object_matrix, result):     # 子线程回调函数
+        if not self.on_button_clicked():
+            return
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
         '''
         # 在主线程中绘图
         plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
@@ -309,11 +328,18 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
     def trajectory_animation_ready(self,animation_name):
         # 加载GIF动画
         print(animation_name)
-        self.movie = QMovie('./animation/' + animation_name + '.gif')
-        #self.movie.setloopCount(1)  # 设置只播放一次
+        self.movie = QMovie('./animation/' + animation_name + '_1.gif')
+        self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
+        self.movie.updated.connect(self.updated)
+        # self.movie.setloopCount(1)  # 设置只播放一次
         self.gif_label.setMovie(self.movie)
         self.movie.start()
         self.button_animation_order.setEnabled(True)
+    def updated(self):
+        if self.movie.currentFrameNumber() == self.movie.frameCount() - 1:
+            self.movie.stop()
+            self.gif_label.setMovie(self.movie2)
+            self.movie2.start()
     # 调整动画在界面图框中的位置
     def resize_event(self, event):
         self.gif_label.resize(event.size())
@@ -327,6 +353,11 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
 
     # 绘制磨头中心轨迹线
     def middle_line_figure_plot_order(self):
+        if not self.on_button_clicked():
+            return
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
         belt_speed=float(self.lineEdit_belt_speed.text())
         beam_speed=float(self.lineEdit_beam_swing_speed.text())
         constant_time=float(self.lineEdit_beam_constant_time.text())
@@ -349,6 +380,11 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
                                    self.lineEdit_stay_time.text(), self.lineEdit_num.text(), self.lineEdit_swing.text(),
                                    self.lineEdit_delay_time.text())
     def middle_line_figure_plot_order_selfdefine(self):
+        if not self.on_button_clicked():
+            return
+        if self.needReCalculation():
+            QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
+            return
         belt_speed=float(self.lineEdit_belt_speed.text())
         beam_speed=float(self.lineEdit_beam_swing_speed.text())
         constant_time=float(self.lineEdit_beam_constant_time.text())

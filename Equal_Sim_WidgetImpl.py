@@ -80,11 +80,11 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
                                                                            float(self.lineEdit_radius.text()))
         self.Polishing_distribution_thread.result_ready.connect(self.Polishing_distribution_ready)
         self.button_simulation_equal.setEnabled(False)
-        log_equal_simulation(self.button_simulation_equal.objectName(), self.lineEdit_between.text(),
-                             self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(),
-                             self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
-                             self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
-                             self.lineEdit_stay_time.text(), self.lineEdit_num.text())
+        # log_equal_simulation(self.button_simulation_equal.objectName(), self.lineEdit_between.text(),
+        #                      self.lineEdit_grind_size.text(), self.lineEdit_belt_speed.text(),
+        #                      self.lineEdit_accelerate.text(), self.lineEdit_radius.text(),
+        #                      self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+        #                      self.lineEdit_stay_time.text(), self.lineEdit_num.text())
         # 运行子线程
         self.Polishing_distribution_thread.start()
     def Polishing_distribution_ready(self,object_matrix, result):     # 子线程回调函数
@@ -167,11 +167,18 @@ class EqualSimWidgetImpl(QWidget, Equal_Sim.Ui_MainWindow):
     def trajectory_animation_ready(self,animation_name):
         # 加载GIF动画
         print(animation_name)
-        self.movie = QMovie('./animation/' + animation_name + '.gif')
-        #self.movie.setloopCount(1)  # 设置只播放一次
+        self.movie = QMovie('./animation/' + animation_name + '_1.gif')
+        self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
+        self.movie.updated.connect(self.updated)
+        # self.movie.setloopCount(1)  # 设置只播放一次
         self.gif_label.setMovie(self.movie)
         self.movie.start()
         self.button_animation_equal.setEnabled(True)
+    def updated(self):
+        if self.movie.currentFrameNumber() == self.movie.frameCount() - 1:
+            self.movie.stop()
+            self.gif_label.setMovie(self.movie2)
+            self.movie2.start()
     # 调整动画在界面图框中的位置
     def resize_event(self, event):
         self.gif_label.resize(event.size())

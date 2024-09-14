@@ -51,17 +51,16 @@ class LeftBar(QWidget):
 
         hlay00 = QHBoxLayout()
 
-        hlay00.addSpacerItem(QSpacerItem(50, 20, QSizePolicy.Fixed, QSizePolicy.Minimum))
+        # hlay00.addSpacerItem(QSpacerItem(50, 20, QSizePolicy.Fixed, QSizePolicy.Minimum))
 
         self.loginBtn = QPushButton("")
-        self.loginBtn.setFixedSize(32, 32)
+        self.loginBtn.setFixedSize(130, 50)
         self.loginBtn.setStyleSheet("""
             QPushButton {
                 border: none;
-                background-image: url(:user);
+                background-image: url(:login_logo3);
                 background-position: center center;
                 background-repeat: no-repeat;
-                background-size: cover; /* 或者使用 contain */
             }
         """)
 

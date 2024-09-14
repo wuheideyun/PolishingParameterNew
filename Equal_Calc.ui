@@ -31,7 +31,11 @@
      <number>6</number>
     </property>
     <item row="6" column="6">
-     <widget class="QLineEdit" name="lineEdit_num"/>
+     <widget class="QLineEdit" name="lineEdit_num">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="2" column="8">
      <widget class="QLineEdit" name="lineEdit_beam_speed_up"/>
@@ -92,7 +96,11 @@
      <widget class="QLineEdit" name="lineEdit_ceramic_width"/>
     </item>
     <item row="5" column="8">
-     <widget class="QLineEdit" name="lineEdit_beam_constant_time"/>
+     <widget class="QLineEdit" name="lineEdit_beam_constant_time">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="4" column="4">
      <widget class="QLabel" name="label_beam_swing_speed">
@@ -102,7 +110,11 @@
      </widget>
     </item>
     <item row="6" column="8">
-     <widget class="QLineEdit" name="lineEdit_coefficient"/>
+     <widget class="QLineEdit" name="lineEdit_coefficient">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="1" column="0">
      <spacer name="horizontalSpacer">
@@ -131,7 +143,11 @@
      </widget>
     </item>
     <item row="5" column="6">
-     <widget class="QLineEdit" name="lineEdit_stay_time"/>
+     <widget class="QLineEdit" name="lineEdit_stay_time">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="2" column="7">
      <widget class="QLabel" name="label_beam_speed_up">
@@ -141,7 +157,11 @@
      </widget>
     </item>
     <item row="4" column="6">
-     <widget class="QLineEdit" name="lineEdit_beam_swing_speed"/>
+     <widget class="QLineEdit" name="lineEdit_beam_swing_speed">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="6" column="4">
      <widget class="QLabel" name="label_num">
@@ -212,7 +232,11 @@
      </widget>
     </item>
     <item row="4" column="8">
-     <widget class="QLineEdit" name="lineEdit_swing"/>
+     <widget class="QLineEdit" name="lineEdit_swing">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="6" column="10">
      <widget class="QPushButton" name="button_animation_equal">

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1088</width>
+    <width>1091</width>
     <height>633</height>
    </rect>
   </property>
@@ -53,6 +53,9 @@
       <property name="text">
        <string>4</string>
       </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="1" column="7">
@@ -66,6 +69,9 @@
      <widget class="QLineEdit" name="lineEdit_delay_time">
       <property name="text">
        <string/>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -109,6 +115,9 @@
       <property name="text">
        <string/>
       </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="1" column="4">
@@ -122,6 +131,9 @@
      <widget class="QLineEdit" name="lineEdit_self_delay_time">
       <property name="text">
        <string/>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -165,6 +177,9 @@
       <property name="text">
        <string/>
       </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item row="2" column="9">
@@ -178,6 +193,9 @@
      <widget class="QLineEdit" name="lineEdit_stay_time">
       <property name="text">
        <string/>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -208,7 +226,11 @@
      </spacer>
     </item>
     <item row="14" column="6">
-     <widget class="QLineEdit" name="lineEdit_swing"/>
+     <widget class="QLineEdit" name="lineEdit_swing">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item row="1" column="1">
      <widget class="QLabel" name="label_between">
