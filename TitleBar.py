@@ -12,6 +12,7 @@ from PySide6.QtCore import Signal, Qt, QPoint
 from PySide6.QtGui import QPainter, QColor, QIcon
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QVBoxLayout, QMenu, QLabel
 
+from CheckCodeDialog import CheckCodeDialog
 from ImageButton import ImageButton
 from ImageTextButton import ImageTextButton
 
@@ -21,7 +22,7 @@ class TitleBar(QWidget):
     sig_Max = Signal()
     sig_Normal = Signal()
     sig_Close = Signal()
-
+    sig_logout = Signal()
     isMax = False
 
     def __init__(self):
@@ -29,6 +30,7 @@ class TitleBar(QWidget):
         self.setFixedHeight(32)
 
         self.setMouseTracking(True)
+        self.checkcodeDialog = CheckCodeDialog()
 
         self.setAttribute(Qt.WA_StyledBackground)  # 禁止父窗口样式影响子控件样式
         self.setStyleSheet('''
@@ -47,12 +49,12 @@ class TitleBar(QWidget):
 
         # 创建菜单
         self.menu = QMenu()
-        self.menu.addAction("会员中心", self.action1_triggered)
-        self.menu.addAction("创建企业", self.action2_triggered)
+        self.menu.addAction("激活码验证", self.action1_triggered)
+        # self.menu.addAction("会员中心", self.action2_triggered)
         self.menu.addSeparator()
-        self.menu.addAction("意见反馈")
-        self.menu.addAction("关于")
-        self.menu.addAction("退出登录")
+        # self.menu.addAction("意见反馈")
+        # self.menu.addAction("关于")
+        self.menu.addAction("退出登录", self.action2_triggered)
 
         self.btnMenu.setMenu(self.menu)
 
@@ -183,7 +185,7 @@ class TitleBar(QWidget):
         self.menu.exec(self.button.mapToGlobal(pos))
 
     def action1_triggered(self):
-        print("Action 1 triggered")
+        self.checkcodeDialog.open_checkcode()
 
     def action2_triggered(self):
         print("Action 2 triggered")

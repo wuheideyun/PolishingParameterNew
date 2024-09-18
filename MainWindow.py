@@ -4,12 +4,13 @@
 
 '''
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPainter, QColor, QEnterEvent
 from PySide6.QtWidgets import QMainWindow, QHBoxLayout, QVBoxLayout, QWidget, QMessageBox, QToolBar, QSizePolicy, \
-    QStatusBar
+    QStatusBar, QSpacerItem, QLabel
 
 from ContentWidget import ContentWidget
+from DatabaseCheckThread import DatabaseCheckThread
 from LeftBar import LeftBar
 from TitleBar import TitleBar
 
@@ -17,6 +18,10 @@ from TitleBar import TitleBar
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()  # 不要加self
+
+        # 创建线程实例
+        self.db_thread = None
+
         self.setMouseTracking(True)
 
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowMinMaxButtonsHint)  # 设置为无边框窗口
@@ -45,6 +50,7 @@ class MainWindow(QMainWindow):
         self.leftBar.setSizePolicy(sizePolicy)
 
         self.leftBar.sig_login_action.connect(self.showStackWidget)
+        self.leftBar.sig_login_administrator_action.connect(self.showStackWidgetAdministrator)
 
         vLay = QVBoxLayout()
         vLay.setContentsMargins(0,0,0,0)
@@ -57,6 +63,7 @@ class MainWindow(QMainWindow):
         self.titleBar.sig_Normal.connect(self.onNormal)
         self.titleBar.sig_Max.connect(self.onMax)
         self.titleBar.sig_Close.connect(self.onClose)
+        self.titleBar.sig_logout.connect(self.onLogout)
 
         self.contentWidget = ContentWidget()
 
@@ -64,9 +71,32 @@ class MainWindow(QMainWindow):
         sizePolicy.setHeightForWidth(self.contentWidget.sizePolicy().hasHeightForWidth())
         self.contentWidget.setSizePolicy(sizePolicy)
 
+        hLayBottom = QHBoxLayout()
+
         self.statusBar = QStatusBar()
         self.statusBar.showMessage("欢迎使用，请登录！")
-        vLay.addWidget(self.statusBar)
+        hLayBottom.addWidget(self.statusBar)
+        self.statusBar2 = QStatusBar()
+        self.statusBar2.showMessage("激活状态：")
+        self.statusBar2.setFixedWidth(70)
+        hLayBottom.addSpacerItem(QSpacerItem(555, 5, QSizePolicy.Expanding, QSizePolicy.Minimum)) # 占位
+        hLayBottom.addWidget(self.statusBar2)
+
+
+        self.statusLabel = QLabel("999分钟")
+        self.statusLabel.setAlignment(Qt.AlignLeft)
+        self.statusLabel.setStyleSheet('''
+            QLabel {
+                font-size: 12px;
+                color: #000000;
+                border : none;
+            }
+        ''')
+        self.statusBar3 = QStatusBar()
+        self.statusBar3.addWidget(self.statusLabel)
+        self.statusBar3.setFixedWidth(70)
+        hLayBottom.addWidget(self.statusBar3)
+        vLay.addLayout(hLayBottom)
 
 
         mainHLay.addLayout(vLay)
@@ -136,6 +166,27 @@ class MainWindow(QMainWindow):
         self.setGeometry(0, 0, 1000, 600)
 
         self.center_on_screen()
+        self.start_checking()
+
+    def start_checking(self):
+        # 创建并启动线程
+        self.db_thread = DatabaseCheckThread()
+        self.db_thread.result_signal.connect(self.update_result)
+        self.db_thread.start()
+
+
+    def stop_checking(self):
+        if self.db_thread:
+            self.db_thread.stop()  # 停止线程
+            self.db_thread.wait()  # 等待线程结束
+            self.db_thread = None
+
+
+    def update_result(self, result):
+        # 更新界面显示的查询结果
+        self.statusLabel.setText(result)
+        if result == "未激活！":
+            self.contentWidget.setStackedWidgetVisible(False)
 
     def center_on_screen(self):
         # 获取显示器分辨率
@@ -152,11 +203,32 @@ class MainWindow(QMainWindow):
 
     def showStackWidget(self,flag):
         if flag:
-            self.contentWidget.setStackedWidgetVisible(True)
-
+            if self.statusLabel.text() != '未激活！':
+                self.contentWidget.setStackedWidgetVisible(True)
+            self.titleBar.checkcodeDialog.activation_code_gainEdit.setVisible(False)
+            self.titleBar.checkcodeDialog.comboBox_src.setVisible(False)
+            self.titleBar.checkcodeDialog.btnGainCode.setVisible(False)
             self.statusBar.showMessage("已登录！")
         else:
             self.contentWidget.setStackedWidgetVisible(False)
+            self.titleBar.checkcodeDialog.activation_code_gainEdit.setVisible(False)
+            self.titleBar.checkcodeDialog.comboBox_src.setVisible(False)
+            self.titleBar.checkcodeDialog.btnGainCode.setVisible(False)
+            self.statusBar.showMessage("欢迎使用，请登录！")
+
+    def showStackWidgetAdministrator(self,flag):
+        if flag:
+            if self.statusLabel.text() != '未激活！':
+                self.contentWidget.setStackedWidgetVisible(True)
+            self.titleBar.checkcodeDialog.activation_code_gainEdit.setVisible(True)
+            self.titleBar.checkcodeDialog.comboBox_src.setVisible(True)
+            self.titleBar.checkcodeDialog.btnGainCode.setVisible(True)
+            self.statusBar.showMessage("已登录！")
+        else:
+            self.contentWidget.setStackedWidgetVisible(False)
+            self.titleBar.checkcodeDialog.activation_code_gainEdit.setVisible(False)
+            self.titleBar.checkcodeDialog.comboBox_src.setVisible(False)
+            self.titleBar.checkcodeDialog.btnGainCode.setVisible(False)
             self.statusBar.showMessage("欢迎使用，请登录！")
 
     def eventFilter(self, obj, event):
@@ -180,6 +252,8 @@ class MainWindow(QMainWindow):
 
     def onClose(self):
         self.close()
+    def onLogout(self):
+        pass
 
     def changeContentPage(self, index):
         self.contentWidget.gotoPage(index)

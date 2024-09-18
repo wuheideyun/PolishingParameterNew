@@ -19,6 +19,7 @@ from PopupMessageBox import PopupMessageBox
 
 class LoginDialog(FrameLessDialog):
     sig_login_success = Signal()
+    sig_login_administrator_success = Signal()
     sig_login_failure = Signal()
     def __init__(self):
         super().__init__()
@@ -243,11 +244,13 @@ class LoginDialog(FrameLessDialog):
             return
 
         if self.db.verify_login('users', username, password):
-            # QMessageBox.information(self, "提示", "登录成功")
             msgbox = PopupMessageBox("提示", "登录成功!")
             msgbox.setFixedSize(200, 100)
             msgbox.exec()
-            self.sig_login_success.emit()
+            if username == "administrator":
+                self.sig_login_administrator_success.emit()
+            else:
+                self.sig_login_success.emit()
             self.accept()
         else:
             QMessageBox.information(self, "提示", "用户名或密码错误")

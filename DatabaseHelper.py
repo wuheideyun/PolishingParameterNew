@@ -43,8 +43,10 @@ class DatabaseHelper:
             sql = f'SELECT {columns} FROM {table}'
             if conditions:
                 sql += f' WHERE {conditions}'
+            sql += f' ORDER BY created_at DESC'
+
             self.cursor.execute(sql)
-            result = self.cursor.fetchall()
+            result = self.cursor.fetchone()
             return result
         except sqlite3.Error as e:
             print(f"读取数据时出错: {e}")
@@ -95,7 +97,16 @@ class DatabaseHelper:
         except sqlite3.Error as e:
             print(f"验证登录时出错: {e}")
             return False
-
+    def verify_code(self, table, key, fingerprint):
+        """验证用户名和密码"""
+        try:
+            sql = f'SELECT * FROM {table} WHERE key = ? AND fingerprint = ?'
+            self.cursor.execute(sql, (key, fingerprint))
+            result = self.cursor.fetchone()
+            return result is not None  # 如果存在匹配的账号密码，返回True，否则返回False
+        except sqlite3.Error as e:
+            print(f"验证激活码时出错: {e}")
+            return False
     def bulk_insert(self, table, data_list):
         """批量插入数据"""
         try:
@@ -126,11 +137,22 @@ class DatabaseHelper:
             );
             '''
         db.create_table(create_table_sql)
-
+    def test_create_table_sql2(self, db):
+        create_table_sql = '''
+            CREATE TABLE IF NOT EXISTS keys (
+                key_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                content TEXT NOT NULL,
+                key TEXT NOT NULL,
+                fingerprint TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                status TEXT DEFAULT 'active'
+            );
+            '''
+        db.create_table(create_table_sql)
     def test_insert_user(self, db):
         user_data = {
-            'username': 'admin',
-            'password_hash': db.hash_password('123456'),
+            'username': 'administrator',
+            'password_hash': db.hash_password('administrator'),
             'email': 'admin@example.com',
             'phone': '1234567890'
         }
@@ -162,8 +184,8 @@ if __name__ == '__main__':
     db = DatabaseHelper('database.db')
 
 
-    db.test_create_table_sql(db)
     db.test_insert_user(db)
+    # db.test_insert_user(db)
 
 
 

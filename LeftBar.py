@@ -27,6 +27,7 @@ class LeftBar(QWidget):
     sig_runse1 = Signal()
 
     sig_login_action = Signal(bool)
+    sig_login_administrator_action = Signal(bool)
     def __init__(self):
         super().__init__()
         self.setMouseTracking(True)
@@ -58,7 +59,7 @@ class LeftBar(QWidget):
         self.loginBtn.setStyleSheet("""
             QPushButton {
                 border: none;
-                background-image: url(:login_logo3);
+                background-image: url(:login_logo4);
                 background-position: center center;
                 background-repeat: no-repeat;
             }
@@ -220,6 +221,7 @@ class LeftBar(QWidget):
 
 
         self.loginDialog.sig_login_success.connect(self.loginSuccess)
+        self.loginDialog.sig_login_administrator_success.connect(self.loginAdministratorSuccess)
         self.loginDialog.sig_login_failure.connect(self.loginFailure)
 
     def onRunse(self):
@@ -253,6 +255,12 @@ class LeftBar(QWidget):
     def loginSuccess(self):
         self.vipInfo.setText('退出登录')
         self.sig_login_action.emit(True)
+
+    def loginAdministratorSuccess(self):
+        self.vipInfo.setText('退出登录')
+        self.sig_login_action.emit(True)
+        self.sig_login_administrator_action.emit(True)
+
     def loginFailure(self):
         self.sig_login_action.emit(False)
     def update_stylesheet(self):
