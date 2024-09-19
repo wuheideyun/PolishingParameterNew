@@ -50,7 +50,7 @@ class Animation_produce_order(QThread):
         self.ax.set_xlabel('Tile feed direction')
         self.ax.set_ylabel('Beam swing direction')
         # 单独隐藏刻度和标签
-        # self.ax.set_xticks([])         # 隐藏刻度
+        self.ax.set_xticks([])         # 隐藏刻度
         self.ax.set_xticklabels([])  # 隐藏刻度标签
         #self.x_range_numtext = 0
         self.one_size=self.msize * self.v1
