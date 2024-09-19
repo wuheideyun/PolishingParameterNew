@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
         ''')
         self.statusBar3 = QStatusBar()
         self.statusBar3.addWidget(self.statusLabel)
-        self.statusBar3.setFixedWidth(70)
+        self.statusBar3.setFixedWidth(90)
         hLayBottom.addWidget(self.statusBar3)
         vLay.addLayout(hLayBottom)
 

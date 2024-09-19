@@ -114,6 +114,7 @@ class CheckCodeDialog(FrameLessDialog):
         self.lang_dic = {
             'TEMP': 60,  # 临时码，1分钟
             '1M': 60,  # 1分钟码
+            '2M': 120,  # 2分钟码
             '1H': 3600,  # 1小时码
             '1D': 86400,  # 1天码
             '1W': 604800,  # 1周码
@@ -228,6 +229,7 @@ def validate_activation_code_with_device(self,code: str) -> bool:
             duration_map = {
                 'TEMP': 60,  # 临时码，1分钟
                 '1M': 60,  # 1分钟码
+                '2M': 120,  # 2分钟码
                 '1H': 3600,  # 1小时码
                 '1D': 86400,  # 1天码
                 '1W': 604800,  # 1周码
