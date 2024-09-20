@@ -12,7 +12,7 @@ from datetime import datetime
     # if not os.path.exists(folder_path):
     #     os.makedirs(folder_path)
     # return folder_path
-def create_daily_log_folder(base_folder='logs'):
+def create_daily_log_folder(base_folder='D:/logs'):
     # 获取当前日期
     today = datetime.today().strftime('%Y-%m-%d')
     # 构建文件夹路径
