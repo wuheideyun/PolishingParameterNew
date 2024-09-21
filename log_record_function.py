@@ -42,7 +42,7 @@ def setup_logger(log_name, log_file, level=logging.INFO):
         logger.addHandler(fh)
     return logger
 # 参数变更日志记录函数封装----同步摆计算系统----
-def log_equal_cal_parm_change(button_name,between,grind_size,belt_speed,accelerate,radius,ceramic_width,beam_speed_up,overlap,
+def log_equal_cal_parm_change(button_name,between,grind_size,belt_speed,accelerate,radius,ceramic_width,beam_accelerate_time,
                            beam_swing_speed,beam_constant_time,stay_time,num,swing):
     # 获取每日文件夹路径
     folder_path = create_daily_log_folder()
@@ -54,7 +54,7 @@ def log_equal_cal_parm_change(button_name,between,grind_size,belt_speed,accelera
     param_logger.info(f"---------------------Equal_Parameter_Calculate---------------------\n"
                       f"The user enters parameter information:\n"
                       f"{'between:':^20} {between:^6} {'geind_size:':^20} {grind_size:^6} {'belt_speed:':^20} {belt_speed:^6} {'accelerate:':^20} {accelerate:^6} \n"
-                      f"{'radius:':^20} {radius:^6} {'ceramic_width:':^20} {ceramic_width:^6} {'beam_speed_up:':^20} {beam_speed_up:^6} {'overlap:':^20} {overlap:^6}\n"
+                      f"{'radius:':^20} {radius:^6} {'ceramic_width:':^20} {ceramic_width:^6} {'beam_accelerate_time:':^20} {beam_accelerate_time:^6}\n"
                       f"User clicks button:{button_name},the output parameter:\n"
                       f"{'beam_swing_speed:':^20} {beam_swing_speed:^6} {'beam_constant_time:':^20} {beam_constant_time:^6} {'stay_time:':^20} {stay_time:^6} {'num:':^20} {num:^6} {'swing:':^20} {swing:^6}\n")
 

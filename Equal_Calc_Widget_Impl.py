@@ -4,12 +4,11 @@ from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPixmap, QMovie
 from PySide6.QtWidgets import QWidget, QLabel, QMessageBox
 import math
-
 from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import Equal_Calc
-import Equal_Calc_Parameter_Calculate
+from Equal_Calc_Parameter_Calculate import equal_num_calculate,equal_num_calculate_new
 from Equal_Calc_Polishing_Distribution_Simulation import Polishing_distribution_Thread
 from Equal_Calc_Generate_Animation import Animation_produce
 from Equal_Calc_Middle_Line_Plot import middle_line_plot
@@ -60,12 +59,11 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         self.add_text_change_monitor(self.lineEdit_belt_speed)
         self.add_text_change_monitor(self.lineEdit_accelerate)
         self.add_text_change_monitor(self.lineEdit_radius)
-        self.add_text_change_monitor(self.lineEdit_beam_speed_up)
+        self.add_text_change_monitor(self.lineEdit_beam_accelerate_time)
         self.add_text_change_monitor(self.lineEdit_ceramic_width)
-        self.add_text_change_monitor(self.lineEdit_overlap)
 
         self.line_edits = [self.lineEdit_between, self.lineEdit_grind_size, self.lineEdit_belt_speed, self.lineEdit_accelerate,
-                           self.lineEdit_radius, self.lineEdit_beam_speed_up, self.lineEdit_ceramic_width, self.lineEdit_overlap]
+                           self.lineEdit_radius, self.lineEdit_beam_accelerate_time, self.lineEdit_ceramic_width]
 
         # 界面分割图片元素
         self.label_top.setText('')
@@ -125,8 +123,8 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
             return True
         else:
             return False
-
-    # 轨迹参数计算（节能计算）
+    '''
+    # 轨迹参数计算（节能计算）------旧版本
     def energy_calculate(self):
         if not self.on_button_clicked():
             return
@@ -137,7 +135,7 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         overlap=float(self.lineEdit_overlap.text())
         a=float(self.lineEdit_accelerate.text())
         beam_speed_up=float(self.lineEdit_beam_speed_up.text())
-        result=Equal_Calc_Parameter_Calculate.equal_num_calculate(v1,ceramic_width,between,R,overlap,a,beam_speed_up)
+        result=equal_num_calculate(v1,ceramic_width,between,R,overlap,a,beam_speed_up)
         self.lineEdit_beam_swing_speed.setText(str(result[0, 1]))
         self.lineEdit_num.setText(str(result[0, 4]))
         self.lineEdit_stay_time.setText(str(result[0, 3]))
@@ -153,6 +151,7 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
                                   self.lineEdit_stay_time.text(),
                                   self.lineEdit_num.text(), self.lineEdit_swing.text())
         self.initReCalculation()
+    
     # 轨迹参数计算（高效计算）
     def efficient_calculate(self):       # 高效计算
         if not self.on_button_clicked():
@@ -175,6 +174,65 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
                                   self.lineEdit_ceramic_width.text(),
                                   self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(), self.lineEdit_stay_time.text(),
+                                  self.lineEdit_num.text(), self.lineEdit_swing.text())
+        self.initReCalculation()
+    '''
+    # 轨迹参数计算（节能计算）------新版本
+    def energy_calculate(self):
+        if not self.on_button_clicked():
+            return
+        v1 = float(self.lineEdit_belt_speed.text())
+        ceramic_width = float(self.lineEdit_ceramic_width.text())
+        between = float(self.lineEdit_between.text())
+        R = float(self.lineEdit_radius.text())
+        beam_accelerate_time = float(self.lineEdit_beam_accelerate_time.text())  # 加减速时间
+        # beam_speed_up = float(self.lineEdit_beam_speed_up.text())
+
+        result = equal_num_calculate_new(v1, ceramic_width, between, R, beam_accelerate_time)
+
+        self.lineEdit_beam_swing_speed.setText(str(result[0, 1]))
+        self.lineEdit_num.setText(str(result[0, 4]))
+        self.lineEdit_stay_time.setText(str(result[0, 3]))
+        self.lineEdit_beam_constant_time.setText(str(result[0, 2]))
+        self.lineEdit_swing.setText(str(result[0, 5]))
+        self.lineEdit_accelerate.setText(str(round(result[0, 1] / beam_accelerate_time, 2)))
+        # log_equal_cal_parm_change(self.button_energy_calculate.objectName(), self.lineEdit_between.text(),
+        #                           self.lineEdit_grind_size.text(),
+        #                           self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(),
+        #                           self.lineEdit_radius.text(),
+        #                           self.lineEdit_ceramic_width.text(),
+        #                           self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+        #                           self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
+        #                           self.lineEdit_stay_time.text(),
+        #                           self.lineEdit_num.text(), self.lineEdit_swing.text())
+        self.initReCalculation()
+
+    # 轨迹参数计算（高效计算）------新版本
+    def efficient_calculate(self):
+        if not self.on_button_clicked():
+            return
+        v1 = float(self.lineEdit_belt_speed.text())
+        ceramic_width = float(self.lineEdit_ceramic_width.text())
+        between = float(self.lineEdit_between.text())
+        R = float(self.lineEdit_radius.text())
+        beam_accelerate_time = float(self.lineEdit_beam_accelerate_time.text())  # 加减速时间
+        # beam_speed_up = float(self.lineEdit_beam_speed_up.text())
+
+        result = equal_num_calculate_new(v1, ceramic_width, between, R, beam_accelerate_time)
+
+        self.lineEdit_beam_swing_speed.setText(str(result[1, 1]))
+        self.lineEdit_num.setText(str(result[1, 4]))
+        self.lineEdit_stay_time.setText(str(result[1, 3]))
+        self.lineEdit_beam_constant_time.setText(str(result[1, 2]))
+        self.lineEdit_swing.setText(str(result[1, 5]))
+        self.lineEdit_accelerate.setText(str(round(result[1, 1] / beam_accelerate_time, 2)))
+        log_equal_cal_parm_change(self.button_energy_calculate.objectName(), self.lineEdit_between.text(),
+                                  self.lineEdit_grind_size.text(),
+                                  self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(),
+                                  self.lineEdit_radius.text(),
+                                  self.lineEdit_ceramic_width.text(),
+                                  self.lineEdit_beam_constant_time.text(),self.lineEdit_beam_swing_speed.text(),
+                                  self.lineEdit_beam_constant_time.text(),self.lineEdit_stay_time.text(),
                                   self.lineEdit_num.text(), self.lineEdit_swing.text())
         self.initReCalculation()
     # 抛磨量分布仿真子线程
@@ -201,7 +259,7 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
                                   self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(),
                                   self.lineEdit_radius.text(),
                                   self.lineEdit_ceramic_width.text(),
-                                  self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                  self.lineEdit_beam_accelerate_time.text(),
                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
                                   self.lineEdit_stay_time.text(),
                                   self.lineEdit_num.text(), self.lineEdit_swing.text())
@@ -259,7 +317,7 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
                                   self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(),
                                   self.lineEdit_radius.text(),
                                   self.lineEdit_ceramic_width.text(),
-                                  self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                  self.lineEdit_beam_accelerate_time.text(),
                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
                                   self.lineEdit_stay_time.text(),
                                   self.lineEdit_num.text(), self.lineEdit_swing.text())
@@ -301,7 +359,7 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
                                   self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(),
                                   self.lineEdit_radius.text(),
                                   self.lineEdit_ceramic_width.text(),
-                                  self.lineEdit_beam_speed_up.text(), self.lineEdit_overlap.text(),
+                                  self.lineEdit_beam_accelerate_time.text(),
                                   self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
                                   self.lineEdit_stay_time.text(),
                                   self.lineEdit_num.text(), self.lineEdit_swing.text())
@@ -313,8 +371,7 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         self.settings.setValue("lineEdit_accelerate1", self.lineEdit_accelerate.text())
         self.settings.setValue("lineEdit_radius1", self.lineEdit_radius.text())
         self.settings.setValue("lineEdit_ceramic_width1", self.lineEdit_ceramic_width.text())
-        self.settings.setValue("lineEdit_beam_speed_up1", self.lineEdit_beam_speed_up.text())
-        self.settings.setValue("lineEdit_overlap1", self.lineEdit_overlap.text())
+        self.settings.setValue("lineEdit_beam_accelerate_time1", self.lineEdit_beam_accelerate_time.text())
 
     def loadParameter(self):
         """加载配置文件中的数据到各个LineEdit控件"""
@@ -324,8 +381,7 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         self.lineEdit_accelerate.setText(self.settings.value("lineEdit_accelerate1", ""))
         self.lineEdit_radius.setText(self.settings.value("lineEdit_radius1", ""))
         self.lineEdit_ceramic_width.setText(self.settings.value("lineEdit_ceramic_width1", ""))
-        self.lineEdit_beam_speed_up.setText(self.settings.value("lineEdit_beam_speed_up1", ""))
-        self.lineEdit_overlap.setText(self.settings.value("lineEdit_overlap1", ""))
+        self.lineEdit_beam_accelerate_time.setText(self.settings.value("lineEdit_beam_accelerate_time1", ""))
 
     def check_animation_gif(self, animation_name):
         # 定义文件路径
