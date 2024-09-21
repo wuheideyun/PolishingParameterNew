@@ -69,14 +69,14 @@ def equal_num_calculate_new(v1,ceramic_width,between,R,t_a):
     # 模式一
     result[0,0] = v1
     result[0,1] = round(a_1 * t_a, 2)    # 横梁摆动速度
-    result[0, 2] = t_e_1                 # 无匀速时间
+    result[0, 2] = round(t_e_1,2)        # 匀速时间
     result[0, 3] = t_stay_1              # 边部停顿时间
     result[0, 4] = num_1                 # 圆整磨头数
     result[0, 5] = a_1*t_a**2+a_1*t_a*t_e_1
     # 模式二
     result[1, 0] = v1
     result[1, 1] = round(a_2 * t_a, 2)   # 横梁摆动速度
-    result[1, 2] = t_e_2
+    result[1, 2] = round(t_e_2,2)
     result[1, 3] = t_stay_2
     result[1, 4] = num_2                 # 圆整磨头数
     result[1, 5] = a_2*t_a**2+a_2*t_a*t_e_2
