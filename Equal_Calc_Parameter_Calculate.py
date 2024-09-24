@@ -1,6 +1,6 @@
 import numpy as np
 import math
-
+# 第一版算法
 def equal_num_calculate(v1,ceramic_width,between,R,overlap,a):
     # 计算最佳斜率（轨迹重叠overlap mm）
     theta = math.asin((2 * R - overlap) / between)
@@ -46,15 +46,14 @@ def equal_num_calculate(v1,ceramic_width,between,R,overlap,a):
     result[1, 4] = num_1+2  # 圆整磨头数
     result[1, 5] = B
     return result
-
-def equal_num_calculate_new(v1,ceramic_width,between,R,t_a):
+# 第二版算法
+def equal_num_calculate_new_1(v1,ceramic_width,between,R,t_a):
     # 初步计算  为了增加摆频，忽略匀速阶段，直接：加速-减速-停顿-加速-减速-停顿
     B = (ceramic_width + 120) - 2 * R  # 摆幅（要求两极限位置各伸出60mm）
     # a = B/t_a/t_a
     # 边部停留时间直接固定  1.2s   1.5s
     t_stay_1=1.2
     t_stay_2=1.5
-
     period_1=4*t_a+2*t_stay_1
     period_2=4*t_a+2*t_stay_2
     num_1=math.ceil(v1 * period_1 / between)
@@ -80,4 +79,38 @@ def equal_num_calculate_new(v1,ceramic_width,between,R,t_a):
     result[1, 3] = t_stay_2
     result[1, 4] = num_2                 # 圆整磨头数
     result[1, 5] = a_2*t_a**2+a_2*t_a*t_e_2
+    return result
+# 第三版算法
+def equal_num_calculate_new(v1,ceramic_width,between,R,t_a):
+    # 初步计算  为了增加摆频，忽略匀速阶段，直接：加速-减速-停顿-加速-减速-停顿
+    B = (ceramic_width + 120) - 2 * R  # 摆幅（要求两极限位置各伸出60mm）
+    # a = B/t_a/t_a
+    # 边部停留时间直接固定  1.2s   1.5s
+    t_stay_1=0.6
+    t_stay_2=1.5
+    period_1=4*t_a+2*t_stay_1
+    period_2=4*t_a+2*t_stay_2
+    num_1=math.ceil(v1 * period_1 / between)
+    num_2=math.ceil(v1 * period_2 / between)
+    t_zeng_1=(num_1*between/v1-period_1)/2
+    t_zeng_2=(num_2*between/v1-period_2)/2
+    # a*t_a**2 + a * t_a * t_e_1 = B
+    a_1=B/t_a**2
+    a_2=B/t_a**2
+    # 输出项
+    result=np.zeros((2,6))
+    # 模式一
+    result[0,0] = v1
+    result[0,1] = round(a_1 * t_a, 2)    # 横梁摆动速度
+    result[0, 2] = 0                     # 匀速时间
+    result[0, 3] = round(t_stay_1+t_zeng_1,2)              # 边部停顿时间
+    result[0, 4] = num_1                 # 圆整磨头数
+    result[0, 5] = a_1*t_a**2
+    # 模式二
+    result[1, 0] = v1
+    result[1, 1] = round(a_2 * t_a, 2)   # 横梁摆动速度
+    result[1, 2] = 0
+    result[1, 3] = round(t_stay_2+t_zeng_2,2)
+    result[1, 4] = num_2                 # 圆整磨头数
+    result[1, 5] = a_2*t_a**2
     return result
