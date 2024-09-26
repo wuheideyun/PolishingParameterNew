@@ -12,6 +12,7 @@ class middle_line_plot():
         self.a = a
         self.num = num
         self.between = between
+        self.n=6
     def inner_calculate(self):
         # 参数赋值
         v1 = self.v1
@@ -31,7 +32,7 @@ class middle_line_plot():
         t8 = motionless_t
         period = 4 * accelerate_t + 2 * motionless_t + 2 * constant_t
         # 正式计算
-        n = 3
+        n = self.n
         msize = 0.01
         time = np.arange(0, period, msize)  # 时间变量
         T_size = math.floor(period / msize)  # 单周期步长
@@ -86,7 +87,7 @@ class middle_line_plot():
         return single_X_location,single_Y_location
     def figure_plot(self):
         msize = 0.01
-        n=3
+        n=self.n
         accelerate_t=self.v2/self.a
         constant_t=self.constant_t
         motionless_t=self.motionless_t
@@ -98,7 +99,7 @@ class middle_line_plot():
         fig=plt.figure('磨头中心轨迹曲线',figsize=(10,4))
         #fig.suptitle('磨头中心轨迹曲线')
         ax=fig.add_subplot(111)
-        ax.set_xlim((-200,period * 3 * self.v1+self.between))
+        ax.set_xlim((-200,period * self.n * self.v1+self.between))
         ax.set_ylim((-200, self.a * (self.v2 / self.a) ** 2 + self.v2 * self.constant_t + 600))
         ax.set_aspect('equal', adjustable='box')
         # 设置图片文本

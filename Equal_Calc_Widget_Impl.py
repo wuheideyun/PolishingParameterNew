@@ -185,17 +185,18 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         ceramic_width = float(self.lineEdit_ceramic_width.text())
         between = float(self.lineEdit_between.text())
         R = float(self.lineEdit_radius.text())
-        beam_accelerate_time = float(self.lineEdit_beam_accelerate_time.text())  # 加减速时间
+        a = float(self.lineEdit_accelerate.text())  # 加速度大小
+        #beam_accelerate_time = float(self.lineEdit_beam_accelerate_time.text())  # 加减速时间
         # beam_speed_up = float(self.lineEdit_beam_speed_up.text())
 
-        result = equal_num_calculate_new(v1, ceramic_width, between, R, beam_accelerate_time)
+        result = equal_num_calculate_new(v1, ceramic_width, between, R, a)
 
         self.lineEdit_beam_swing_speed.setText(str(result[0, 1]))
         self.lineEdit_num.setText(str(result[0, 4]))
         self.lineEdit_stay_time.setText(str(result[0, 3]))
         self.lineEdit_beam_constant_time.setText(str(result[0, 2]))
         self.lineEdit_swing.setText(str(result[0, 5]))
-        self.lineEdit_accelerate.setText(str(round(result[0, 1] / beam_accelerate_time, 2)))
+        self.lineEdit_beam_accelerate_time.setText(str(result[0, 6]))
         # log_equal_cal_parm_change(self.button_energy_calculate.objectName(), self.lineEdit_between.text(),
         #                           self.lineEdit_grind_size.text(),
         #                           self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(),
@@ -215,17 +216,18 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         ceramic_width = float(self.lineEdit_ceramic_width.text())
         between = float(self.lineEdit_between.text())
         R = float(self.lineEdit_radius.text())
-        beam_accelerate_time = float(self.lineEdit_beam_accelerate_time.text())  # 加减速时间
+        a = float(self.lineEdit_accelerate.text())  # 加速度大小
+        # beam_accelerate_time = float(self.lineEdit_beam_accelerate_time.text())  # 加减速时间
         # beam_speed_up = float(self.lineEdit_beam_speed_up.text())
 
-        result = equal_num_calculate_new(v1, ceramic_width, between, R, beam_accelerate_time)
+        result = equal_num_calculate_new(v1, ceramic_width, between, R, a)
 
         self.lineEdit_beam_swing_speed.setText(str(result[1, 1]))
         self.lineEdit_num.setText(str(result[1, 4]))
         self.lineEdit_stay_time.setText(str(result[1, 3]))
         self.lineEdit_beam_constant_time.setText(str(result[1, 2]))
         self.lineEdit_swing.setText(str(result[1, 5]))
-        self.lineEdit_accelerate.setText(str(round(result[1, 1] / beam_accelerate_time, 2)))
+        self.lineEdit_beam_accelerate_time.setText(str(result[1, 6]))
         log_equal_cal_parm_change(self.button_energy_calculate.objectName(), self.lineEdit_between.text(),
                                   self.lineEdit_grind_size.text(),
                                   self.lineEdit_belt_speed.text(), self.lineEdit_accelerate.text(),
