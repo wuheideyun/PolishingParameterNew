@@ -390,11 +390,12 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         constant_time=float(self.lineEdit_beam_constant_time.text())
         stay_time=float(self.lineEdit_stay_time.text())
         a_speed=float(self.lineEdit_accelerate.text())
-        num=math.ceil(float(self.lineEdit_num.text()))
+        group = float(self.lineEdit_group_count.text())
+        num=math.ceil(float(self.lineEdit_num.text())/group)
         between=float(self.lineEdit_between.text())
         between_beam = float(self.lineEdit_between_beam.text())
         delay_time = float(self.lineEdit_delay_time.text())
-        group = float(self.lineEdit_group_count.text())
+
         mid_var=middle_line_plot_self_define_order(belt_speed,beam_speed,constant_time,stay_time,a_speed,num,between,between_beam,delay_time,group)
         mid_var.figure_plot()
         log_double_cal_parm_change(self.button_middle_line_order_define.objectName(), self.lineEdit_between.text(),

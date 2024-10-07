@@ -6,7 +6,8 @@ def self_define_calculate(v1,ceramic_width,between,between_beam,R,a,num,group):
     t_all=round(distance_period/v1,2)
     # 边部停留时间设定
     if ceramic_width >= 1200:
-        t2 = 0.8
+        #t2 = 0.8
+        t2=1.51
     else:
         t2 = 0.6
     t_a_in=(t_all-2*t2)/2
