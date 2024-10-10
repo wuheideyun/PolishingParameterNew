@@ -189,9 +189,9 @@ def equal_num_calculate_new_4(v1,ceramic_width,between,R,a):
     result[1, 6] = round(t_a, 2)
     return result
 # 第六版算法（单周期）
-def equal_num_calculate_new_(v1,ceramic_width,between,R,a):
+def equal_num_calculate_new(v1,ceramic_width,between,R,a):
     # 初步计算  为了增加摆频，忽略匀速阶段，直接：加速-减速-停顿-加速-减速-停顿
-    B = (ceramic_width + 120) - 2 * R  # 摆幅（要求两极限位置各伸出60mm）
+    B = (ceramic_width + 2*100) - 2 * R  # 摆幅（要求两极限位置各伸出60mm）
     # a = B/t_a/t_a
     # 边部停留时间直接固定  1.2s   1.5s
     t_stay_1=0.8
@@ -236,13 +236,13 @@ def equal_num_calculate_new_(v1,ceramic_width,between,R,a):
     result[1, 6] = round(t_a_2, 2)
     return result
 # 第六版算法（双周期）
-def equal_num_calculate_new(v1,ceramic_width,between,R,a):
+def equal_num_calculate_new_(v1,ceramic_width,between,R,a):
     # 初步计算  为了增加摆频，忽略匀速阶段，直接：加速-减速-停顿-加速-减速-停顿
-    B = (ceramic_width + 120) - 2 * R  # 摆幅（要求两极限位置各伸出60mm）
+    B = (ceramic_width + 2*100) - 2 * R  # 摆幅（要求两极限位置各伸出60mm）
     # a = B/t_a/t_a
     # 边部停留时间直接固定  1.2s   1.5s
     t_stay_1=0.8
-    t_stay_2=1.5
+    t_stay_2=1.2
     t_a = (B / a) ** 0.5
     period_1=4*t_a+2*t_stay_1
     period_2=4*t_a+2*t_stay_2

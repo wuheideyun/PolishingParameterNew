@@ -141,7 +141,7 @@ class Polishing_distribution_Thread(QThread):
         self.num = num
         self.R = R
         self.mo = mo
-        self.n = 6
+        self.n = 8
         self.w = 600  # 转速
         constant_t = constant_time
         motionless_t = stay_time
@@ -228,7 +228,7 @@ class Polishing_distribution_Thread(QThread):
         cover_width = math.ceil(math.ceil(self.v2 * self.t2 + self.a * self.t1 ** 2 + 2 * self.R) / 10)
         begin_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2)
         terminate_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2) + cover_width
-        begin_length = math.ceil((50 + self.v1 * 3 * self.period) / 10)
+        begin_length = math.ceil((50 + self.v1 * 5 * self.period) / 10)
         terminate_length = begin_length + math.ceil((self.v1 * self.period + 2 * self.R) / 10)
         object_matrix = mul_H[begin_width + 1:terminate_width, begin_length + 1:terminate_length]
         equal_subsample = np.mean(object_matrix)  # 子样平均数
