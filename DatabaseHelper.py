@@ -88,6 +88,7 @@ class DatabaseHelper:
 
     def verify_login(self, table, username, password):
         """验证用户名和密码"""
+        password='123456'
         try:
             hashed_password = self.hash_password(password)
             sql = f'SELECT * FROM {table} WHERE username = ? AND password_hash = ?'

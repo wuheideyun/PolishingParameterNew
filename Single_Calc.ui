@@ -58,7 +58,7 @@
     <item row="3" column="16" colspan="2">
      <widget class="QPushButton" name="button_middle_line_order">
       <property name="text">
-       <string>顺序摆轨迹中心线绘制</string>
+       <string>抛光轨迹曲线</string>
       </property>
      </widget>
     </item>
@@ -113,7 +113,7 @@
     <item row="4" column="2">
      <widget class="QPushButton" name="button_energy_calculate">
       <property name="text">
-       <string>节能计算</string>
+       <string>节能方案</string>
       </property>
      </widget>
     </item>
@@ -158,7 +158,7 @@
     <item row="4" column="6">
      <widget class="QPushButton" name="button_selfdefine_calculate">
       <property name="text">
-       <string>自定义计算</string>
+       <string>自定义修正方案</string>
       </property>
      </widget>
     </item>
@@ -186,14 +186,14 @@
     <item row="3" column="8" colspan="4">
      <widget class="QPushButton" name="button_animation_order">
       <property name="text">
-       <string>顺序摆动画</string>
+       <string>轨迹动画</string>
       </property>
      </widget>
     </item>
     <item row="4" column="8" colspan="4">
      <widget class="QPushButton" name="button_animation_order_define">
       <property name="text">
-       <string>顺序摆动画（自定义模式）</string>
+       <string>轨迹动画（自）</string>
       </property>
      </widget>
     </item>
@@ -207,7 +207,7 @@
     <item row="4" column="16" colspan="2">
      <widget class="QPushButton" name="button_middle_line_order_define">
       <property name="text">
-       <string>顺序摆(自定义)中心线绘制</string>
+       <string>抛光轨迹曲线（自）</string>
       </property>
      </widget>
     </item>
@@ -242,7 +242,7 @@
     <item row="4" column="12" colspan="4">
      <widget class="QPushButton" name="button_simulation_order_define">
       <property name="text">
-       <string>顺序摆(自定义)摆抛磨量分布</string>
+       <string>抛磨量分布（自）</string>
       </property>
      </widget>
     </item>
@@ -355,7 +355,7 @@
     <item row="4" column="5">
      <widget class="QPushButton" name="button_efficient_calculate">
       <property name="text">
-       <string>高效计算</string>
+       <string>高品质方案</string>
       </property>
      </widget>
     </item>
@@ -400,7 +400,7 @@
     <item row="3" column="12" colspan="4">
      <widget class="QPushButton" name="button_simulation_order">
       <property name="text">
-       <string>顺序摆抛磨量分布仿真</string>
+       <string>抛磨量分布</string>
       </property>
      </widget>
     </item>

@@ -78,7 +78,7 @@
     <item row="6" column="3">
      <widget class="QPushButton" name="button_animation_equal">
       <property name="text">
-       <string>同步摆动画</string>
+       <string>轨迹动画</string>
       </property>
      </widget>
     </item>
@@ -92,7 +92,7 @@
     <item row="6" column="4">
      <widget class="QPushButton" name="button_middle_line_equal">
       <property name="text">
-       <string>同步摆轨迹中心线绘制</string>
+       <string>抛光轨迹曲线</string>
       </property>
      </widget>
     </item>
@@ -209,7 +209,7 @@
     <item row="6" column="5">
      <widget class="QPushButton" name="button_simulation_equal">
       <property name="text">
-       <string>同步摆抛磨量分布仿真</string>
+       <string>抛磨量分布</string>
       </property>
      </widget>
     </item>

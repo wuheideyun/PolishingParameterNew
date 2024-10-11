@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1017</width>
-    <height>686</height>
+    <height>684</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -51,7 +51,7 @@
     <item row="4" column="6" colspan="2">
      <widget class="QPushButton" name="button_middle_line_equal">
       <property name="text">
-       <string>同步摆轨迹中心线绘制</string>
+       <string>抛光轨迹曲线（同）</string>
       </property>
      </widget>
     </item>
@@ -65,14 +65,14 @@
     <item row="5" column="4" colspan="2">
      <widget class="QPushButton" name="button_simulation_order">
       <property name="text">
-       <string>顺序摆抛磨量分布仿真</string>
+       <string>抛磨量分布（顺）</string>
       </property>
      </widget>
     </item>
     <item row="4" column="4" colspan="2">
      <widget class="QPushButton" name="button_simulation_equal">
       <property name="text">
-       <string>同步摆抛磨量分布仿真</string>
+       <string>抛磨量分布（同）</string>
       </property>
      </widget>
     </item>
@@ -135,7 +135,7 @@
     <item row="4" column="3">
      <widget class="QPushButton" name="button_animation_equal">
       <property name="text">
-       <string>同步摆动画</string>
+       <string>轨迹动画（同）</string>
       </property>
      </widget>
     </item>
@@ -149,7 +149,7 @@
     <item row="6" column="3">
      <widget class="QPushButton" name="button_animation_cross">
       <property name="text">
-       <string>交叉摆动画</string>
+       <string>轨迹动画（交）</string>
       </property>
      </widget>
     </item>
@@ -163,7 +163,7 @@
     <item row="6" column="4" colspan="2">
      <widget class="QPushButton" name="button_simulation_cross">
       <property name="text">
-       <string>交叉抛磨量分布仿真</string>
+       <string>抛磨量分布（交）</string>
       </property>
      </widget>
     </item>
@@ -177,14 +177,14 @@
     <item row="5" column="3">
      <widget class="QPushButton" name="button_animation_order">
       <property name="text">
-       <string>顺序摆动画</string>
+       <string>轨迹动画（顺）</string>
       </property>
      </widget>
     </item>
     <item row="5" column="6" colspan="2">
      <widget class="QPushButton" name="button_middle_line_order">
       <property name="text">
-       <string>顺序摆轨迹中心线绘制</string>
+       <string>抛光轨迹曲线（顺）</string>
       </property>
      </widget>
     </item>
@@ -249,7 +249,7 @@
     <item row="6" column="6" colspan="2">
      <widget class="QPushButton" name="button_middle_line_cross">
       <property name="text">
-       <string>交叉摆轨迹中心线绘制</string>
+       <string>抛光轨迹曲线（交）</string>
       </property>
      </widget>
     </item>
