@@ -6,6 +6,10 @@
         <file alias="dickbookred">./Resources/dickbookred.png</file>
         <file alias="firstpagegray">./Resources/firstpagegray.png</file>
         <file alias="firstpagered">./Resources/firstpagered.png</file>
+        <file alias="kedalogo">./Resources/KEDA.png</file>
+        <file alias="kedalogo2">./Resources/KEDA(1).png</file>
+        <file alias="single_click">./Resources/single_click.png</file>
+        <file alias="quora">./Resources/quora.png</file>
         <file alias="mytransgray">./Resources/mytransgray.png</file>
         <file alias="mytransred">./Resources/mytransred.png</file>
         <file alias="shotimg">./Resources/shotimg.png</file>
@@ -23,6 +27,7 @@
         <file alias="normal16">./Resources/normal16.svg</file>
         <file alias="min16">./Resources/min16.svg</file>
         <file alias="menu16">./Resources/menu16.svg</file>
+        <file alias="homepage">./Resources/homepage.png</file>
         <file alias="login_logo">./Resources/LoginDlg/login_logo.svg</file>
         <file alias="login_logo2">./Resources/LoginDlg/login_logo2.jpg</file>
         <file alias="login_logo3">./Resources/LoginDlg/login_logo3.jpg</file>

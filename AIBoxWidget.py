@@ -68,6 +68,7 @@ class AIBoxWidget(QWidget):
                         border-radius: 10px;
                         color: white;
                         padding: 5px;
+                        outline: none;  /* 去掉按钮的虚线框 */
                     }
 
                     QPushButton:pressed {

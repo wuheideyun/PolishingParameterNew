@@ -54,7 +54,7 @@ class TitleBar(QWidget):
         self.menu.addSeparator()
         # self.menu.addAction("意见反馈")
         # self.menu.addAction("关于")
-        self.menu.addAction("退出登录", self.action2_triggered)
+        # self.menu.addAction("退出登录", self.action2_triggered)
 
         self.btnMenu.setMenu(self.menu)
 
@@ -96,6 +96,7 @@ class TitleBar(QWidget):
 
         qss001 = '''
             QPushButton {
+                outline: none;  /* 去掉按钮的虚线框 */
                 border: none;
                 background-image: url(:menu16);
                 background-position: center center;
@@ -128,6 +129,7 @@ class TitleBar(QWidget):
 
         self.btnMax.setStyleSheet("""
             QPushButton {
+                outline: none;  /* 去掉按钮的虚线框 */
                 border: none; /* 无边框 */
             }
 

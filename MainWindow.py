@@ -32,9 +32,14 @@ class MainWindow(QMainWindow):
         # 设置主窗口的标题
         self.setWindowTitle("科达系统")
 
+        self.setStyleSheet('''
+            QPushButton: focus{
+                outline: none; / *去掉按钮的虚线框 * /
+            }
+        ''')
         # self.setStyleSheet('''
-        #     background-color:blue;
-        #     border-radius:10px;
+        #     # background-color:blue;
+        #     border-radius:15px;
         # ''')
 
         mainHLay = QHBoxLayout()
@@ -75,15 +80,18 @@ class MainWindow(QMainWindow):
 
         self.statusBar = QStatusBar()
         self.statusBar.showMessage("欢迎使用，请登录！")
+        self.statusBar.setFixedWidth(200)
         hLayBottom.addWidget(self.statusBar)
-        self.statusBar2 = QStatusBar()
-        self.statusBar2.showMessage("激活状态：")
-        self.statusBar2.setFixedWidth(70)
-        hLayBottom.addSpacerItem(QSpacerItem(555, 5, QSizePolicy.Expanding, QSizePolicy.Minimum)) # 占位
-        hLayBottom.addWidget(self.statusBar2)
+        hLayBottom.addSpacerItem(QSpacerItem(580, 5, QSizePolicy.Expanding, QSizePolicy.Minimum)) # 占位
 
+        self.statusLabel1 = QLabel("激活状态：")
+        self.statusLabel1.setAlignment(Qt.AlignCenter)
+        hLayBottom.addWidget(self.statusLabel1)
 
-        self.statusLabel = QLabel("999分钟")
+        self.statusLabel = QLabel("未激活！")
+        self.statusLabel.setWordWrap(False)
+        self.statusLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        # self.statusLabel.setFixedWidth(190)
         self.statusLabel.setAlignment(Qt.AlignLeft)
         self.statusLabel.setStyleSheet('''
             QLabel {
@@ -94,7 +102,8 @@ class MainWindow(QMainWindow):
         ''')
         self.statusBar3 = QStatusBar()
         self.statusBar3.addWidget(self.statusLabel)
-        self.statusBar3.setFixedWidth(90)
+        # self.statusBar3.setFixedWidth(190)
+        self.statusBar3.setContentsMargins(0,0,0,0)
         hLayBottom.addWidget(self.statusBar3)
         vLay.addLayout(hLayBottom)
 
