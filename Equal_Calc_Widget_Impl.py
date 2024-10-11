@@ -281,7 +281,8 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
         plt.colorbar(im, cax=cax)
         plt.show()  # 显示函数图像
         '''
-        polishing_distribution_Plot(object_matrix)
+        ceramic=self.lineEdit_ceramic_width.text()
+        polishing_distribution_Plot(object_matrix,ceramic)
         self.lineEdit_coefficient.setText(result)
         self.button_simulation_equal.setEnabled(True)
     # 轨迹动画生成子线程

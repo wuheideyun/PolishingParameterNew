@@ -252,7 +252,8 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         plt.colorbar(im, cax=cax)
         plt.show()  # 显示函数图像
         '''
-        polishing_distribution_Plot(object_matrix)
+        ceramic = self.lineEdit_ceramic_width.text()
+        polishing_distribution_Plot(object_matrix, ceramic)
         self.lineEdit_coefficient.setText(str(result))
         #equal_coefficient
         self.button_simulation_order.setEnabled(True)

@@ -12,7 +12,7 @@ class middle_line_plot():
         self.a = a
         self.num = num
         self.between = between
-        self.n=6
+        self.n=3
     def inner_calculate(self):
         # 参数赋值
         v1 = self.v1

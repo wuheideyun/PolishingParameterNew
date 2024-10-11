@@ -261,7 +261,8 @@ class SingleCalcWidgetImpl(QWidget, Single_Calc.Ui_MainWindow):
         if self.needReCalculation():
             QMessageBox.information(None, '提示', '参数已经更改，请重新点击【计算】后再执行此操作！')
             return
-        polishing_distribution_Plot(object_matrix)
+        ceramic = self.lineEdit_ceramic_width.text()
+        polishing_distribution_Plot(object_matrix, ceramic)
         self.button_simulation_order.setEnabled(True)
         self.button_simulation_order_define.setEnabled(True)
         self.lineEdit_coefficient.setText(result)
