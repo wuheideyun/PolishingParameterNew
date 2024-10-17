@@ -235,18 +235,18 @@ class LoginDialog(FrameLessDialog):
         self.save_username()
         # 实际项目里登录使用http post
 
-        # if username == "" or password == "":
-        #     msgbox = PopupMessageBox("提示", "用户名或密码为空")
-        #     msgbox.setFixedSize(200,100)
-        #     msgbox.exec()
-        #
-        #     self.sig_login_failure.emit()
-        #     return
+        if username == "" or password == "":
+            msgbox = PopupMessageBox("提示", "用户名或密码为空")
+            msgbox.setFixedSize(200,100)
+            msgbox.exec()
+
+            self.sig_login_failure.emit()
+            return
 
         if self.db.verify_login('users', username, password):
-            # msgbox = PopupMessageBox("提示", "登录成功!")
-            # msgbox.setFixedSize(200, 100)
-            # msgbox.exec()
+            msgbox = PopupMessageBox("提示", "登录成功!")
+            msgbox.setFixedSize(200, 100)
+            msgbox.exec()
             if username == "administrator":
                 self.sig_login_administrator_success.emit()
             else:
