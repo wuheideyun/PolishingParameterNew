@@ -24,6 +24,7 @@ class ContentWidget(QWidget):
         self.setMouseTracking(True)
         self.setAttribute(Qt.WA_StyledBackground)  # 禁止父窗口样式影响子控件样式
 
+        # 右侧主界面样式
         self.setStyleSheet('''
             QWidget {
                 background-color: white;
@@ -101,14 +102,17 @@ class ContentWidget(QWidget):
         self.wDoubleCalc = QMainWindow()
         self.wDoubleCalc.setContentsMargins(0, 0, 0, 0)
         self.wDoubleCalcWidgetImpl = DoubleCalcWidgetImpl(self.wDoubleCalc)
+
         # 双头摆仿真界面
         self.wDoubleSim = QMainWindow()
         self.wDoubleSim.setContentsMargins(0, 0, 0, 0)
         self.wDoubleSimWidgetImpl = DoubleSimWidgetImpl(self.wDoubleSim)
+
         # 单头摆计算界面
         self.wSingleCalc = QMainWindow()
         self.wSingleCalc.setContentsMargins(0, 0, 0, 0)
         self.wSingleCalcWidgetImpl = SingleCalcWidgetImpl(self.wSingleCalc)
+
         # 单头摆仿真界面
         self.wSingleSim = QMainWindow()
         self.wSingleSim.setContentsMargins(0, 0, 0, 0)
@@ -125,17 +129,11 @@ class ContentWidget(QWidget):
         self.stackedWidget.addWidget(self.wDoubleSim)
         self.stackedWidget.addWidget(self.wSingleCalc)
         self.stackedWidget.addWidget(self.wSingleSim)
-
-
-
         mainVLay.addWidget(self.stackedWidget)
-
         self.stackedWidget.setVisible(False)
-
-
         self.setLayout(mainVLay)
 
-        self.gotoPage(0)
+        # self.gotoPage(0)
 
     def gotoPage(self, index = 0):
         self.stackedWidget.setCurrentIndex(index)

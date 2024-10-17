@@ -47,7 +47,6 @@ class DatabaseCheckThread(QThread):
                     '6MO': 15552000,  # 6个月码
                     'PERM': float('inf'),  # 永久码
                 }
-
                 if duration_type == 'PERM':
                     # self.is_running = False
                     return "永久!"
@@ -55,9 +54,8 @@ class DatabaseCheckThread(QThread):
                 valid_duration = duration_map.get(duration_type, 0)
                 timeStamp = int(time.mktime(time.strptime(result[1], "%Y-%m-%d %H:%M:%S")))
                 if current_time > timeStamp + valid_duration:
-                    return "未激活！"
+                    return "已过期！"
                 else:
-
                     return str(self.time_shift(timeStamp + valid_duration - current_time))
             else:
                 return "未激活！"

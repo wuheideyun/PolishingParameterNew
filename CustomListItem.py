@@ -26,7 +26,7 @@ class CustomListItem(QWidget):
         hLay = QHBoxLayout()
         self.setLayout(hLay)
 
-        item_w = 112
+        item_w = 172
         item_h = 42
         self.setFixedSize(item_w, item_h)
 
@@ -35,6 +35,10 @@ class CustomListItem(QWidget):
 
         self.setStyleSheet('''
             QWidget {
+                outline: none;              /* 去掉虚线框 */
+                color: white;
+                font-size: 14px;
+                border: 0px solid transparent;
                 background-color: transparent;
             }
         ''')
@@ -47,7 +51,7 @@ class CustomListItem(QWidget):
         self.labelLeft.setScaledContents(True)
 
         self.labelRight = QLabel(text, self)
-        self.labelRight.setFixedSize(60, 32)
+        self.labelRight.setFixedSize(70, 32)
 
         hLay.addWidget(self.labelLeft)
         hLay.addWidget(self.labelRight)

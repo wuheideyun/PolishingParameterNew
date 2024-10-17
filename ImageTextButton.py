@@ -4,7 +4,7 @@
 
 '''
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QPushButton
 
@@ -21,11 +21,12 @@ class ImageTextButton(QPushButton):
         self.setFixedSize(fix_w, fix_h)
         self.setText(str)  # 设置按钮文字
         self.setIcon(QIcon(image_path))  # 设置按钮图标
-
+        self.setIconSize(QSize(fix_w, fix_h))
         self.setStyleSheet("""
             QPushButton {
                 text-align: left; /* 文字左对齐 */
                 border: none; /* 无边框 */
+                color: white;
             }
             
             QPushButton:hover {

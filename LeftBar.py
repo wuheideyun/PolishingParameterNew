@@ -32,20 +32,20 @@ class LeftBar(QWidget):
         super().__init__()
         self.setMouseTracking(True)
         self.loginDialog = LoginDialog()
-        item_w = 111
+        item_w = 141
         w = item_w + 40
         self.setFixedWidth(w)
 
         self.setAttribute(Qt.WA_StyledBackground)  # 禁止父窗口样式影响子控件样式
 
         self.setStyleSheet('''
-                    QWidget {
-                        background-color: rgb(251, 245, 255);
-                        border: none;
-                        border-top-left-radius:10px solid #cccccc;
-                        border-bottom-left-radius:10px solid #cccccc;
-                    }
-                ''')
+            QWidget {
+                background-color: rgb(50, 126, 188);
+                border: none;
+                border-top-left-radius:10px 10px 0 0 solid #cccccc;
+                border-bottom-left-radius:10px 10px 0 0 solid #cccccc;
+            }
+        ''')
 
         mainVLay = QVBoxLayout()
         mainVLay.setContentsMargins(0, 10, 0, 0)
@@ -55,13 +55,16 @@ class LeftBar(QWidget):
         # hlay00.addSpacerItem(QSpacerItem(50, 20, QSizePolicy.Fixed, QSizePolicy.Minimum))
 
         self.loginBtn = QPushButton("")
-        self.loginBtn.setFixedSize(130, 50)
+        self.loginBtn.setFixedSize(140, 50)
         self.loginBtn.setStyleSheet("""
             QPushButton {
-                border: none;
-                background-image: url(:login_logo4);
-                background-position: center center;
+                background-image: url(:kedalogo2);
                 background-repeat: no-repeat;
+                background-position: center;
+                background-size: contain;
+                border: none;
+                outline: none;  /* 去掉按钮的虚线框 */
+                font-color: white;
             }
         """)
 
@@ -75,22 +78,23 @@ class LeftBar(QWidget):
 
         roundedButtonStyle = """
             QPushButton {
-                background-color: rgb(255,216,188);
+                color: white;
+                background-color: rgb(50,126,188);
                 border-style: solid;
-                border-color: rgb(255,216,188);
+                border-color: rgb(50,126,188);
                 border-width: 0px;
-                border-radius: 10px;
-                color: rgb(44,33,65);
+                border-radius: 10px 10px 0 0;
                 padding: 5px;
-                font-size: 14px;
+                font-size: 18px;
+                outline: none;  /* 去掉按钮的虚线框 */
             }
     
             QPushButton:pressed {
-                background-color: rgb(105,216,188);
+                background-color: rgb(34,90,137);
             }
     
             QPushButton:hover {
-                background-color: rgb(205,216,188);
+                background-color: rgb(48,122,181);
             }
         """
 
@@ -98,8 +102,7 @@ class LeftBar(QWidget):
         self.h_spacer002 = QSpacerItem(15, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)  # Minimum  Expanding
         self.h_spacer003 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)  # Minimum  Expanding
         hlay01.addSpacerItem(self.h_spacer002)
-        self.vipInfo = QPushButton('会员登录')
-        self.vipInfo.setFixedSize(100, 32)
+        self.vipInfo = ImageTextButton(':homepage','会员登录',120,35)
         self.vipInfo.setStyleSheet(roundedButtonStyle)
         self.vipInfo.clicked.connect(self.OnShowLoginDlg)
         hlay01.addWidget(self.vipInfo)
@@ -117,42 +120,42 @@ class LeftBar(QWidget):
 
         # 创建QListWidget实例
         self.listWidget = QListWidget()
-        self.listWidget.setFixedSize(w - 1, 42 * 7 + 250)
+        self.listWidget.setFixedSize(w - 20, 42 * 7 + 250)
 
         # 连接点击事件
         self.listWidget.itemClicked.connect(self.item_clicked)
 
-        self.firstPageItem_widget = CustomListItem(":firstpagered", "同步摆计算")
+        self.firstPageItem_widget = CustomListItem(":single_click", "同步摆计算")
         self.firstPageItem_widget.setContentsMargins(8,0,20,0)
         self.firstPage_item = QListWidgetItem(self.listWidget)
         self.firstPage_item.setSizeHint(self.firstPageItem_widget.sizeHint())
         self.listWidget.setItemWidget(self.firstPage_item, self.firstPageItem_widget)
 
-        self.transItem_widget = CustomListItem(":transred", "同步摆仿真")
+        self.transItem_widget = CustomListItem(":quora", "同步摆仿真")
         self.transItem_widget.setContentsMargins(8,0,20,0)
         self.trans_item = QListWidgetItem(self.listWidget)
         self.trans_item.setSizeHint(self.transItem_widget.sizeHint())
         self.listWidget.setItemWidget(self.trans_item, self.transItem_widget)
 
-        self.writeItem_widget = CustomListItem(":writered", "双头摆计算")
+        self.writeItem_widget = CustomListItem(":single_click", "双头摆计算")
         self.writeItem_widget.setContentsMargins(8,0,20,0)
         self.write_item = QListWidgetItem(self.listWidget)
         self.write_item.setSizeHint(self.writeItem_widget.sizeHint())
         self.listWidget.setItemWidget(self.write_item, self.writeItem_widget)
 
-        self.soulunwenItem_widget = CustomListItem(":soulunwenred", "双头摆仿真")
+        self.soulunwenItem_widget = CustomListItem(":quora", "双头摆仿真")
         self.soulunwenItem_widget.setContentsMargins(8,0,20,0)
         self.soulunwen_item = QListWidgetItem(self.listWidget)
         self.soulunwen_item.setSizeHint(self.soulunwenItem_widget.sizeHint())
         self.listWidget.setItemWidget(self.soulunwen_item, self.soulunwenItem_widget)
 
-        self.dicbookItem_widget = CustomListItem(":dickbookred", "单头摆计算")
+        self.dicbookItem_widget = CustomListItem(":single_click", "单头摆计算")
         self.dicbookItem_widget.setContentsMargins(8,0,20,0)
         self.dicbook_item = QListWidgetItem(self.listWidget)
         self.dicbook_item.setSizeHint(self.dicbookItem_widget.sizeHint())
         self.listWidget.setItemWidget(self.dicbook_item, self.dicbookItem_widget)
 
-        self.mytransItem_widget = CustomListItem(":mytransred", "单头摆仿真")
+        self.mytransItem_widget = CustomListItem(":quora", "单头摆仿真")
         self.mytransItem_widget.setContentsMargins(8,0,20,0)
         self.mytrans_item = QListWidgetItem(self.listWidget)
         self.mytrans_item.setSizeHint(self.mytransItem_widget.sizeHint())
@@ -160,9 +163,9 @@ class LeftBar(QWidget):
 
         mainVLay.addWidget(self.listWidget)
 
-        self.spacer = QSpacerItem(40, 20, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.spacer = QSpacerItem(40, 120, QSizePolicy.Minimum, QSizePolicy.Expanding)
         mainVLay.addSpacerItem(self.spacer)
-
+        mainVLay.setContentsMargins(10,10,10,10)
         # self.btnShotTrans = ImageTextButton(":shotimg", "工具")
         # self.btnShotTrans.setFixedSize(92, 32)
         #
@@ -206,16 +209,21 @@ class LeftBar(QWidget):
         self.setLayout(mainVLay)
 
         style_sheet = """
-            QListWidget {
-                background-color:rgb(251, 245, 255);
-                border: none; /* 隐藏边框 */
+            QListWidget::item:selected {
+                background-color: #2E5C92;  /* 背景颜色 */
+                color: white;               /* 文字颜色 */
+                border-radius: 10px;
+                border-right: 5px solid red;  /* 右侧的红色边框 */
             }
-    
+            QListWidget {
+                background-color:rgb(50, 126, 188);
+                border: none; /* 隐藏边框 */
+                outline: none;  /* 去掉 QListWidget 选中项的虚线框 */
+            }
             QListWidget::verticalScrollBar {
                 width: 0px; /* 将滚动条宽度设置为0，实际上是隐藏它 */
             }
         """
-
         # 假设你有一个QListWidget实例叫做myListWidget
         self.listWidget.setStyleSheet(style_sheet)
 
@@ -240,17 +248,17 @@ class LeftBar(QWidget):
             self.loginDialog.open_login()
     def item_clicked(self, item):
         # 重置所有项的自定义属性
-        for index in range(self.listWidget.count()):
-            self.listWidget.item(index).setData(Qt.UserRole, False)
+        # for index in range(self.listWidget.count()):
+        #     self.listWidget.item(index).setData(Qt.UserRole, False)
 
         index = self.listWidget.row(item)
         self.sig_ListIndex.emit(index)
 
         # 设置被点击项的自定义属性
-        item.setData(Qt.UserRole, True)
+        # item.setData(Qt.UserRole, True)
 
         # 更新样式
-        self.update_stylesheet()
+        # self.update_stylesheet()
 
     def loginSuccess(self):
         self.vipInfo.setText('退出登录')
@@ -268,17 +276,17 @@ class LeftBar(QWidget):
         stylesheet = """
             QListWidget {
                 border: none; /* 隐藏边框 */
-                background-color:rgb(251, 245, 255)
+                # background-color:rgb(251, 245, 255)
             }
             QListWidget::item[data-user-role="true"] {
                 /* 被点击项的样式 */
-                /*border: 1px solid #5e97f6;*/
-                background-color: #b0d4f1;
+                border: 10px solid #ffffff;
+                background-color: green;
             }
         """
 
         # 应用样式表
-        self.listWidget.setStyleSheet(stylesheet.replace('data-user-role', str(Qt.UserRole)))
+        # self.listWidget.setStyleSheet(stylesheet.replace('data-user-role', str(Qt.UserRole)))
 
     # def update_stylesheet(self):
     #     # 定义样式表

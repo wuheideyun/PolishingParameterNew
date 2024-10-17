@@ -2,7 +2,7 @@ import os
 
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPixmap, QMovie
-from PySide6.QtWidgets import QWidget, QLabel, QMessageBox
+from PySide6.QtWidgets import QWidget, QLabel, QMessageBox, QFrame
 import math
 from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable

@@ -141,7 +141,7 @@ class Animation_produce(QThread):
                             radius=self.R, alpha=0.1, color=self.color_7[j])
             self.ax.add_patch(circle)
             patches.append(circle)
-        # return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches
+        # return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches·
         return [self.grinding_num, self.ytext_ani] + patches
 
     def run(self):
