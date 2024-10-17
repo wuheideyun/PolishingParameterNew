@@ -68,7 +68,7 @@ class DatabaseCheckThread(QThread):
     def time_shift(self,seconds):
         if seconds < 60:
             self.interval = 1
-            return f"{seconds}秒"
+            return f"{seconds}"
 
         if seconds < 120:
             self.interval = 1
@@ -82,9 +82,9 @@ class DatabaseCheckThread(QThread):
             seconds %= day_seconds
             hours = seconds // 3600
             minutes = (seconds % 3600) // 60
-            return f"{days}天{hours:02}:{minutes:02}分"
+            return f"{days}:{hours:02}:{minutes:02}"
 
         # 如果秒数在24小时内，直接转换为小时和分钟
         hours = seconds // 3600
         minutes = (seconds % 3600) // 60
-        return f"{hours:02}:{minutes:02}分"
+        return f"{hours:02}:{minutes:02}"

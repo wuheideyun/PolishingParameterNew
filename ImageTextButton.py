@@ -40,3 +40,6 @@ class ImageTextButton(QPushButton):
 
         # 让图标显示在文字左侧
         self.setLayoutDirection(Qt.LeftToRight)
+
+    def updateTextName(self,name):
+        self.setText(name)

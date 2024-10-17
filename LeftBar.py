@@ -10,28 +10,34 @@ item 高 32 + 5 * 2，宽10 + 32 + 60 + 10
 
 '''
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QTranslator, QCoreApplication
 from PySide6.QtGui import QPainter, QColor
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QSpacerItem, QSizePolicy, QCheckBox, QListWidget, QListWidgetItem, \
-    QPushButton, QHBoxLayout, QDialog, QMessageBox
+    QPushButton, QHBoxLayout, QDialog, QMessageBox, QApplication
 
 from AIBoxWidget import AIBoxWidget
 from ConfirmDialog import ConfirmDialog
 from CustomListItem import CustomListItem
 from ImageTextButton import ImageTextButton
 from LoginDialog import LoginDialog
+from SwitchButton import SwitchButton
 
 
 class LeftBar(QWidget):
     sig_ListIndex = Signal(int)
     sig_runse1 = Signal()
 
+    sig_switch_language = Signal(bool)
     sig_login_action = Signal(bool)
     sig_login_administrator_action = Signal(bool)
     def __init__(self):
         super().__init__()
         self.setMouseTracking(True)
         self.loginDialog = LoginDialog()
+        # 初始化翻译器
+        self.translator = QTranslator()
+        self.current_language = "zh"
+        self.isLogin = False
         item_w = 141
         w = item_w + 40
         self.setFixedWidth(w)
@@ -48,7 +54,7 @@ class LeftBar(QWidget):
         ''')
 
         mainVLay = QVBoxLayout()
-        mainVLay.setContentsMargins(0, 10, 0, 0)
+        mainVLay.setContentsMargins(10, 10, 0, 0)
 
         hlay00 = QHBoxLayout()
 
@@ -99,10 +105,10 @@ class LeftBar(QWidget):
         """
 
         hlay01 = QHBoxLayout()
-        self.h_spacer002 = QSpacerItem(15, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)  # Minimum  Expanding
+        self.h_spacer002 = QSpacerItem(0, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)  # Minimum  Expanding
         self.h_spacer003 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)  # Minimum  Expanding
         hlay01.addSpacerItem(self.h_spacer002)
-        self.vipInfo = ImageTextButton(':homepage','会员登录',120,35)
+        self.vipInfo = ImageTextButton(':homepage',self.tr("会员登录"),140,35)
         self.vipInfo.setStyleSheet(roundedButtonStyle)
         self.vipInfo.clicked.connect(self.OnShowLoginDlg)
         hlay01.addWidget(self.vipInfo)
@@ -120,42 +126,42 @@ class LeftBar(QWidget):
 
         # 创建QListWidget实例
         self.listWidget = QListWidget()
-        self.listWidget.setFixedSize(w - 20, 42 * 7 + 250)
+        self.listWidget.setFixedSize(w - 20, 42 * 7 + 150)
 
         # 连接点击事件
         self.listWidget.itemClicked.connect(self.item_clicked)
 
-        self.firstPageItem_widget = CustomListItem(":single_click", "同步摆计算")
+        self.firstPageItem_widget = CustomListItem(":single_click", self.tr("同步摆计算"))
         self.firstPageItem_widget.setContentsMargins(8,0,20,0)
         self.firstPage_item = QListWidgetItem(self.listWidget)
         self.firstPage_item.setSizeHint(self.firstPageItem_widget.sizeHint())
         self.listWidget.setItemWidget(self.firstPage_item, self.firstPageItem_widget)
 
-        self.transItem_widget = CustomListItem(":quora", "同步摆仿真")
+        self.transItem_widget = CustomListItem(":quora", self.tr("同步摆仿真"))
         self.transItem_widget.setContentsMargins(8,0,20,0)
         self.trans_item = QListWidgetItem(self.listWidget)
         self.trans_item.setSizeHint(self.transItem_widget.sizeHint())
         self.listWidget.setItemWidget(self.trans_item, self.transItem_widget)
 
-        self.writeItem_widget = CustomListItem(":single_click", "双头摆计算")
+        self.writeItem_widget = CustomListItem(":single_click", self.tr("双头摆计算"))
         self.writeItem_widget.setContentsMargins(8,0,20,0)
         self.write_item = QListWidgetItem(self.listWidget)
         self.write_item.setSizeHint(self.writeItem_widget.sizeHint())
         self.listWidget.setItemWidget(self.write_item, self.writeItem_widget)
 
-        self.soulunwenItem_widget = CustomListItem(":quora", "双头摆仿真")
+        self.soulunwenItem_widget = CustomListItem(":quora", self.tr("双头摆仿真"))
         self.soulunwenItem_widget.setContentsMargins(8,0,20,0)
         self.soulunwen_item = QListWidgetItem(self.listWidget)
         self.soulunwen_item.setSizeHint(self.soulunwenItem_widget.sizeHint())
         self.listWidget.setItemWidget(self.soulunwen_item, self.soulunwenItem_widget)
 
-        self.dicbookItem_widget = CustomListItem(":single_click", "单头摆计算")
+        self.dicbookItem_widget = CustomListItem(":single_click", self.tr("单头摆计算"))
         self.dicbookItem_widget.setContentsMargins(8,0,20,0)
         self.dicbook_item = QListWidgetItem(self.listWidget)
         self.dicbook_item.setSizeHint(self.dicbookItem_widget.sizeHint())
         self.listWidget.setItemWidget(self.dicbook_item, self.dicbookItem_widget)
 
-        self.mytransItem_widget = CustomListItem(":quora", "单头摆仿真")
+        self.mytransItem_widget = CustomListItem(":quora", self.tr("单头摆仿真"))
         self.mytransItem_widget.setContentsMargins(8,0,20,0)
         self.mytrans_item = QListWidgetItem(self.listWidget)
         self.mytrans_item.setSizeHint(self.mytransItem_widget.sizeHint())
@@ -163,9 +169,17 @@ class LeftBar(QWidget):
 
         mainVLay.addWidget(self.listWidget)
 
-        self.spacer = QSpacerItem(40, 120, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.spacer = QSpacerItem(40, 100, QSizePolicy.Minimum, QSizePolicy.Expanding)
         mainVLay.addSpacerItem(self.spacer)
         mainVLay.setContentsMargins(10,10,10,10)
+
+        layout = QVBoxLayout()
+        self.language_switch = SwitchButton()
+        # 添加按钮到布局，并设置水平居中
+        layout.addWidget(self.language_switch, 0, Qt.AlignCenter)
+        self.language_switch.sig_language_switch.connect(self.switch_language)
+
+        mainVLay.addLayout(layout)
         # self.btnShotTrans = ImageTextButton(":shotimg", "工具")
         # self.btnShotTrans.setFixedSize(92, 32)
         #
@@ -236,16 +250,31 @@ class LeftBar(QWidget):
         self.sig_runse1.emit()
 
     def OnShowLoginDlg(self):
-        if self.vipInfo.text() == "退出登录":
+        if self.current_language == "zh":
+            QApplication.instance().removeTranslator(self.translator)
+            # if self.vipInfo.text() == self.tr("退出登录"):
+            #     self.vipInfo.setText(self.tr("退出登录"))
+            # else:
+            #     self.vipInfo.setText(self.tr("会员登录"))
+        else:
+            # 切换到英文
+            # if self.translator.load("zh_CN.qm"):  # 加载语言文件
+            QApplication.instance().installTranslator(self.translator)
+                # if self.vipInfo.text() == self.tr("退出登录"):
+                #     self.vipInfo.setText(self.tr("退出登录"))
+                # else:
+                #     self.vipInfo.setText(self.tr("会员登录"))
 
+        if self.isLogin:
             """弹出确认对话框"""
-            reply = QMessageBox.question(self, "确认", "你确定要退出登录吗？",
+            reply = QMessageBox.question(self, QCoreApplication.translate("MainWindow","确认",None), QCoreApplication.translate("MainWindow","你确定要退出登录吗？",None),
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
             if reply == QMessageBox.Yes:
+                self.isLogin = False
                 self.sig_login_action.emit(False)
-                self.vipInfo.setText('会员登录')
+                self.vipInfo.setText(QCoreApplication.translate("MainWindow","会员登录",None))
         else:
-            self.loginDialog.open_login()
+            self.loginDialog.open_login(self.current_language)
     def item_clicked(self, item):
         # 重置所有项的自定义属性
         # for index in range(self.listWidget.count()):
@@ -261,16 +290,22 @@ class LeftBar(QWidget):
         # self.update_stylesheet()
 
     def loginSuccess(self):
-        self.vipInfo.setText('退出登录')
+        self.isLogin = True
+        self.vipInfo.setText(QCoreApplication.translate("MainWindow","退出登录",None))
         self.sig_login_action.emit(True)
 
     def loginAdministratorSuccess(self):
-        self.vipInfo.setText('退出登录')
+        self.isLogin = True
+        self.vipInfo.setText(QCoreApplication.translate("MainWindow","退出登录",None))
         self.sig_login_action.emit(True)
         self.sig_login_administrator_action.emit(True)
 
     def loginFailure(self):
+        self.isLogin = False
         self.sig_login_action.emit(False)
+
+    def switch_language(self,isChinese):
+        self.sig_switch_language.emit(isChinese)
     def update_stylesheet(self):
         # 定义样式表
         stylesheet = """
@@ -284,6 +319,20 @@ class LeftBar(QWidget):
                 background-color: green;
             }
         """
+
+    def retranslate_ui(self,MainWindow):
+        self.firstPageItem_widget.setLabelName(QCoreApplication.translate("MainWindow","同步摆计算",None))
+        self.transItem_widget.setLabelName(QCoreApplication.translate("MainWindow","同步摆仿真",None))
+        self.writeItem_widget.setLabelName(QCoreApplication.translate("MainWindow","双头摆计算",None))
+        self.soulunwenItem_widget.setLabelName(QCoreApplication.translate("MainWindow","双头摆仿真",None))
+        self.dicbookItem_widget.setLabelName(QCoreApplication.translate("MainWindow","单头摆计算",None))
+        self.mytransItem_widget.setLabelName(QCoreApplication.translate("MainWindow","单头摆仿真",None))
+
+        if self.isLogin:
+            self.vipInfo.updateTextName(QCoreApplication.translate("MainWindow","退出登录",None))
+        else:
+            self.vipInfo.updateTextName(QCoreApplication.translate("MainWindow","会员登录",None))
+
 
         # 应用样式表
         # self.listWidget.setStyleSheet(stylesheet.replace('data-user-role', str(Qt.UserRole)))

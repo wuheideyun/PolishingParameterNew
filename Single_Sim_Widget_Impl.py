@@ -391,3 +391,25 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
 
         # 判断文件是否存在
         return os.path.isfile(file_path)
+
+
+    def retranslateUi(self, MainWindow):
+        super().retranslateUi(MainWindow)
+        # 界面分割图片元素
+        self.label_top.setText('')
+        pixmap = QPixmap(":equal")  # 替换为实际图片路径
+        self.label_top.setPixmap(pixmap)
+        # 如果需要，可以让图片自适应 QLabel 的大小
+        self.label_top.setScaledContents(True)
+
+        self.label_middle.setText('')
+        pixmap = QPixmap(":middle")  # 替换为实际图片路径
+        self.label_middle.setPixmap(pixmap)
+        # 如果需要，可以让图片自适应 QLabel 的大小
+        self.label_middle.setScaledContents(True)
+
+        self.label_bottom.setText('')
+        pixmap = QPixmap(":bottom")  # 替换为实际图片路径
+        self.label_bottom.setPixmap(pixmap)
+        # 如果需要，可以让图片自适应 QLabel 的大小
+        self.label_bottom.setScaledContents(True)

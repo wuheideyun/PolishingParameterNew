@@ -5,10 +5,10 @@
 '''
 import sqlite3
 
-from PySide6.QtCore import Qt, Signal, QSettings
+from PySide6.QtCore import Qt, Signal, QSettings, QCoreApplication, QTranslator
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QCheckBox, QGridLayout, \
-    QSpacerItem, QSizePolicy, QMessageBox
+    QSpacerItem, QSizePolicy, QMessageBox, QApplication
 
 from DatabaseHelper import DatabaseHelper
 from FrameLessDialog import FrameLessDialog
@@ -27,6 +27,8 @@ class LoginDialog(FrameLessDialog):
         self.setWindowTitle("登录")
         self.setFixedSize(1100, 450)
 
+        # 初始化翻译器
+        self.translator = QTranslator()
         self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
 
 
@@ -70,10 +72,10 @@ class LoginDialog(FrameLessDialog):
         hlay2.setContentsMargins(0, 0, 0, 0)
         mainVLay.addLayout(hlay2)
 
-        textLabel = QLabel("欢迎登录")
-        textLabel.setAlignment(Qt.AlignCenter)  # 将文本居中对齐
-        textLabel.setFixedSize(100, 30)  # 不设置大小，在水平布局时不会自动居中
-        textLabel.setStyleSheet("""
+        self.textLabel = QLabel(QCoreApplication.translate("MainWindow","欢迎登录",None))
+        self.textLabel.setAlignment(Qt.AlignCenter)  # 将文本居中对齐
+        self.textLabel.setFixedSize(200, 30)  # 不设置大小，在水平布局时不会自动居中
+        self.textLabel.setStyleSheet("""
             QLabel {
                 font-size: 20px;
                 color: #000000;
@@ -81,7 +83,7 @@ class LoginDialog(FrameLessDialog):
         """)
 
         hlay3 = QHBoxLayout()
-        hlay3.addWidget(textLabel)
+        hlay3.addWidget(self.textLabel)
         mainVLay.addSpacerItem(QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.Fixed))
         mainVLay.addLayout(hlay3)
         mainVLay.setContentsMargins(0, 0, 0, 0)
@@ -89,7 +91,7 @@ class LoginDialog(FrameLessDialog):
         gridLayout = QGridLayout()
 
         self.userNameEdit = LoginEdit(":login_user")
-        self.userNameEdit.setPlaceholderText("用户名/手机号/邮箱")
+        self.userNameEdit.setPlaceholderText("用户名")
 
         gridLayout.addWidget(self.userNameEdit, 0, 0, 1, 2)  # 第0行，第0列，占1行，占2列
 
@@ -236,15 +238,15 @@ class LoginDialog(FrameLessDialog):
         # 实际项目里登录使用http post
 
         if username == "" or password == "":
-            msgbox = PopupMessageBox("提示", "用户名或密码为空")
-            msgbox.setFixedSize(200,100)
+            msgbox = PopupMessageBox(QCoreApplication.translate("MainWindow", "提示", None), QCoreApplication.translate("MainWindow", "用户名或密码为空", None))
+            msgbox.setFixedSize(400,100)
             msgbox.exec()
 
             self.sig_login_failure.emit()
             return
 
         if self.db.verify_login('users', username, password):
-            msgbox = PopupMessageBox("提示", "登录成功!")
+            msgbox = PopupMessageBox(QCoreApplication.translate("MainWindow", "提示", None), QCoreApplication.translate("MainWindow", "登录成功！", None))
             msgbox.setFixedSize(200, 100)
             msgbox.exec()
             if username == "administrator":
@@ -253,10 +255,15 @@ class LoginDialog(FrameLessDialog):
                 self.sig_login_success.emit()
             self.accept()
         else:
-            QMessageBox.information(self, "提示", "用户名或密码错误")
+            QMessageBox.information(self, QCoreApplication.translate("MainWindow", QCoreApplication.translate("MainWindow", "提示", None), None), QCoreApplication.translate("MainWindow", "用户名或密码错误", None))
             self.sig_login_failure.emit()
 
-    def open_login(self):
+    def open_login(self,current_language):
+        if current_language == "en":
+            QApplication.instance().installTranslator(self.translator)
+        else:
+            QApplication.instance().removeTranslator(self.translator)
+
         self.passwordEdit.setText('')
         flag = self.settings.value("Remember", "")
         if flag == 'True':
@@ -285,3 +292,12 @@ class LoginDialog(FrameLessDialog):
             self.saved_username = ""
             self.settings.setValue("userName", '')
         self.close()
+
+    def retranslate_ui(self,MainWindow):
+        self.textLabel.setText(QCoreApplication.translate("MainWindow","欢迎登录",None))
+        self.userNameEdit.setPlaceholderText(QCoreApplication.translate("MainWindow","用户名",None))
+        self.passwordEdit.setPlaceholderText(QCoreApplication.translate("MainWindow","密码",None))
+        self.btnLogin.setText(QCoreApplication.translate("MainWindow","登 录",None))
+        self.checkBoxRemember.setText(QCoreApplication.translate("MainWindow","记住账号",None))
+        self.setWindowTitle(QCoreApplication.translate("MainWindow","登录",None))
+

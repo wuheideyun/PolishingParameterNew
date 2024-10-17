@@ -19,5 +19,15 @@ def generate_activation_code(duration_type: str) -> str:
 
 
 # # 示例调用
-activation_code = generate_activation_code('2M')
+activation_code = generate_activation_code('1W')
 print("激活码:", activation_code)
+
+# 'TEMP': 60,  # 临时码，1分钟
+# '1M': 60,  # 1分钟码
+# '2M': 120,  # 2分钟码
+# '1H': 3600,  # 1小时码
+# '1D': 86400,  # 1天码
+# '1W': 604800,  # 1周码
+# '1MO': 2592000,  # 1个月码
+# '6MO': 15552000,  # 6个月码
+# 'PERM': float('inf'),  # 永久码

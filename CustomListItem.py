@@ -58,4 +58,7 @@ class CustomListItem(QWidget):
 
         self.setLayout(hLay)
 
+    def setLabelName(self,name):
+        self.labelRight.setText(name)
+
 

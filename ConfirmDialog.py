@@ -1,3 +1,4 @@
+from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QApplication, QDialog, QVBoxLayout, QPushButton, QMessageBox
 
 class ConfirmDialog(QDialog):
@@ -20,7 +21,7 @@ class ConfirmDialog(QDialog):
 
     def confirm_action(self):
         """弹出确认对话框"""
-        reply = QMessageBox.question(self, "确认", "你确定要退出登录吗？",
+        reply = QMessageBox.question(self, QCoreApplication.translate("MainWindow","确认",None), QCoreApplication.translate("MainWindow","你确定要退出登录吗？",None),
                                       QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:

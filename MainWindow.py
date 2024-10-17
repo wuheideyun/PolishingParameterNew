@@ -4,10 +4,10 @@
 
 '''
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QTranslator, QCoreApplication
 from PySide6.QtGui import QPainter, QColor, QEnterEvent
 from PySide6.QtWidgets import QMainWindow, QHBoxLayout, QVBoxLayout, QWidget, QMessageBox, QToolBar, QSizePolicy, \
-    QStatusBar, QSpacerItem, QLabel
+    QStatusBar, QSpacerItem, QLabel, QApplication
 
 from ContentWidget import ContentWidget
 from DatabaseCheckThread import DatabaseCheckThread
@@ -23,6 +23,11 @@ class MainWindow(QMainWindow):
         self.db_thread = None
 
         self.setMouseTracking(True)
+
+        # 初始化翻译器
+        self.translator = QTranslator()
+        self.current_language = "zh"  # 初始语言为中文
+        self.isActivated = False
 
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowMinMaxButtonsHint)  # 设置为无边框窗口
 
@@ -47,6 +52,7 @@ class MainWindow(QMainWindow):
         mainHLay.setContentsMargins(0, 0, 0, 0)
 
         self.leftBar = LeftBar()
+        self.leftBar.sig_switch_language.connect(self.switch_language)
         mainHLay.addWidget(self.leftBar)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -79,7 +85,7 @@ class MainWindow(QMainWindow):
         hLayBottom = QHBoxLayout()
 
         self.statusBar = QStatusBar()
-        self.statusBar.showMessage("欢迎使用，请登录！")
+        self.statusBar.showMessage(QCoreApplication.translate("MainWindow","欢迎使用，请登录！",None))
         self.statusBar.setFixedWidth(200)
         hLayBottom.addWidget(self.statusBar)
         hLayBottom.addSpacerItem(QSpacerItem(580, 5, QSizePolicy.Expanding, QSizePolicy.Minimum)) # 占位
@@ -172,7 +178,7 @@ class MainWindow(QMainWindow):
         self.installEventFilter(self)  # 初始化事件过滤器
 
         # 设置窗口的尺寸
-        self.setGeometry(0, 0, 1000, 600)
+        self.setGeometry(0, 0, 1200, 500)
 
         self.center_on_screen()
         self.start_checking()
@@ -194,8 +200,14 @@ class MainWindow(QMainWindow):
     def update_result(self, result):
         # 更新界面显示的查询结果
         self.statusLabel.setText(result)
-        if result == "未激活！":
+        if result == "未激活！" or result == "已过期！":
+            self.isActivated = False
             self.contentWidget.setStackedWidgetVisible(False)
+        else:
+            self.isActivated = True
+
+
+
 
     def center_on_screen(self):
         # 获取显示器分辨率
@@ -205,25 +217,25 @@ class MainWindow(QMainWindow):
 
         # 计算窗口的左上角点位置
         x_position = (screen_width - self.width()) / 2
-        y_position = (screen_height - self.height()) / 2 - 60 # 向上偏移60像素
+        y_position = (screen_height - self.height()) / 3 - 60# 向上偏移60像素
 
         # 移动窗口到上述位置
         self.move(int(x_position), int(y_position))
 
     def showStackWidget(self,flag):
         if flag:
-            if self.statusLabel.text() != '未激活！':
+            if self.statusLabel.text() != '未激活！' and self.statusLabel.text() != '已过期！':
                 self.contentWidget.setStackedWidgetVisible(True)
             self.titleBar.checkcodeDialog.activation_code_gainEdit.setVisible(False)
             self.titleBar.checkcodeDialog.comboBox_src.setVisible(False)
             self.titleBar.checkcodeDialog.btnGainCode.setVisible(False)
-            self.statusBar.showMessage("已登录！")
+            self.statusBar.showMessage(QCoreApplication.translate("MainWindow","已登录！",None))
         else:
             self.contentWidget.setStackedWidgetVisible(False)
             self.titleBar.checkcodeDialog.activation_code_gainEdit.setVisible(False)
             self.titleBar.checkcodeDialog.comboBox_src.setVisible(False)
             self.titleBar.checkcodeDialog.btnGainCode.setVisible(False)
-            self.statusBar.showMessage("欢迎使用，请登录！")
+            self.statusBar.showMessage(QCoreApplication.translate("MainWindow","欢迎使用，请登录！",None))
 
     def showStackWidgetAdministrator(self,flag):
         if flag:
@@ -238,7 +250,7 @@ class MainWindow(QMainWindow):
             self.titleBar.checkcodeDialog.activation_code_gainEdit.setVisible(False)
             self.titleBar.checkcodeDialog.comboBox_src.setVisible(False)
             self.titleBar.checkcodeDialog.btnGainCode.setVisible(False)
-            self.statusBar.showMessage("欢迎使用，请登录！")
+            self.statusBar.showMessage(QCoreApplication.translate("MainWindow","欢迎使用，请登录！",None))
 
     def eventFilter(self, obj, event):
         # 事件过滤器,用于解决鼠标进入其它控件后还原为标准鼠标样式
@@ -359,3 +371,58 @@ class MainWindow(QMainWindow):
         painter.setBrush(QColor(255, 255, 255, 255))
         rect = self.rect()
         painter.drawRoundedRect(rect, 10, 10)  # 绘制圆角矩形
+
+    def switch_language(self,isChinese):
+        if isChinese:
+            # 切换到中文
+            self.current_language = "zh"
+
+            # self.leftBar.current_language = "zh"
+            # if self.leftBar.vipInfo.text() == self.tr("退出登录"):
+            #     self.isLogin = False
+            # else:
+            #     self.isLogin = True
+            QApplication.instance().removeTranslator(self.translator)
+            # if self.isLogin:
+            #     self.leftBar.vipInfo.setText(self.tr("会员登录"))
+            # else:
+            #     self.leftBar.vipInfo.setText(self.tr("退出登录"))
+
+            self.setWindowTitle(self.tr("科达系统"))
+            self.leftBar.retranslate_ui(self.leftBar)
+            self.leftBar.loginDialog.retranslate_ui(self.leftBar.loginDialog)
+            self.leftBar.current_language = "zh"
+            self.contentWidget.retranslate_ui()
+            self.titleBar.retranslate_ui(self.titleBar)
+            self.retranslate_ui()
+        else:
+            self.current_language = "en"
+            # self.leftBar.current_language = "en"
+            # # 切换到英文
+            if self.translator.load("zh_CN.qm"):  # 加载语言文件
+                #     if self.leftBar.vipInfo.text() == self.tr("退出登录"):
+                #         self.isLogin = False
+                #     else:
+                #         self.isLogin = True
+                #
+                QApplication.instance().installTranslator(self.translator)
+                #     if self.isLogin:
+                #         self.leftBar.vipInfo.setText(self.tr("会员登录"))
+                #     else:
+                #         self.leftBar.vipInfo.setText(self.tr("退出登录"))
+
+
+                # self.button_save_parameter.setText(QCoreApplication.translate("MainWindow", "保存参数", None))
+                # self.button_energy_calculate.setText(self.tr("节能方案"))
+                # self.current_language = "en"
+                self.leftBar.current_language = "en"
+                self.leftBar.retranslate_ui(self.leftBar)
+                self.leftBar.loginDialog.retranslate_ui(self.leftBar.loginDialog)
+                self.contentWidget.retranslate_ui()
+                self.setWindowTitle(self.tr("科达系统"))
+                self.titleBar.retranslate_ui(self.titleBar)
+                self.retranslate_ui()
+
+    def retranslate_ui(self):
+        self.statusBar.showMessage(QCoreApplication.translate("MainWindow","欢迎使用，请登录！",None))
+        self.statusLabel1.setText(QCoreApplication.translate("MainWindow","激活状态：",None))

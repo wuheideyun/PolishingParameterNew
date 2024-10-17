@@ -1,8 +1,8 @@
 import os
 
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt, QSettings, QTranslator, QCoreApplication
 from PySide6.QtGui import QPixmap, QMovie
-from PySide6.QtWidgets import QWidget, QLabel, QMessageBox, QFrame
+from PySide6.QtWidgets import QWidget, QLabel, QMessageBox, QFrame, QApplication
 import math
 from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -18,6 +18,10 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
     def __init__(self, w):
         super().__init__()
         self.setupUi(w)
+
+        # 初始化翻译器
+        self.translator = QTranslator()
+        self.current_language = "zh"  # 初始语言为中文
 
         self.reCalcFlag = True
         self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
@@ -367,6 +371,42 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
                                   self.lineEdit_stay_time.text(),
                                   self.lineEdit_num.text(), self.lineEdit_swing.text())
     def saveParameter(self):
+
+        # # 界面分割图片元素
+        # self.label_top.setText('')
+        # pixmap = QPixmap(":equal")  # 替换为实际图片路径
+        # self.label_top.setPixmap(pixmap)
+        # # 如果需要，可以让图片自适应 QLabel 的大小
+        # self.label_top.setScaledContents(True)
+        #
+        # self.label_middle.setText('')
+        # pixmap = QPixmap(":middle")  # 替换为实际图片路径
+        # self.label_middle.setPixmap(pixmap)
+        # # 如果需要，可以让图片自适应 QLabel 的大小
+        # self.label_middle.setScaledContents(True)
+        #
+        # self.label_bottom.setText('')
+        # pixmap = QPixmap(":bottom")  # 替换为实际图片路径
+        # self.label_bottom.setPixmap(pixmap)
+        # # 如果需要，可以让图片自适应 QLabel 的大小
+        # self.label_bottom.setScaledContents(True)
+
+        # if self.current_language == "zh":
+        #     # 切换到英文
+        #     if self.translator.load("zh_CN.qm"):  # 加载语言文件
+        #         QApplication.instance().installTranslator(self.translator)
+        #         self.button_save_parameter.setText(QCoreApplication.translate("MainWindow", "保存参数", None))
+        #         # self.button_save_parameter.setText(self.tr("保存参数"))
+        #         self.button_energy_calculate.setText(self.tr("节能方案"))
+        #         self.current_language = "en"
+        # else:
+        #     # 切换到中文
+        #     QApplication.instance().removeTranslator(self.translator)
+        #     self.button_save_parameter.setText("保存参数1")
+        #     self.button_energy_calculate.setText("节能方案1")
+        #     self.current_language = "zh"
+
+
         """保存各个LineEdit控件的数据到配置文件"""
         self.settings.setValue("lineEdit_between1", self.lineEdit_between.text())
         self.settings.setValue("lineEdit_grind_size1", self.lineEdit_grind_size.text())
@@ -392,3 +432,24 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
 
         # 判断文件是否存在
         return os.path.isfile(file_path)
+
+    def retranslateUi(self, MainWindow):
+        super().retranslateUi(MainWindow)
+        # 界面分割图片元素
+        self.label_top.setText('')
+        pixmap = QPixmap(":equal")  # 替换为实际图片路径
+        self.label_top.setPixmap(pixmap)
+        # 如果需要，可以让图片自适应 QLabel 的大小
+        self.label_top.setScaledContents(True)
+
+        self.label_middle.setText('')
+        pixmap = QPixmap(":middle")  # 替换为实际图片路径
+        self.label_middle.setPixmap(pixmap)
+        # 如果需要，可以让图片自适应 QLabel 的大小
+        self.label_middle.setScaledContents(True)
+
+        self.label_bottom.setText('')
+        pixmap = QPixmap(":bottom")  # 替换为实际图片路径
+        self.label_bottom.setPixmap(pixmap)
+        # 如果需要，可以让图片自适应 QLabel 的大小
+        self.label_bottom.setScaledContents(True)

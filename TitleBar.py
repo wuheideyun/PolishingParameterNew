@@ -8,8 +8,8 @@
 '''
 
 
-from PySide6.QtCore import Signal, Qt, QPoint
-from PySide6.QtGui import QPainter, QColor, QIcon
+from PySide6.QtCore import Signal, Qt, QPoint, QCoreApplication
+from PySide6.QtGui import QPainter, QColor, QIcon, QAction
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton, QSpacerItem, QSizePolicy, QVBoxLayout, QMenu, QLabel
 
 from CheckCodeDialog import CheckCodeDialog
@@ -41,6 +41,7 @@ class TitleBar(QWidget):
                     }
                 ''')
 
+
         self.btnMenu = QPushButton("")
         self.btnMenu.setFixedSize(16, 16)
 
@@ -49,7 +50,10 @@ class TitleBar(QWidget):
 
         # 创建菜单
         self.menu = QMenu()
-        self.menu.addAction("激活码验证", self.action1_triggered)
+        self.action1 = QAction("激活码验证",self)
+        self.action1.triggered.connect(self.action1_triggered)
+        # self.menu.addAction("激活码验证", self.action1_triggered)
+        self.menu.addAction(self.action1)
         # self.menu.addAction("会员中心", self.action2_triggered)
         self.menu.addSeparator()
         # self.menu.addAction("意见反馈")
@@ -148,10 +152,11 @@ class TitleBar(QWidget):
         hlay = QHBoxLayout()
         hlay.setContentsMargins(0, 0, 0, 0)
 
-        label = QLabel()
-        label.setText("Copyright © 2024 科达制造股份有限公司")
-        hlay.addWidget(label)
-        hlay.addStretch()
+        self.label = QLabel()
+        self.label.setText(self.tr("Copyright © 2024 科达制造股份有限公司"))
+        hlay.addWidget(self.label)
+        # hlay.addStretch()
+
 
         hlay.addWidget(self.btnMenu)
         hlay.addSpacerItem(QSpacerItem(15, 5, QSizePolicy.Fixed, QSizePolicy.Minimum))
@@ -197,3 +202,8 @@ class TitleBar(QWidget):
 
     def mouseDoubleClickEvent(self, event):
         self.onMax()
+
+    def retranslate_ui(self,MainWindow):
+        self.label.setText(QCoreApplication.translate("MainWindow","Copyright © 2024 科达制造股份有限公司",None))
+        self.action1.setText(QCoreApplication.translate("MainWindow","激活码验证",None))
+        self.checkcodeDialog.retranslate_ui(self.checkcodeDialog)

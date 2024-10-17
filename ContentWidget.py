@@ -146,3 +146,11 @@ class ContentWidget(QWidget):
         opt.initFrom(self)
         painter = QPainter(self)
         self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+
+    def retranslate_ui(self):
+        self.wEqualWidgetImpl.retranslateUi(self.wEqualWidgetImpl)
+        self.wEqualSimWidgetImpl.retranslateUi(self.wEqualSimWidgetImpl)
+        self.wDoubleCalcWidgetImpl.retranslateUi(self.wDoubleCalcWidgetImpl)
+        self.wDoubleSimWidgetImpl.retranslateUi(self.wDoubleSimWidgetImpl)
+        self.wSingleCalcWidgetImpl.retranslateUi(self.wSingleCalcWidgetImpl)
+        self.wSingleSimWidgetImpl.retranslateUi(self.wSingleSimWidgetImpl)

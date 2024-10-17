@@ -11,7 +11,7 @@ import time
 import uuid
 from tkinter.tix import Form
 import datetime
-from PySide6.QtCore import Qt, Signal, QSettings
+from PySide6.QtCore import Qt, Signal, QSettings, QCoreApplication
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QCheckBox, QGridLayout, \
     QSpacerItem, QSizePolicy, QMessageBox, QComboBox
@@ -83,7 +83,7 @@ class CheckCodeDialog(FrameLessDialog):
         gridLayout.addWidget(self.activationCodeEdit, 0, 0, 1, 2)  # 第0行，第0列，占1行，占2列
 
         self.btnCheckCode = QPushButton("验证激活码")
-        self.btnCheckCode.setFixedSize(128, 48)
+        self.btnCheckCode.setFixedSize(258, 48)
 
         self.btnCheckCode.clicked.connect(self.OnCheckCode)
 
@@ -188,9 +188,9 @@ class CheckCodeDialog(FrameLessDialog):
         else:
             self.settings.setValue("activation_status", "False")
             self.settings.setValue("activation_code", '')
-        msgbox = PopupMessageBox("提示", f"激活码是否有效:{is_valid}")
+        msgbox = PopupMessageBox(QCoreApplication.translate("MainWindow","提示",None), QCoreApplication.translate("MainWindow","激活码是否有效：",None)+f"{is_valid}")
 
-        msgbox.setFixedSize(250, 100)
+        msgbox.setFixedSize(450, 100)
         msgbox.exec()
 
     def OnGainCode(self):
@@ -200,6 +200,11 @@ class CheckCodeDialog(FrameLessDialog):
 
     def open_checkcode(self):
         self.exec()
+
+    def retranslate_ui(self, MainWindow):
+        self.setWindowTitle(QCoreApplication.translate("MainWindow","验证码",None))
+        self.activationCodeEdit.setPlaceholderText(QCoreApplication.translate("MainWindow","激活码",None))
+        self.btnCheckCode.setText(QCoreApplication.translate("MainWindow","验证激活码",None))
 
 # 校验激活码
 def validate_activation_code_with_device(self,code: str) -> bool:

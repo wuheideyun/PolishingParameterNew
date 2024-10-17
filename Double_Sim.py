@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'Double_Sim.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.7.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -28,6 +28,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.label_coefficient = QLabel(self.centralwidget)
         self.label_coefficient.setObjectName(u"label_coefficient")
 
@@ -82,13 +83,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.lineEdit_stay_time, 2, 6, 1, 1)
 
-        self.label_bottom = QLabel(self.centralwidget)
-        self.label_bottom.setObjectName(u"label_bottom")
-        self.label_bottom.setMinimumSize(QSize(500, 0))
-        self.label_bottom.setMaximumSize(QSize(16777215, 40))
-
-        self.gridLayout.addWidget(self.label_bottom, 11, 0, 1, 5)
-
         self.lineEdit_grind_size = QLineEdit(self.centralwidget)
         self.lineEdit_grind_size.setObjectName(u"lineEdit_grind_size")
 
@@ -137,20 +131,6 @@ class Ui_MainWindow(object):
         self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
         self.gridLayout.addItem(self.horizontalSpacer_2, 3, 7, 1, 1)
-
-        self.label_middle = QLabel(self.centralwidget)
-        self.label_middle.setObjectName(u"label_middle")
-        self.label_middle.setMinimumSize(QSize(500, 0))
-        self.label_middle.setMaximumSize(QSize(16777215, 25))
-
-        self.gridLayout.addWidget(self.label_middle, 9, 0, 1, 5)
-
-        self.label_top = QLabel(self.centralwidget)
-        self.label_top.setObjectName(u"label_top")
-        self.label_top.setMinimumSize(QSize(500, 0))
-        self.label_top.setMaximumSize(QSize(16777215, 50))
-
-        self.gridLayout.addWidget(self.label_top, 0, 0, 1, 5)
 
         self.label_3 = QLabel(self.centralwidget)
         self.label_3.setObjectName(u"label_3")
@@ -263,6 +243,27 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.button_middle_line_equal, 8, 3, 1, 1)
 
+        self.label_bottom = QLabel(self.centralwidget)
+        self.label_bottom.setObjectName(u"label_bottom")
+        self.label_bottom.setMinimumSize(QSize(500, 0))
+        self.label_bottom.setMaximumSize(QSize(16777215, 40))
+
+        self.gridLayout.addWidget(self.label_bottom, 11, 0, 1, 8)
+
+        self.label_middle = QLabel(self.centralwidget)
+        self.label_middle.setObjectName(u"label_middle")
+        self.label_middle.setMinimumSize(QSize(500, 0))
+        self.label_middle.setMaximumSize(QSize(16777215, 25))
+
+        self.gridLayout.addWidget(self.label_middle, 9, 0, 1, 8)
+
+        self.label_top = QLabel(self.centralwidget)
+        self.label_top.setObjectName(u"label_top")
+        self.label_top.setMinimumSize(QSize(500, 0))
+        self.label_top.setMaximumSize(QSize(16777215, 50))
+
+        self.gridLayout.addWidget(self.label_top, 0, 0, 1, 8)
+
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -272,35 +273,32 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.label_coefficient.setText(QCoreApplication.translate("MainWindow", u"\u5747\u5300\u7cfb\u6570\uff1a", None))
-        self.label_delay_time.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u5ef6\u65f6\u65f6\u95f4\uff1a</p></body></html>", None))
+        self.label_coefficient.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u5747\u5300\u7cfb\u6570\uff1a</p></body></html>", None))
+        self.label_delay_time.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u5ef6\u65f6\u65f6\u95f4\uff1a</p></body></html>", None))
         self.lineEdit_radius.setText(QCoreApplication.translate("MainWindow", u"260", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u4ea4\u53c9\u6446\u6a21\u5f0f</p></body></html>", None))
-        self.label_belt_speed.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u76ae\u5e26\u901f\u5ea6\uff1a</p></body></html>", None))
+        self.label_belt_speed.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u76ae\u5e26\u901f\u5ea6\uff1a</p></body></html>", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u540c\u6b65\u6446\u6a21\u5f0f</p></body></html>", None))
-        self.label_beam_swing_speed.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u6a2a\u6881\u6446\u52a8\u901f\u5ea6\uff1a</p></body></html>", None))
-        self.label_num.setText(QCoreApplication.translate("MainWindow", u"\u540c\u7c92\u5ea6\u78e8\u5934\u6570\u76ee\uff1a", None))
-        self.label_accelerate.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u52a0\u901f\u5ea6\u5927\u5c0f\uff1a</p></body></html>", None))
+        self.label_beam_swing_speed.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u6a2a\u6881\u6446\u52a8\u901f\u5ea6\uff1a</p></body></html>", None))
+        self.label_num.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u540c\u7c92\u5ea6\u78e8\u5934\u6570\u76ee\uff1a</p></body></html>", None))
+        self.label_accelerate.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u52a0\u901f\u5ea6\u5927\u5c0f\uff1a</p></body></html>", None))
         self.lineEdit_stay_time.setText(QCoreApplication.translate("MainWindow", u"1", None))
-        self.label_bottom.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.lineEdit_grind_size.setText(QCoreApplication.translate("MainWindow", u"150", None))
         self.lineEdit_beam_constant_time.setText(QCoreApplication.translate("MainWindow", u"1", None))
-        self.label_radius.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5934\u534a\u5f84\uff1a</p></body></html>", None))
-        self.label_stay_time.setText(QCoreApplication.translate("MainWindow", u"\u8fb9\u90e8\u505c\u7559\u65f6\u95f4\uff1a", None))
+        self.label_radius.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u78e8\u5934\u534a\u5f84\uff1a</p></body></html>", None))
+        self.label_stay_time.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u8fb9\u90e8\u505c\u7559\u65f6\u95f4\uff1a</p></body></html>", None))
         self.lineEdit_belt_speed.setText(QCoreApplication.translate("MainWindow", u"240.37", None))
         self.lineEdit_beam_swing_speed.setText(QCoreApplication.translate("MainWindow", u"800", None))
-        self.label_beam_between.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u6a2a\u6881\u95f4\u8ddd\uff1a</p></body></html>", None))
+        self.label_beam_between.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u6a2a\u6881\u95f4\u8ddd\uff1a</p></body></html>", None))
         self.lineEdit_delay_time.setText(QCoreApplication.translate("MainWindow", u"3", None))
-        self.label_middle.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
-        self.label_top.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u987a\u5e8f\u6446\u6a21\u5f0f</p></body></html>", None))
         self.lineEdit_num.setText(QCoreApplication.translate("MainWindow", u"4", None))
-        self.label_grind_size.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5757\u5c3a\u5bf8\uff1a</p></body></html>", None))
+        self.label_grind_size.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u78e8\u5757\u5c3a\u5bf8\uff1a</p></body></html>", None))
         self.button_save_parameter.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58\u53c2\u6570", None))
-        self.label_beam_constant_time.setText(QCoreApplication.translate("MainWindow", u"\u6a2a\u6881\u5300\u901f\u6446\u52a8\u65f6\u95f4\uff1a", None))
+        self.label_beam_constant_time.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u6a2a\u6881\u5300\u901f\u6446\u52a8\u65f6\u95f4\uff1a</p></body></html>", None))
         self.lineEdit_between.setText(QCoreApplication.translate("MainWindow", u"580", None))
         self.lineEdit_between_beam.setText(QCoreApplication.translate("MainWindow", u"1906", None))
-        self.label_between.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u78e8\u5934\u95f4\u8ddd\uff1a</p></body></html>", None))
+        self.label_between.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"right\">\u78e8\u5934\u95f4\u8ddd\uff1a</p></body></html>", None))
         self.button_animation_equal.setText(QCoreApplication.translate("MainWindow", u"\u8f68\u8ff9\u52a8\u753b\uff08\u540c\uff09", None))
         self.lineEdit_accelerate.setText(QCoreApplication.translate("MainWindow", u"650", None))
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\">\u52a8\u753b\u6a21\u62df</p></body></html>", None))
@@ -314,5 +312,8 @@ class Ui_MainWindow(object):
         self.button_simulation_order.setText(QCoreApplication.translate("MainWindow", u"\u629b\u78e8\u91cf\u5206\u5e03\uff08\u987a\uff09", None))
         self.button_simulation_equal.setText(QCoreApplication.translate("MainWindow", u"\u629b\u78e8\u91cf\u5206\u5e03\uff08\u540c\uff09", None))
         self.button_middle_line_equal.setText(QCoreApplication.translate("MainWindow", u"\u629b\u5149\u8f68\u8ff9\u66f2\u7ebf\uff08\u540c\uff09", None))
+        self.label_bottom.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.label_middle.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.label_top.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
     # retranslateUi
 
