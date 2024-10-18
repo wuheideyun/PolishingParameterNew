@@ -3,7 +3,7 @@ import os
 
 from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QPixmap, QMovie
-from PySide6.QtWidgets import QWidget, QLabel, QMessageBox, QApplication
+from PySide6.QtWidgets import QWidget, QLabel, QMessageBox, QApplication, QPushButton
 from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -15,6 +15,8 @@ from Double_Calc_Polishing_Distribution_Simulation import Polishing_distribution
     Polishing_distribution_Thread_order_unequal
 from Double_Calc_Self_Define_Calculate import self_define_calculate
 from Public_Polishing_Distribution_Plot import polishing_distribution_Plot
+from TipsButton import HoverButton
+from TipsLabel import HoverLabel
 from log_record_function import log_double_cal_parm_change
 class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
     def __init__(self, w):
@@ -44,6 +46,22 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         self.label_bottom.setPixmap(pixmap)
         # 如果需要，可以让图片自适应 QLabel 的大小
         self.label_bottom.setScaledContents(True)
+
+        # 移除父类的 QPushButton
+        old_label = self.tipsLabel  # 这是父类中定义的按钮
+        if old_label is not None:
+            old_label.deleteLater()  # 删除原按钮
+            self.tipsLabel = None  # 清空引用
+        # 创建一个新的 QToolButton
+        new_label = HoverLabel(":tips1", self)
+
+        # new_button.setGeometry(150, 100, 100, 50)  # 使用与旧按钮相同的几何设置
+        # new_label.setText("")
+        new_label.setObjectName("tipsLabel")
+        # 将新按钮添加到界面中
+        self.tipsLabel = new_label
+        self.tipsLabel.show()
+        self.gridLayout.addWidget(self.tipsLabel, 1, 12, 1, 1)
 
         # 运行逻辑
         # 按钮操作
@@ -458,3 +476,19 @@ class DoubleCalcWidgetImpl(QWidget, Double_Calc.Ui_MainWindow):
         self.label_bottom.setPixmap(pixmap)
         # 如果需要，可以让图片自适应 QLabel 的大小
         self.label_bottom.setScaledContents(True)
+
+        # 移除父类的 QPushButton
+        old_label = self.tipsLabel  # 这是父类中定义的按钮
+        if old_label is not None:
+            old_label.deleteLater()  # 删除原按钮
+            self.tipsLabel = None  # 清空引用
+        # 创建一个新的 QToolButton
+        new_label = HoverLabel(":tips1", self)
+
+        # new_button.setGeometry(150, 100, 100, 50)  # 使用与旧按钮相同的几何设置
+        # new_label.setText("")
+        new_label.setObjectName("tipsLabel")
+        # 将新按钮添加到界面中
+        self.tipsLabel = new_label
+        self.tipsLabel.show()
+        self.gridLayout.addWidget(self.tipsLabel, 1, 12, 1, 1)

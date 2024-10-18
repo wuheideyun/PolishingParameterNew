@@ -88,12 +88,18 @@ class MainWindow(QMainWindow):
         self.statusBar.showMessage(QCoreApplication.translate("MainWindow","欢迎使用，请登录！",None))
         self.statusBar.setFixedWidth(200)
         hLayBottom.addWidget(self.statusBar)
-        hLayBottom.addSpacerItem(QSpacerItem(580, 5, QSizePolicy.Expanding, QSizePolicy.Minimum)) # 占位
+        hLayBottom.addSpacerItem(QSpacerItem(200, 5, QSizePolicy.Expanding, QSizePolicy.Minimum)) # 占位
+        self.statusProcessLabel = QLabel("计算过程：")
+        self.statusProcessLabel.setAlignment(Qt.AlignCenter)
+        hLayBottom.addWidget(self.statusProcessLabel)
+        self.statusProcessContent = QLabel("已完成")
+        self.statusProcessContent.setAlignment(Qt.AlignCenter)
+        hLayBottom.addWidget(self.statusProcessContent)
+        hLayBottom.addSpacerItem(QSpacerItem(200, 5, QSizePolicy.Expanding, QSizePolicy.Minimum)) # 占位
 
         self.statusLabel1 = QLabel("激活状态：")
         self.statusLabel1.setAlignment(Qt.AlignCenter)
         hLayBottom.addWidget(self.statusLabel1)
-
         self.statusLabel = QLabel("未激活！")
         self.statusLabel.setWordWrap(False)
         self.statusLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -108,9 +114,12 @@ class MainWindow(QMainWindow):
         ''')
         self.statusBar3 = QStatusBar()
         self.statusBar3.addWidget(self.statusLabel)
-        # self.statusBar3.setFixedWidth(190)
         self.statusBar3.setContentsMargins(0,0,0,0)
         hLayBottom.addWidget(self.statusBar3)
+
+        self.statusVersion = QLabel("版本：v1.0.0   ")
+        self.statusVersion.setAlignment(Qt.AlignCenter)
+        hLayBottom.addWidget(self.statusVersion)
         vLay.addLayout(hLayBottom)
 
 

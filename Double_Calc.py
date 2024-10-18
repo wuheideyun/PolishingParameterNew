@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1091, 633)
+        MainWindow.resize(1114, 633)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -301,6 +301,12 @@ class Ui_MainWindow(object):
 
         self.gridLayout.addWidget(self.label_bottom, 15, 0, 1, 13)
 
+        self.tipsLabel = QLabel(self.centralwidget)
+        self.tipsLabel.setObjectName(u"tipsLabel")
+        self.tipsLabel.setMaximumSize(QSize(20, 16777215))
+
+        self.gridLayout.addWidget(self.tipsLabel, 1, 12, 1, 1)
+
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -356,5 +362,6 @@ class Ui_MainWindow(object):
         self.label_top.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.label_middle.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.label_bottom.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
+        self.tipsLabel.setText(QCoreApplication.translate("MainWindow", u"\uff1f", None))
     # retranslateUi
 

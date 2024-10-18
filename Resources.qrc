@@ -3,6 +3,8 @@
     <qresource>
         <file alias="AI">./Resources/AI.png</file>
         <file alias="dickbookgray">./Resources/dickbookgray.png</file>
+        <file alias="tips">./Resources/tips.png</file>
+        <file alias="tips1">./Resources/tips1.png</file>
         <file alias="dickbookred">./Resources/dickbookred.png</file>
         <file alias="firstpagegray">./Resources/firstpagegray.png</file>
         <file alias="firstpagered">./Resources/firstpagered.png</file>

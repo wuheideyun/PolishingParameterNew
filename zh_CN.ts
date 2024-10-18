@@ -603,6 +603,10 @@
         <translation type="unfinished">Whether the activation code is valid:</translation>
     </message>
     <message>
+        <source>抛磨强度分布仿真</source>
+        <translation type="unfinished">Simulation of polishing strength distribution</translation>
+    </message>
+    <message>
         <source>用户名或密码错误</source>
         <translation type="unfinished">The user name or password is incorrect</translation>
     </message>

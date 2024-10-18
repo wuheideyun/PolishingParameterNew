@@ -1,7 +1,7 @@
 import math
 import os
 
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt, QSettings, QCoreApplication
 from PySide6.QtGui import QPixmap, QMovie
 from PySide6.QtWidgets import QWidget, QLabel, QMessageBox
 from matplotlib import pyplot as plt
@@ -153,7 +153,7 @@ class DoubleSimWidgetImpl(QWidget, Double_Sim.Ui_MainWindow):
         # 在主线程中绘图
         plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
         plt.rcParams['axes.unicode_minus'] = False  # 避免坐标轴不能正常的显示负号
-        fig = plt.figure('抛磨强度分布仿真')
+        fig = plt.figure(QCoreApplication.translate("MainWindow","抛磨强度分布仿真",None))
         ax = fig.add_subplot(111)
         ax.set_aspect('equal', adjustable='box')
         im = ax.contourf(object_matrix, 15, alpha=1, cmap='jet')

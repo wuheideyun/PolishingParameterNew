@@ -21,6 +21,7 @@ from CustomListItem import CustomListItem
 from ImageTextButton import ImageTextButton
 from LoginDialog import LoginDialog
 from SwitchButton import SwitchButton
+from TipsButton import HoverButton
 
 
 class LeftBar(QWidget):
