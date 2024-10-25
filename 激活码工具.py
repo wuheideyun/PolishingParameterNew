@@ -19,7 +19,7 @@ def generate_activation_code(duration_type: str) -> str:
 
 
 # # 示例调用
-activation_code = generate_activation_code('1W')
+activation_code = generate_activation_code('1MO')
 print("激活码:", activation_code)
 
 # 'TEMP': 60,  # 临时码，1分钟
