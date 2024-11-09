@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QMainWindow
 
-import MainWindowNew
+import MainWindowNew_back
 from LeftBar import LeftBar
 
 

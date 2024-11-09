@@ -1,6 +1,5 @@
 import sys
 
-from PyQt5.QtCore import pyqtSignal
 from PySide6 import QtWidgets
 from PySide6.QtCore import QRect, Signal
 from PySide6.QtGui import QPen, QColor, QBrush, Qt, QFont, QPainter

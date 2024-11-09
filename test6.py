@@ -118,7 +118,7 @@ class MainWindow(QMainWindow):
         card = QFrame()
         card.setStyleSheet("""
             QFrame {
-                background-color: white;
+                background-color: blue;
                 border-radius: 10px;
                 padding: 20px;
                 border: 1px solid #ddd;

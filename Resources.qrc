@@ -50,5 +50,27 @@
         <file alias="middle">./Resources/Keda/middle2.png</file>
         <file alias="bottom">./Resources/Keda/bottom2.png</file>
 
+        <file alias="background">./Resources/NewUI/Base/background.png</file>
+        <file alias="InputOutput">./Resources/NewUI/Base/InputOutput.png</file>
+        <file alias="Line">./Resources/NewUI/Base/Line.png</file>
+        <file alias="Machine">./Resources/NewUI/Base/Machine.png</file>
+        <file alias="Select">./Resources/NewUI/Base/Select.png</file>
+        <file alias="SimInputOutput">./Resources/NewUI/Base/SimInputOutput.png</file>
+        <file alias="SwingAndHostParameter">./Resources/NewUI/Base/SwingAndHostParameter.png</file>
+
+        <file alias="Double">./Resources/NewUI/Button/Double.png</file>
+        <file alias="DoubleClicked">./Resources/NewUI/Button/DoubleClicked.png</file>
+        <file alias="Equal">./Resources/NewUI/Button/Equal.png</file>
+        <file alias="EqualClicked">./Resources/NewUI/Button/EqualClicked.png</file>
+        <file alias="GreenFrame">./Resources/NewUI/Button/Green.png</file>
+        <file alias="GreenFrameClicked">./Resources/NewUI/Button/GreenClicked.png</file>
+        <file alias="MiddleFrame">./Resources/NewUI/Button/Middle.png</file>
+        <file alias="MiddleFrameClicked">./Resources/NewUI/Button/MiddleClicked.png</file>
+        <file alias="Single">./Resources/NewUI/Button/Single.png</file>
+        <file alias="SingleClicked">./Resources/NewUI/Button/SingleClicked.png</file>
+        <file alias="SmallFrame">./Resources/NewUI/Button/Small.png</file>
+        <file alias="SmallFrameClicked">./Resources/NewUI/Button/SmallClicked.png</file>
+
+
     </qresource>
 </RCC>

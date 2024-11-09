@@ -1,0 +1,512 @@
+from PySide6.QtGui import QPainter, QPixmap, QColor, QPalette, QBrush, QFont
+from PySide6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, \
+    QLineEdit, QFrame, QSizePolicy, QSpacerItem, QStackedWidget
+from PySide6.QtCore import Qt, QSize
+
+
+from HostParamDoubleWidget import HostParamDoubleWidget
+from HostParamSingleWidget import HostParamSingleWidget
+from ImageButton import ImageButton
+from ImageChangeButton import ImageChangeButton
+from ImageChangeWithTextButton import ImageChangeWithTextButton
+from MotionInputOutputParamCombineWidget import MotionInputOutputParamCombineWidget
+from MotionInputParamWidget import MotionInputParamWidget
+from MotionOutputParamWidget import MotionOutputParamWidget
+from TitleBar import TitleBar
+
+
+class MainWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.margin_value = 15
+        self.flag = False
+
+        self.selectedFunction = 1
+
+        self.left_frame_width = 410
+        self.right_frame_width = 410
+        self.setWindowTitle("抛光参数计算系统")
+        self.setStyleSheet("color: white;")
+
+        # self.setAttribute(Qt.WA_TranslucentBackground)# 设置窗口背景透明
+
+        # 创建 QStackedWidget
+        self.host_param_stacked_widget = QStackedWidget()
+        self.host_param_stacked_widget.setFixedSize(self.left_frame_width,310)
+
+        # 创建 QStackedWidget
+        self.motion_param_stacked_widget = QStackedWidget()
+        self.motion_param_stacked_widget.setFixedWidth(420)
+
+        # 初始窗口大小
+        self.resize(1560, 540)
+
+        # 主布局
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(20, 10, 20, 10)
+        main_layout.setSpacing(0)
+
+        global_layout = QVBoxLayout()
+        global_layout.addSpacerItem(QSpacerItem(500,100,QSizePolicy.Expanding, QSizePolicy.Fixed))
+        # 内容区域布局
+        content_layout = QHBoxLayout()
+        global_layout.addLayout(content_layout)
+        main_layout.addLayout(global_layout)
+
+        # 左侧布局
+        left_layout = QVBoxLayout()
+        # 区域1 - 三个按钮
+
+        self.button_frame = QFrame()
+        self.button_frame.setFixedWidth(self.left_frame_width)
+        self.button_frame.setContentsMargins(self.margin_value,self.margin_value,self.margin_value,self.margin_value)
+        button_layout = QVBoxLayout(self.button_frame)
+        button1 = ImageChangeButton("",":Single",":SingleClicked",315,74)
+        button1.clicked.connect(self.switch_motion_param_single_frame)
+        button2 = ImageChangeButton("",":Double",":DoubleClicked",315,74)
+        button2.clicked.connect(self.switch_motion_param_double_frame)
+
+        button3 = ImageChangeButton("",":Equal",":EqualClicked",315,74)
+
+        button_layout.setAlignment(Qt.AlignCenter)
+        button_layout.addWidget(button1)
+        button_layout.addSpacerItem(QSpacerItem(315,10,QSizePolicy.Fixed,QSizePolicy.Fixed))
+        button_layout.addWidget(button2)
+        button_layout.addSpacerItem(QSpacerItem(315,10,QSizePolicy.Fixed,QSizePolicy.Fixed))
+        button_layout.addWidget(button3)
+
+        left_layout.addWidget(self.button_frame)
+
+        # 区域2 - 图片位置
+        self.image_frame = QFrame()
+        self.image_frame.setFixedWidth(self.left_frame_width)
+        self.image_frame.setContentsMargins(self.margin_value,5,self.margin_value,self.margin_value)
+        image_layout = QVBoxLayout(self.image_frame)
+        image_label = QLabel("机型图")
+        # 设置字体大小和字体类型
+        image_font = QFont("Microsoft YaHei", 18)  # "Microsoft YaHei" 为字体类型，18 为字体大小
+        image_label.setFont(image_font)
+        image_layout.addWidget(image_label)
+        image_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        left_layout.addWidget(self.image_frame)
+
+
+        # 区域3 - 主机参数(双头摆)
+        self.host_param_double_frame = HostParamDoubleWidget()
+        # self.main_param_frame.setFrameShape(QFrame.Box)
+        self.host_param_double_frame.setFixedSize(self.left_frame_width,310)
+        self.host_param_double_frame.setContentsMargins(self.margin_value, 5, self.margin_value, self.margin_value)
+        # main_param_layout = QVBoxLayout(self.main_param_frame)
+
+        # param_label = QLabel("主机参数")
+        # # 设置字体大小和字体类型
+        # param_font = QFont("Microsoft YaHei", 18)  # "Microsoft YaHei" 为字体类型，18 为字体大小
+        # param_label.setFont(param_font)
+        # main_param_layout.addWidget(param_label)
+        # param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+
+        # for i in range(4):
+        #     param_label = QLabel(f"主机参数{i + 1}")
+        #     param_edit = QLineEdit()
+        #     param_layout = QHBoxLayout()
+        #     param_layout.addWidget(param_label)
+        #     param_layout.addWidget(param_edit)
+        #     main_param_layout.addLayout(param_layout)
+
+        # 区域3 - 主机参数(单头摆)
+        self.host_param_single_frame = HostParamSingleWidget()
+        # self.main_param_frame.setFrameShape(QFrame.Box)
+        self.host_param_single_frame.setFixedSize(self.left_frame_width,310)
+        self.host_param_single_frame.setContentsMargins(self.margin_value, 5, self.margin_value, self.margin_value)
+
+
+        self.host_param_stacked_widget.addWidget(self.host_param_single_frame)
+        self.host_param_stacked_widget.addWidget(self.host_param_double_frame)
+        left_layout.addWidget(self.host_param_stacked_widget)
+
+        content_layout.addLayout(left_layout)
+
+        # 中间布局
+        center_layout = QVBoxLayout()
+
+        # 区域6 - 轨迹分布
+        self.chart_frame1 = QFrame()
+        chart1_layout = QVBoxLayout(self.chart_frame1)
+        self.chart_frame1.setContentsMargins(self.margin_value,5,self.margin_value,self.margin_value)
+        chart_label1 = QLabel("轨迹分布")
+        chart1_font = QFont("Microsoft YaHei",18)
+        chart_label1.setFont(chart1_font)
+        chart1_layout.addWidget(chart_label1)
+        chart_label1.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        self.chart_frame1.setFixedHeight(300)
+        center_layout.addWidget(self.chart_frame1)
+
+        # 区域7 - 轨迹动画
+        self.chart_frame2 = QFrame()
+        self.chart_frame2.setContentsMargins(self.margin_value,5,self.margin_value,self.margin_value)
+        chart_label2 = QLabel("轨迹动画")
+        chart2_font = QFont("Microsoft YaHei",18)
+        chart_label2.setFont(chart2_font)
+        chart_label2.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        chart2_layout = QVBoxLayout(self.chart_frame2)
+        chart2_layout.addWidget(chart_label2)
+        self.chart_frame2.setFixedHeight(300)
+        center_layout.addWidget(self.chart_frame2)
+
+        # 区域8 - 计算模式按钮
+        self.calc_button_frame = QFrame()
+        self.calc_button_frame.setContentsMargins(self.margin_value,self.margin_value,self.margin_value,self.margin_value)
+        calc_button_layout = QVBoxLayout(self.calc_button_frame)
+
+        first_layout = QHBoxLayout()
+        button1 = ImageChangeButton("智能寻优模式",":MiddleFrame",":MiddleFrameCliecked",236,56)
+        button1.clicked.connect(self.switch_search_motion_param_intelligence_frame)
+        button2 = ImageChangeButton("人工寻优模式",":MiddleFrame",":MiddleFrameCliecked",236,56)
+        button2.clicked.connect(self.switch_search_motion_param_manual_frame)
+        button3 = ImageChangeButton("参数保存",":SmallFrame",":SmallFrameCliecked",114,37)
+        first_layout.addWidget(button1)
+        first_layout.addWidget(button2)
+        first_layout.addWidget(button3)
+
+        second_layout = QHBoxLayout()
+        button4 = ImageChangeButton("节能方案", ":GreenFrame", ":GreenFrameCliecked",
+                                    236,56)
+        button5 = ImageChangeButton("高品质方案", ":GreenFrame", ":GreenFrameCliecked",
+                                    236,56)
+        button6 = ImageChangeButton("自定义修正方案", ":GreenFrame", ":GreenFrameCliecked",236,56)
+        second_layout.addWidget(button4)
+        second_layout.addWidget(button5)
+        second_layout.addWidget(button6)
+        calc_button_layout.addLayout(first_layout)
+        calc_button_layout.addLayout(second_layout)
+        # for i in range(3):
+        #     calc_button = QPushButton("高效计算")
+        #     calc_button_layout.addWidget(calc_button)
+
+        center_layout.addWidget(self.calc_button_frame)
+
+        content_layout.addLayout(center_layout)
+
+
+
+
+        right_layout = QVBoxLayout()
+        right_layout.setContentsMargins(0,0,0,0)
+        # 右侧布局(智能寻优模式)
+        self.right_intelligent_search_mode_layout = QVBoxLayout()
+        # 区域4 - 运动输入参数
+        self.motion_in_param_frame = MotionInputParamWidget()
+        motion_in_param_layout = QVBoxLayout(self.motion_in_param_frame)
+        # motion_in_param_label = QLabel("运动输入参数")
+        # motion_in_param_layout.addWidget(motion_in_param_label)
+        # motion_in_font = QFont("Microsoft YaHei",18)
+        # motion_in_param_label.setFont(motion_in_font)
+        # motion_in_param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        self.motion_in_param_frame.setFixedWidth(self.right_frame_width)
+        self.motion_in_param_frame.setContentsMargins(self.margin_value,5,self.margin_value,self.margin_value)
+
+        # for i in range(4):
+        #     param_label = QLabel(f"运动参数{i + 1}")
+        #     param_edit = QLineEdit()
+        #     param_layout = QHBoxLayout()
+        #     param_layout.addWidget(param_label)
+        #     param_layout.addWidget(param_edit)
+        #     motion_in_param_layout.addLayout(param_layout)
+
+        # right_layout.addWidget(self.motion_in_param_frame)
+
+        # 区域5 - 运动输出参数
+        self.motion_out_param_frame = MotionOutputParamWidget()
+        self.motion_out_param_frame.setFixedWidth(self.right_frame_width)
+        self.motion_out_param_frame.setContentsMargins(self.margin_value,5,self.margin_value,self.margin_value)
+        # motion_out_param_layout = QVBoxLayout(self.motion_out_param_frame)
+        # motion_out_param_label = QLabel("运动输出参数")
+        # motion_out_param_layout.addWidget(motion_out_param_label)
+        # motion_out_font = QFont("Microsoft YaHei",18)
+        # motion_out_param_label.setFont(motion_out_font)
+        # motion_out_param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+
+        # product_quality_param_label = QLabel("产品质量参数")
+        # motion_out_param_layout.addWidget(product_quality_param_label)
+        # product_quality_font = QFont("Microsoft YaHei", 18)
+        # product_quality_param_label.setFont(product_quality_font)
+        # product_quality_param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+
+
+        # for i in range(4):
+        #     param_label = QLabel(f"计算参数{i + 1}")
+        #     param_edit = QLineEdit()
+        #     param_layout = QHBoxLayout()
+        #     param_layout.addWidget(param_label)
+        #     param_layout.addWidget(param_edit)
+        #     motion_out_param_layout.addLayout(param_layout)
+
+        # right_layout.addWidget(self.motion_out_param_frame)
+
+        self.right_intelligent_search_mode_layout.addWidget(self.motion_in_param_frame)
+        self.right_intelligent_search_mode_layout.addWidget(self.motion_out_param_frame)
+
+        self.combine_frame = QFrame()
+        self.combine_frame.setLayout(self.right_intelligent_search_mode_layout)
+
+
+
+        # 运动参数-人工寻优模式
+        self.motion_input_out_param_manual_frame = MotionInputOutputParamCombineWidget()
+
+        self.motion_input_out_param_manual_frame.setFixedSize(self.right_frame_width,830)
+
+        # 右侧切换部分
+        self.motion_param_stacked_widget.addWidget(self.combine_frame)
+        self.motion_param_stacked_widget.addWidget(self.motion_input_out_param_manual_frame)
+        right_layout.addWidget(self.motion_param_stacked_widget)
+
+        content_layout.addLayout(right_layout)
+
+        # 底部按钮区域布局
+        bottom_layout = QHBoxLayout()
+
+        # 底部 - 输出报告按钮
+        report_button = ImageChangeWithTextButton("输出报告",":SmallFrame",":SmallFrameCliecked",73,64)
+
+        # report_button = QPushButton("输出报告")
+        report_button.setFixedHeight(50)
+        bottom_layout.addWidget(report_button, alignment=Qt.AlignRight)
+        bottom_layout.addSpacerItem(QSpacerItem(100,60,QSizePolicy.Fixed, QSizePolicy.Fixed))
+
+        main_layout.addLayout(bottom_layout)
+
+        # 设置各个组件的背景图片
+        self.update_background_image()
+
+        # 设置主窗口布局
+        self.setLayout(main_layout)
+        self.showMaximized()
+
+    def set_frame_image(self, image_path):
+        # 加载图片
+        self.frame_image = QPixmap(image_path)
+        # 设置背景
+        self.update_frame_image()
+
+    def update_frame_image(self):
+        # 获取窗口大小
+        window_size = self.chart_frame2.size()
+        # 将图片缩放至窗口大小
+        scaled_image = self.frame_image.scaled(window_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # 设置为窗口背景
+        palette = QPalette()
+        palette.setBrush(QPalette.Window, QBrush(scaled_image))
+        self.chart_frame2.setPalette(palette)
+        self.chart_frame2.setAutoFillBackground(True)
+
+
+    def set_background_image(self):
+
+        # 主窗口背景AAAAAAAAAAAAA
+        # 设置背景图片路径
+        self.background_image_path = ":background"
+        self.background_image = QPixmap(self.background_image_path)
+        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        window_size = self.size()
+        scaled_image = self.background_image.scaled(window_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+
+        # 设置为窗口背景
+        palette = QPalette()
+        palette.setBrush(QPalette.Window, QBrush(scaled_image))
+        self.setPalette(palette)
+        # self.setAutoFillBackground(True)  # 确保背景填充
+
+
+        # 单头摆/双头摆/同步摆设备选择AAAAAAAAAAAAAAAAAA
+        # 设置背景图片路径
+        self.button_frame_image_path = ":SwingAndHostParameter"
+        self.button_frame_image = QPixmap(self.button_frame_image_path)
+        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        button_frame_size = self.button_frame.size()
+        scaled_image = self.button_frame_image.scaled(button_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # 设置为窗口背景
+        palette1 = QPalette()
+        palette1.setBrush(QPalette.Window, QBrush(scaled_image))
+        self.button_frame.setPalette(palette1)
+        self.button_frame.setAutoFillBackground(True)
+
+        # 机型图AAAAAAAAAAAAAAAAAA
+        # 设置背景图片路径
+        self.image_frame_image_path = ":Machine"
+        self.image_frame_image = QPixmap(self.image_frame_image_path)
+        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        image_frame_size = self.image_frame.size()
+        scaled_image = self.image_frame_image.scaled(image_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # 设置为窗口背景
+        palette2 = QPalette()
+        palette2.setBrush(QPalette.Window, QBrush(scaled_image))
+        self.image_frame.setPalette(palette2)
+        self.image_frame.setAutoFillBackground(True)
+
+        # 主机参数-双头摆AAAAAAAAAAAAAAAAAAAAA
+        # 设置背景图片路径
+        self.main_param_frame_image_path = ":SwingAndHostParameter"
+        self.main_param_frame_image = QPixmap(self.main_param_frame_image_path)
+        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        main_param_frame_size = self.host_param_double_frame.size()
+        scaled_image = self.main_param_frame_image.scaled(main_param_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # 设置为窗口背景
+        palette3 = QPalette()
+        palette3.setBrush(QPalette.Window, QBrush(scaled_image))
+        self.host_param_double_frame.setPalette(palette3)
+        self.host_param_double_frame.setAutoFillBackground(True)
+
+        # 主机参数-单头摆AAAAAAAAAAAAAAAAAAAAA
+        # 设置背景图片路径
+        self.main_param_frame_image_path = ":SwingAndHostParameter"
+        self.main_param_frame_image = QPixmap(self.main_param_frame_image_path)
+        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        main_param_frame_size = self.host_param_single_frame.size()
+        scaled_image = self.main_param_frame_image.scaled(main_param_frame_size, Qt.IgnoreAspectRatio,
+                                                          Qt.SmoothTransformation)
+        # 设置为窗口背景
+        palette3 = QPalette()
+        palette3.setBrush(QPalette.Window, QBrush(scaled_image))
+        self.host_param_single_frame.setPalette(palette3)
+        self.host_param_single_frame.setAutoFillBackground(True)
+
+        # 轨迹分布AAAAAAAAAAAAAA
+        # 设置背景图片路径
+        self.sim_image_path = ":Line"
+        self.sim_image = QPixmap(self.sim_image_path)
+        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        sim_frame_size = self.chart_frame1.size()
+        scaled_image = self.sim_image.scaled(sim_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # 设置为窗口背景
+        palette4 = QPalette()
+        palette4.setBrush(QPalette.Window, QBrush(scaled_image))
+        self.chart_frame1.setPalette(palette4)
+        self.chart_frame1.setAutoFillBackground(True)
+
+        # 轨迹动画AAAAAAAAAAAAAA
+        # 设置背景图片路径
+        self.animation_image_path = ":Line"
+        self.animation_image = QPixmap(self.animation_image_path)
+        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        animation_frame_size = self.chart_frame2.size()
+        scaled_image = self.animation_image.scaled(animation_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # 设置为窗口背景
+        palette5 = QPalette()
+        palette5.setBrush(QPalette.Window, QBrush(scaled_image))
+        self.chart_frame2.setPalette(palette5)
+        self.chart_frame2.setAutoFillBackground(True)
+
+        # 模式选择AAAAAAAAAAAAAA
+        # 设置背景图片路径
+        self.animation_image_path = ":Select"
+        self.animation_image = QPixmap(self.animation_image_path)
+        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        animation_frame_size = self.calc_button_frame.size()
+        scaled_image = self.animation_image.scaled(animation_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # 设置为窗口背景
+        palette6 = QPalette()
+        palette6.setBrush(QPalette.Window, QBrush(scaled_image))
+        self.calc_button_frame.setPalette(palette6)
+        self.calc_button_frame.setAutoFillBackground(True)
+
+
+        # 运动输入参数AAAAAAAAAAAAAA
+        # 设置背景图片路径
+        self.motion_param_image_path = ":InputOutput"
+        self.motion_param_image = QPixmap(self.motion_param_image_path)
+        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        motion_in_param_frame_size = self.motion_in_param_frame.size()
+        scaled_image = self.motion_param_image.scaled(motion_in_param_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # 设置为窗口背景
+        palette7 = QPalette()
+        palette7.setBrush(QPalette.Window, QBrush(scaled_image))
+        self.motion_in_param_frame.setPalette(palette7)
+        self.motion_in_param_frame.setAutoFillBackground(True)
+
+
+
+        # 运动输出参数AAAAAAAAAAAAAA
+        # 设置背景图片路径
+        self.motion_out_param_image_path = ":InputOutput"
+        self.motion_out_param_image = QPixmap(self.motion_out_param_image_path)
+        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        calc_param_frame_size = self.motion_out_param_frame.size()
+        scaled_image = self.motion_out_param_image.scaled(calc_param_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # 设置为窗口背景
+        palette8 = QPalette()
+        palette8.setBrush(QPalette.Window, QBrush(scaled_image))
+        self.motion_out_param_frame.setPalette(palette8)
+        self.motion_out_param_frame.setAutoFillBackground(True)
+
+        # 运动参数-合并AAAAAAAAAAAAA
+
+        self.motion_input_out_param_manual_image_path = ":SimInputOutput"
+        self.motion_input_out_param_manual_image = QPixmap(self.motion_input_out_param_manual_image_path)
+        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        calc_param_frame_size = self.motion_input_out_param_manual_frame.size()
+        scaled_image = self.motion_input_out_param_manual_image.scaled(calc_param_frame_size, Qt.IgnoreAspectRatio,
+                                                          Qt.SmoothTransformation)
+        # 设置为窗口背景
+        palette9 = QPalette()
+        palette9.setBrush(QPalette.Window, QBrush(scaled_image))
+        self.motion_input_out_param_manual_frame.setPalette(palette9)
+        self.motion_input_out_param_manual_frame.setAutoFillBackground(True)
+
+    def update_background_image(self):
+        # 更新背景图片的显示效果
+        self.set_background_image()
+
+    def resizeEvent(self, event):
+        # 窗口大小改变时更新背景图片
+        self.update_background_image()
+
+        # 继承父类的 resizeEvent
+        super(MainWindow, self).resizeEvent(event)
+
+    def switch_motion_param_single_frame(self):
+        self.host_param_stacked_widget.setCurrentIndex(0);
+
+    def switch_motion_param_double_frame(self):
+        self.host_param_stacked_widget.setCurrentIndex(1);
+
+    def switch_search_motion_param_intelligence_frame(self):
+        self.motion_param_stacked_widget.setCurrentIndex(0);
+
+    def switch_search_motion_param_manual_frame(self):
+        self.motion_param_stacked_widget.setCurrentIndex(1);
+
+    def set_main_param_frame_visible(self, visible):
+        if visible:
+            # 重新设置背景
+            # 运动输入参数AAAAAAAAAAAAAA
+            # 设置背景图片路径
+            self.motion_param_image_path = ":InputOutput"
+            self.motion_param_image = QPixmap(self.motion_param_image_path)
+            # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+            motion_in_param_frame_size = self.motion_in_param_frame.size()
+            scaled_image = self.motion_param_image.scaled(motion_in_param_frame_size, Qt.IgnoreAspectRatio,
+                                                          Qt.SmoothTransformation)
+            # 设置为窗口背景
+            palette5 = QPalette()
+            palette5.setBrush(QPalette.Window, QBrush(scaled_image))
+            self.motion_in_param_frame.setPalette(palette5)
+            self.motion_in_param_frame.setAutoFillBackground(True)
+        else:
+            # 移除背景
+
+            self.motion_in_param_frame.setPalette(QPalette())
+            self.motion_in_param_frame.setAutoFillBackground(False)
+
+        # 设置可见性
+        self.motion_in_param_frame.setVisible(visible)
+
+
+
+
+if __name__ == "__main__":
+    app = QApplication([])
+    window = MainWindow()
+    window.show()
+    window.show()
+    app.exec()

@@ -131,7 +131,7 @@ class MainWindow(QMainWindow):
         self.centralWidget.setContentsMargins(0, 0, 0, 0)
         self.centralWidget.setStyleSheet('''
             QWidget {
-                margin: 0;
+                margin: 0; 
                 padding: 0px;
                 border: none;
             }

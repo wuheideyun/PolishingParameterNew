@@ -23,7 +23,7 @@ class TitleBar(QWidget):
     sig_Normal = Signal()
     sig_Close = Signal()
     sig_logout = Signal()
-    isMax = False
+    isMax = True
 
     def __init__(self):
         super().__init__()
@@ -126,7 +126,7 @@ class TitleBar(QWidget):
         self.btnMax = QPushButton("")
         self.btnMax.setFixedSize(16, 16)
         self.btnMax.clicked.connect(self.onMax)
-        self.btnMax.setIcon(QIcon(":max16"))  # 设置按钮图标
+        self.btnMax.setIcon(QIcon(":normal16"))  # 设置按钮图标
 
         # 让图标自适应按钮大小
         self.btnMax.setIconSize(self.btnMax.size())  # 和按钮的尺寸一致
