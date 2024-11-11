@@ -28,28 +28,28 @@ class MotionOutputParamWidget(QWidget):
         motion_layout = QFormLayout()
 
         # 添加主皮带速度输入框
-        self.main_belt_speed_input = QLineEdit()
-        motion_layout.addRow(QLabel("主皮带速度："), self.main_belt_speed_input)
+        self.lineEdit_belt_speed = QLineEdit()
+        motion_layout.addRow(QLabel("主皮带速度："), self.lineEdit_belt_speed)
 
         # 添加摆动速度输入框
-        self.swing_speed_input = QLineEdit()
-        motion_layout.addRow(QLabel("摆动速度："), self.swing_speed_input)
+        self.lineEdit_beam_swing_speed = QLineEdit()
+        motion_layout.addRow(QLabel("摆动速度："), self.lineEdit_beam_swing_speed)
 
         # 添加匀速摆动时间输入框
-        self.constant_swing_time_input = QLineEdit()
-        motion_layout.addRow(QLabel("匀速摆动时间："), self.constant_swing_time_input)
+        self.lineEdit_beam_constant_time = QLineEdit()
+        motion_layout.addRow(QLabel("匀速摆动时间："), self.lineEdit_beam_constant_time)
 
         # 添加边部停留时间输入框
-        self.edge_stay_time_input = QLineEdit()
-        motion_layout.addRow(QLabel("边部停留时间："), self.edge_stay_time_input)
+        self.lineEdit_stay_time_input = QLineEdit()
+        motion_layout.addRow(QLabel("边部停留时间："), self.lineEdit_stay_time_input)
 
         # 添加摆幅输入框
-        self.swing_amplitude_input = QLineEdit()
-        motion_layout.addRow(QLabel("摆幅："), self.swing_amplitude_input)
+        self.lineEdit_swing = QLineEdit()
+        motion_layout.addRow(QLabel("摆幅："), self.lineEdit_swing)
 
         # 添加同粒度磨头数输入框
-        self.same_grain_moto_count_input = QLineEdit()
-        motion_layout.addRow(QLabel("同粒度磨头数："), self.same_grain_moto_count_input)
+        self.lineEdit_num_output = QLineEdit()
+        motion_layout.addRow(QLabel("同粒度磨头数："), self.lineEdit_num_output)
 
         # 将运动输出参数的布局添加到组框中
         motion_group_box.setLayout(motion_layout)
@@ -62,8 +62,8 @@ class MotionOutputParamWidget(QWidget):
         quality_layout = QFormLayout()
 
         # 添加均匀系数输入框
-        self.uniformity_coefficient_input = QLineEdit()
-        quality_layout.addRow(QLabel("均匀系数："), self.uniformity_coefficient_input)
+        self.lineEdit_coefficient = QLineEdit()
+        quality_layout.addRow(QLabel("均匀系数："), self.lineEdit_coefficient)
 
         # 将产品质量参数的布局添加到组框中
         quality_group_box.setLayout(quality_layout)
@@ -77,22 +77,8 @@ class MotionOutputParamWidget(QWidget):
 
     def save_parameters(self):
         # 获取输入的参数
-        main_belt_speed = self.main_belt_speed_input.text()
-        swing_speed = self.swing_speed_input.text()
-        constant_swing_time = self.constant_swing_time_input.text()
-        edge_stay_time = self.edge_stay_time_input.text()
-        swing_amplitude = self.swing_amplitude_input.text()
-        same_grain_moto_count = self.same_grain_moto_count_input.text()
-        uniformity_coefficient = self.uniformity_coefficient_input.text()
+        pass
 
-        # 打印参数（实际应用中可以保存到文件或数据库）
-        print("主皮带速度:", main_belt_speed)
-        print("摆动速度:", swing_speed)
-        print("匀速摆动时间:", constant_swing_time)
-        print("边部停留时间:", edge_stay_time)
-        print("摆幅:", swing_amplitude)
-        print("同粒度磨头数:", same_grain_moto_count)
-        print("均匀系数:", uniformity_coefficient)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
