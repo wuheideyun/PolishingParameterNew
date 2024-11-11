@@ -17,3 +17,5 @@ class MainWindowNewImpl(QMainWindow,MainWindowNew.Ui_MainWindow):
         self.leftbar_widget = LeftBar()
         self.leftbar_widget.show()
 
+        # 按钮操作
+
