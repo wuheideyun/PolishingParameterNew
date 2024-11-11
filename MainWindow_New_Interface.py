@@ -27,7 +27,8 @@ class MainWindow(QWidget):
         self.right_frame_width = 410
         self.setWindowTitle("抛光参数计算系统")
         self.setStyleSheet("color: white;")
-
+        # 模式切换标签    1：单头摆  2：双头摆  3：同步摆
+        self.current_mode = 1
         # self.setAttribute(Qt.WA_TranslucentBackground)# 设置窗口背景透明
 
         # 创建 QStackedWidget
@@ -63,8 +64,10 @@ class MainWindow(QWidget):
         self.button_frame.setContentsMargins(self.margin_value,self.margin_value,self.margin_value,self.margin_value)
         button_layout = QVBoxLayout(self.button_frame)
         self.single_button = ImageChangeButton("",":Single",":SingleClicked",315,74)
+        # 单头摆模式切换
         self.single_button.clicked.connect(self.switch_motion_param_single_frame)
         self.double_button = ImageChangeButton("",":Double",":DoubleClicked",315,74)
+        # 双头摆模式切换
         self.double_button.clicked.connect(self.switch_motion_param_double_frame)
 
         self.equal_button = ImageChangeButton("",":Equal",":EqualClicked",315,74)
@@ -304,7 +307,7 @@ class MainWindow(QWidget):
 
 
         self.third_widget.setVisible(False)
-        self.showMaximized()
+        # self.showMaximized()
 
     def set_frame_image(self, image_path):
         # 加载图片
@@ -489,9 +492,11 @@ class MainWindow(QWidget):
 
     def switch_motion_param_single_frame(self):
         self.host_param_stacked_widget.setCurrentIndex(0);
+        self.current_mode = 1
 
     def switch_motion_param_double_frame(self):
         self.host_param_stacked_widget.setCurrentIndex(1);
+        self.current_mode = 2
 
     def switch_search_motion_param_intelligence_frame(self):
         self.second_widget.setVisible(True)
@@ -527,6 +532,14 @@ class MainWindow(QWidget):
 
         # 设置可见性
         self.motion_in_param_frame.setVisible(visible)
+        # -------------------------按钮逻辑部分---------------------
+        self.button_energy_project.clicked.connect()
+        self.button_efficient_project.clicked.connect()
+        self.button_selfdefine_project.clicked.connect()
+
+        self.button_synchronization_mode.clicked.connect()
+        self.button_cross_mode.clicked.connect()
+        self.button_order_mode.clicked.connect()
 
 
 
