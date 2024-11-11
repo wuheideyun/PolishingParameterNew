@@ -159,7 +159,8 @@ class MainWindow(QWidget):
         self.calc_button_frame.setContentsMargins(self.margin_value,self.margin_value,self.margin_value,self.margin_value)
         calc_button_layout = QVBoxLayout(self.calc_button_frame)
 
-        first_layout = QHBoxLayout()
+        self.first_widget = QWidget()
+        first_layout = QHBoxLayout(self.first_widget)
         self.intelligent_search_mode = ImageChangeButton("智能寻优模式",":MiddleFrame",":MiddleFrameCliecked",236,56)
         self.intelligent_search_mode.clicked.connect(self.switch_search_motion_param_intelligence_frame)
         self.artificial_search_mode = ImageChangeButton("人工寻优模式",":MiddleFrame",":MiddleFrameCliecked",236,56)
@@ -169,7 +170,8 @@ class MainWindow(QWidget):
         first_layout.addWidget(self.artificial_search_mode)
         first_layout.addWidget(self.save_button)
 
-        second_layout = QHBoxLayout()
+        self.second_widget = QWidget()
+        second_layout = QHBoxLayout(self.second_widget)
         self.button_energy_project = ImageChangeButton("节能方案", ":GreenFrame", ":GreenFrameCliecked",
                                     236,56)
         self.button_efficient_project = ImageChangeButton("高品质方案", ":GreenFrame", ":GreenFrameCliecked",
@@ -178,8 +180,24 @@ class MainWindow(QWidget):
         second_layout.addWidget(self.button_energy_project)
         second_layout.addWidget(self.button_efficient_project)
         second_layout.addWidget(self.button_selfdefine_project)
-        calc_button_layout.addLayout(first_layout)
-        calc_button_layout.addLayout(second_layout)
+
+        self.third_widget = QWidget()
+        third_layout = QHBoxLayout(self.third_widget)
+        self.button_synchronization_mode = ImageChangeButton("同步摆动模式", ":GreenFrame", ":GreenFrameCliecked",
+                                                       236, 56)
+        self.button_cross_mode = ImageChangeButton("交叉摆动模式", ":GreenFrame", ":GreenFrameCliecked",
+                                                          236, 56)
+        self.button_order_mode = ImageChangeButton("顺序摆动模式", ":GreenFrame", ":GreenFrameCliecked", 236,
+                                                           56)
+        third_layout.addWidget(self.button_synchronization_mode)
+        third_layout.addWidget(self.button_cross_mode)
+        third_layout.addWidget(self.button_order_mode)
+
+
+
+        calc_button_layout.addWidget(self.first_widget)
+        calc_button_layout.addWidget(self.second_widget)
+        calc_button_layout.addWidget(self.third_widget)
         # for i in range(3):
         #     calc_button = QPushButton("高效计算")
         #     calc_button_layout.addWidget(calc_button)
@@ -282,6 +300,10 @@ class MainWindow(QWidget):
 
         # 设置主窗口布局
         self.setLayout(main_layout)
+
+
+
+        self.third_widget.setVisible(False)
         self.showMaximized()
 
     def set_frame_image(self, image_path):
@@ -472,9 +494,13 @@ class MainWindow(QWidget):
         self.host_param_stacked_widget.setCurrentIndex(1);
 
     def switch_search_motion_param_intelligence_frame(self):
+        self.second_widget.setVisible(True)
+        self.third_widget.setVisible(False)
         self.motion_param_stacked_widget.setCurrentIndex(0);
 
     def switch_search_motion_param_manual_frame(self):
+        self.second_widget.setVisible(False)
+        self.third_widget.setVisible(True)
         self.motion_param_stacked_widget.setCurrentIndex(1);
 
     def set_main_param_frame_visible(self, visible):
