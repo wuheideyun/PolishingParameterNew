@@ -57,23 +57,24 @@ class MainWindow(QWidget):
         left_layout = QVBoxLayout()
         # 区域1 - 三个按钮
 
+        # 机型选择按钮区域
         self.button_frame = QFrame()
         self.button_frame.setFixedWidth(self.left_frame_width)
         self.button_frame.setContentsMargins(self.margin_value,self.margin_value,self.margin_value,self.margin_value)
         button_layout = QVBoxLayout(self.button_frame)
-        button1 = ImageChangeButton("",":Single",":SingleClicked",315,74)
-        button1.clicked.connect(self.switch_motion_param_single_frame)
-        button2 = ImageChangeButton("",":Double",":DoubleClicked",315,74)
-        button2.clicked.connect(self.switch_motion_param_double_frame)
+        self.single_button = ImageChangeButton("",":Single",":SingleClicked",315,74)
+        self.single_button.clicked.connect(self.switch_motion_param_single_frame)
+        self.double_button = ImageChangeButton("",":Double",":DoubleClicked",315,74)
+        self.double_button.clicked.connect(self.switch_motion_param_double_frame)
 
-        button3 = ImageChangeButton("",":Equal",":EqualClicked",315,74)
+        self.equal_button = ImageChangeButton("",":Equal",":EqualClicked",315,74)
 
         button_layout.setAlignment(Qt.AlignCenter)
-        button_layout.addWidget(button1)
+        button_layout.addWidget(self.single_button)
         button_layout.addSpacerItem(QSpacerItem(315,10,QSizePolicy.Fixed,QSizePolicy.Fixed))
-        button_layout.addWidget(button2)
+        button_layout.addWidget(self.double_button)
         button_layout.addSpacerItem(QSpacerItem(315,10,QSizePolicy.Fixed,QSizePolicy.Fixed))
-        button_layout.addWidget(button3)
+        button_layout.addWidget(self.equal_button)
 
         left_layout.addWidget(self.button_frame)
 
@@ -159,24 +160,24 @@ class MainWindow(QWidget):
         calc_button_layout = QVBoxLayout(self.calc_button_frame)
 
         first_layout = QHBoxLayout()
-        button1 = ImageChangeButton("智能寻优模式",":MiddleFrame",":MiddleFrameCliecked",236,56)
-        button1.clicked.connect(self.switch_search_motion_param_intelligence_frame)
-        button2 = ImageChangeButton("人工寻优模式",":MiddleFrame",":MiddleFrameCliecked",236,56)
-        button2.clicked.connect(self.switch_search_motion_param_manual_frame)
-        button3 = ImageChangeButton("参数保存",":SmallFrame",":SmallFrameCliecked",114,37)
-        first_layout.addWidget(button1)
-        first_layout.addWidget(button2)
-        first_layout.addWidget(button3)
+        self.intelligent_search_mode = ImageChangeButton("智能寻优模式",":MiddleFrame",":MiddleFrameCliecked",236,56)
+        self.intelligent_search_mode.clicked.connect(self.switch_search_motion_param_intelligence_frame)
+        self.artificial_search_mode = ImageChangeButton("人工寻优模式",":MiddleFrame",":MiddleFrameCliecked",236,56)
+        self.artificial_search_mode.clicked.connect(self.switch_search_motion_param_manual_frame)
+        self.save_button = ImageChangeButton("参数保存",":SmallFrame",":SmallFrameCliecked",114,37)
+        first_layout.addWidget(self.intelligent_search_mode)
+        first_layout.addWidget(self.artificial_search_mode)
+        first_layout.addWidget(self.save_button)
 
         second_layout = QHBoxLayout()
-        button4 = ImageChangeButton("节能方案", ":GreenFrame", ":GreenFrameCliecked",
+        self.button_energy_project = ImageChangeButton("节能方案", ":GreenFrame", ":GreenFrameCliecked",
                                     236,56)
-        button5 = ImageChangeButton("高品质方案", ":GreenFrame", ":GreenFrameCliecked",
+        self.button_efficient_project = ImageChangeButton("高品质方案", ":GreenFrame", ":GreenFrameCliecked",
                                     236,56)
-        button6 = ImageChangeButton("自定义修正方案", ":GreenFrame", ":GreenFrameCliecked",236,56)
-        second_layout.addWidget(button4)
-        second_layout.addWidget(button5)
-        second_layout.addWidget(button6)
+        self.button_selfdefine_project = ImageChangeButton("自定义修正方案", ":GreenFrame", ":GreenFrameCliecked",236,56)
+        second_layout.addWidget(self.button_energy_project)
+        second_layout.addWidget(self.button_efficient_project)
+        second_layout.addWidget(self.button_selfdefine_project)
         calc_button_layout.addLayout(first_layout)
         calc_button_layout.addLayout(second_layout)
         # for i in range(3):

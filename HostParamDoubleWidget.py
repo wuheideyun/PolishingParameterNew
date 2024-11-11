@@ -28,19 +28,19 @@ class HostParamDoubleWidget(QWidget):
 
         # 添加磨头间距输入框
         self.lineEdit_between = QLineEdit()
-        form_layout.addRow(QLabel("磨 头 间 距："), self.lineEdit_between)
+        form_layout.addRow(QLabel("磨头间距："), self.lineEdit_between)
 
         # 添加横梁间距输入框
         self.lineEdit_beam_between = QLineEdit()
-        form_layout.addRow(QLabel("横 梁 间 距："), self.lineEdit_beam_between)
+        form_layout.addRow(QLabel("横梁间距："), self.lineEdit_beam_between)
 
         # 添加磨头直径输入框
         self.lineEdit_diameter = QLineEdit()
-        form_layout.addRow(QLabel("磨 头 直 径："), self.lineEdit_diameter)
+        form_layout.addRow(QLabel("磨头直径："), self.lineEdit_diameter)
 
         # 添加磨块长度输入框
         self.lineEdit_grind_size = QLineEdit()
-        form_layout.addRow(QLabel("磨 块 长 度："), self.lineEdit_grind_size)
+        form_layout.addRow(QLabel("磨块长度："), self.lineEdit_grind_size)
 
         # 将表单布局添加到主布局中
         layout.addLayout(form_layout)

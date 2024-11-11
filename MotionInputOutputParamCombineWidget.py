@@ -69,16 +69,16 @@ class MotionInputOutputParamCombineWidget(QWidget):
         output_layout = QFormLayout()
 
         # 添加摆幅输入框
-        self.swing_amplitude_input = QLineEdit()
-        output_layout.addRow(QLabel("摆幅："), self.swing_amplitude_input)
+        self.lineEdit_swing = QLineEdit()
+        output_layout.addRow(QLabel("摆幅："), self.lineEdit_swing)
 
         # 添加产量大小输入框
-        self.production_size_input = QLineEdit()
-        output_layout.addRow(QLabel("产量大小："), self.production_size_input)
+        self.lineEdit_production_volume = QLineEdit()
+        output_layout.addRow(QLabel("产量大小："), self.lineEdit_production_volume)
 
         # 添加均匀系数输入框
-        self.uniformity_coefficient_input = QLineEdit()
-        output_layout.addRow(QLabel("均匀系数："), self.uniformity_coefficient_input)
+        self.lineEdit_coefficient = QLineEdit()
+        output_layout.addRow(QLabel("均匀系数："), self.lineEdit_coefficient)
 
         # 将输出参数的布局添加到组框中
         output_group_box.setLayout(output_layout)
@@ -92,30 +92,7 @@ class MotionInputOutputParamCombineWidget(QWidget):
 
     def output_report(self):
         # 获取输入的参数
-        main_belt_speed = self.main_belt_speed_input.text()
-        beam_swing_speed = self.beam_swing_speed_input.text()
-        beam_constant_swing_time = self.beam_constant_swing_time_input.text()
-        edge_stay_time = self.edge_stay_time_input.text()
-        same_grain_moto_count = self.same_grain_moto_count_input.text()
-        acceleration = self.acceleration_input.text()
-        brick_width = self.brick_width_input.text()
-        delay_time = self.delay_time_input.text()
-        swing_amplitude = self.swing_amplitude_input.text()
-        production_size = self.production_size_input.text()
-        uniformity_coefficient = self.uniformity_coefficient_input.text()
-
-        # 打印参数（实际应用中可以保存到文件或数据库）
-        print("主皮带速度:", main_belt_speed)
-        print("横梁摆动速度:", beam_swing_speed)
-        print("横梁匀速摆动时间:", beam_constant_swing_time)
-        print("边部停留时间:", edge_stay_time)
-        print("同款度磨头数:", same_grain_moto_count)
-        print("加速度大小:", acceleration)
-        print("进砖宽度:", brick_width)
-        print("延时时间:", delay_time)
-        print("摆幅:", swing_amplitude)
-        print("产量大小:", production_size)
-        print("均匀系数:", uniformity_coefficient)
+        pass
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

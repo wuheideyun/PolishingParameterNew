@@ -27,20 +27,20 @@ class MotionInputParamWidget(QWidget):
         form_layout = QFormLayout()
 
         # 添加产量大小输入框
-        self.production_size_input = QLineEdit()
-        form_layout.addRow(QLabel("产量大小："), self.production_size_input)
+        self.lineEdit_production_volume = QLineEdit()
+        form_layout.addRow(QLabel("产量大小："), self.lineEdit_production_volume)
 
         # 添加进砖宽度输入框
-        self.brick_width_input = QLineEdit()
-        form_layout.addRow(QLabel("进砖宽度："), self.brick_width_input)
+        self.lineEdit_ceramic_width = QLineEdit()
+        form_layout.addRow(QLabel("进砖宽度："), self.lineEdit_ceramic_width)
 
         # 添加加速度大小输入框
-        self.acceleration_input = QLineEdit()
-        form_layout.addRow(QLabel("加速度大小："), self.acceleration_input)
+        self.lineEdit_accelerate = QLineEdit()
+        form_layout.addRow(QLabel("加速度大小："), self.lineEdit_accelerate)
 
-        # 添加轨迹重量量输入框
-        self.trajectory_weight_input = QLineEdit()
-        form_layout.addRow(QLabel("轨迹重量量："), self.trajectory_weight_input)
+        # 添加轨迹重叠量输入框
+        self.lineEdit_overlap = QLineEdit()
+        form_layout.addRow(QLabel("轨迹重叠量："), self.lineEdit_overlap)
 
         # 将表单布局添加到主布局中
         main_layout.addLayout(form_layout)
@@ -54,12 +54,12 @@ class MotionInputParamWidget(QWidget):
         custom_layout.addRow(QLabel("单组覆盖磨头数："), self.single_group_moto_input)
 
         # 添加叠加组数输入框
-        self.overlay_groups_input = QLineEdit()
-        custom_layout.addRow(QLabel("叠加组数："), self.overlay_groups_input)
+        self.lineEdit_num_input = QLineEdit()
+        custom_layout.addRow(QLabel("叠加组数："), self.lineEdit_num_input)
 
         # 添加边部停留时间输入框
-        self.edge_stay_time_input = QLineEdit()
-        custom_layout.addRow(QLabel("边部停留时间："), self.edge_stay_time_input)
+        self.lineEdit_stay_time_output = QLineEdit()
+        custom_layout.addRow(QLabel("边部停留时间："), self.lineEdit_stay_time_output)
 
         # 将自定义修正方案的布局添加到组框中
         custom_group_box.setLayout(custom_layout)
@@ -77,22 +77,7 @@ class MotionInputParamWidget(QWidget):
 
     def save_parameters(self):
         # 获取输入的参数
-        production_size = self.production_size_input.text()
-        brick_width = self.brick_width_input.text()
-        acceleration = self.acceleration_input.text()
-        trajectory_weight = self.trajectory_weight_input.text()
-        single_group_moto = self.single_group_moto_input.text()
-        overlay_groups = self.overlay_groups_input.text()
-        edge_stay_time = self.edge_stay_time_input.text()
-
-        # 打印参数（实际应用中可以保存到文件或数据库）
-        print("产量大小:", production_size)
-        print("进砖宽度:", brick_width)
-        print("加速度大小:", acceleration)
-        print("轨迹重量量:", trajectory_weight)
-        print("单组覆盖磨头数:", single_group_moto)
-        print("叠加组数:", overlay_groups)
-        print("边部停留时间:", edge_stay_time)
+        pass
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
