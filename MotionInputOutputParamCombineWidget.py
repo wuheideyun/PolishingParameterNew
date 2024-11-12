@@ -2,7 +2,11 @@ import sys
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QFormLayout, QGroupBox, QHBoxLayout
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QFormLayout, \
+    QGroupBox, QHBoxLayout, QSpacerItem, QSizePolicy
+
+from JustifiedGridLayout import JustifiedGridLayout
+
 
 class MotionInputOutputParamCombineWidget(QWidget):
     def __init__(self):
@@ -15,77 +19,74 @@ class MotionInputOutputParamCombineWidget(QWidget):
         # 创建主布局
         main_layout = QVBoxLayout()
         param_label = QLabel("运动输入参数")
-        param_label.setFixedHeight(50)
+        param_label.setFixedHeight(35)
         # 设置字体大小和字体类型
-        param_font = QFont("Microsoft YaHei", 18)  # "Microsoft YaHei" 为字体类型，18 为字体大小
+        param_font = QFont("Microsoft YaHei", 16)  # "Microsoft YaHei" 为字体类型，18 为字体大小
         param_label.setFont(param_font)
         param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
-
         main_layout.addWidget(param_label)
-        # 创建运动参数的组框
-        motion_group_box = QGroupBox("运动参数")
-        motion_layout = QFormLayout()
 
-        # 添加主皮带速度输入框
-        self.lineEdit_belt_speed = QLineEdit()
-        motion_layout.addRow(QLabel("主皮带速度："), self.lineEdit_belt_speed)
+        # 定义标签和编辑框的文本
+        labels = [
+            "产量大小：", "摆动速度：", "匀速摆动时间：", "边部停留时间：", "同粒度磨头数：", "加速度大小：", "进砖宽度：", "延时时间："
+        ]
 
-        # 添加横梁摆动速度输入框
-        self.lineEdit_beam_swing_speed = QLineEdit()
-        motion_layout.addRow(QLabel("横梁摆动速度："), self.lineEdit_beam_swing_speed)
+        # 定义编辑框的名称
+        line_edit_names = [
+            "lineEdit_production_volume", "lineEdit_beam_swing_speed", "lineEdit_beam_constant_time", "lineEdit_stay_time_input",
+            "lineEdit_num_output", "lineEdit_accelerate", "lineEdit_ceramic_width", "lineEdit_delay_time"
+        ]
 
-        # 添加横梁匀速摆动时间输入框
-        self.lineEdit_beam_constant_time = QLineEdit()
-        motion_layout.addRow(QLabel("横梁匀速摆动时间："), self.lineEdit_beam_constant_time)
+        # 创建自定义的网格布局
+        self.content_up_layout = JustifiedGridLayout(labels, line_edit_names)
+        main_layout.addLayout(self.content_up_layout)
 
-        # 添加边部停留时间输入框
-        self.lineEdit_stay_time_input = QLineEdit()
-        motion_layout.addRow(QLabel("边部停留时间："), self.lineEdit_stay_time_input)
+        main_layout.addStretch()
 
-        # 添加同款度磨头数输入框
-        self.lineEdit_num_output = QLineEdit()
-        motion_layout.addRow(QLabel("同粒度磨头数："), self.lineEdit_num_output)
+        param_middle_label = QLabel("运动输出参数")
+        param_middle_label.setFixedHeight(30)
+        # 设置字体大小和字体类型
+        param_font = QFont("Microsoft YaHei", 16)  # "Microsoft YaHei" 为字体类型，18 为字体大小
+        param_middle_label.setFont(param_font)
+        param_middle_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        main_layout.addWidget(param_middle_label)
 
-        # 添加加速度大小输入框
-        self.lineEdit_accelerate = QLineEdit()
-        motion_layout.addRow(QLabel("加速度大小："), self.lineEdit_accelerate)
+        # 定义标签和编辑框的文本
+        labels = [
+            "主皮带速度：", "摆幅："
+        ]
 
-        # 添加进砖宽度输入框
-        self.lineEdit_ceramic_width = QLineEdit()
-        motion_layout.addRow(QLabel("进砖宽度："), self.lineEdit_ceramic_width)
+        # 定义编辑框的名称
+        line_edit_names = [
+            "lineEdit_belt_speed", "lineEdit_swing"
+        ]
 
-        # 添加延时时间输入框
-        self.lineEdit_delay_time = QLineEdit()
-        motion_layout.addRow(QLabel("延时时间："), self.lineEdit_delay_time)
+        # 创建自定义的网格布局
+        self.content_middle_layout = JustifiedGridLayout(labels, line_edit_names)
+        main_layout.addLayout(self.content_middle_layout)
 
-        # 将运动参数的布局添加到组框中
-        motion_group_box.setLayout(motion_layout)
+        param_bottom_label = QLabel("产品质量参数")
+        param_bottom_label.setFixedHeight(30)
+        # 设置字体大小和字体类型
+        param_font = QFont("Microsoft YaHei", 16)  # "Microsoft YaHei" 为字体类型，18 为字体大小
+        param_bottom_label.setFont(param_font)
+        param_bottom_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        main_layout.addWidget(param_bottom_label)
 
-        # 将组框添加到主布局中
-        main_layout.addWidget(motion_group_box)
+        # 定义标签和编辑框的文本
+        labels = [
+            "均匀系数："
+        ]
 
-        # 创建输出参数的组框
-        output_group_box = QGroupBox("输出参数")
-        output_layout = QFormLayout()
+        # 定义编辑框的名称
+        line_edit_names = [
+            "lineEdit_coefficient"
+        ]
 
-        # 添加摆幅输入框
-        self.lineEdit_swing = QLineEdit()
-        output_layout.addRow(QLabel("摆幅："), self.lineEdit_swing)
-
-        # 添加产量大小输入框
-        self.lineEdit_production_volume = QLineEdit()
-        output_layout.addRow(QLabel("产量大小："), self.lineEdit_production_volume)
-
-        # 添加均匀系数输入框
-        self.lineEdit_coefficient = QLineEdit()
-        output_layout.addRow(QLabel("均匀系数："), self.lineEdit_coefficient)
-
-        # 将输出参数的布局添加到组框中
-        output_group_box.setLayout(output_layout)
-
-        # 将组框添加到主布局中
-        main_layout.addWidget(output_group_box)
-
+        # 创建自定义的网格布局
+        self.content_bottom_layout = JustifiedGridLayout(labels, line_edit_names)
+        main_layout.addLayout(self.content_bottom_layout)
+        main_layout.addSpacerItem(QSpacerItem(0, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
 
         # 设置主布局
         self.setLayout(main_layout)

@@ -6,13 +6,11 @@ from PySide6.QtCore import Qt, QSize
 
 from HostParamDoubleWidget import HostParamDoubleWidget
 from HostParamSingleWidget import HostParamSingleWidget
-from ImageButton import ImageButton
 from ImageChangeButton import ImageChangeButton
-from ImageChangeWithTextButton import ImageChangeWithTextButton
+from JustifiedLabel import JustifiedLabel
 from MotionInputOutputParamCombineWidget import MotionInputOutputParamCombineWidget
 from MotionInputParamWidget import MotionInputParamWidget
 from MotionOutputParamWidget import MotionOutputParamWidget
-from TitleBar import TitleBar
 
 
 class MainWindow(QWidget):
@@ -48,7 +46,20 @@ class MainWindow(QWidget):
         main_layout.setSpacing(0)
 
         global_layout = QVBoxLayout()
-        global_layout.addSpacerItem(QSpacerItem(500,100,QSizePolicy.Expanding, QSizePolicy.Fixed))
+        # global_layout.addSpacerItem(QSpacerItem(500,100,QSizePolicy.Expanding, QSizePolicy.Fixed))
+
+        top_layout = QHBoxLayout()
+
+        version_label = JustifiedLabel("版本号: KDUI-2401")
+        version_label.setFixedSize(250,100)
+        # 设置字体大小和字体类型
+        param_font = QFont("Microsoft YaHei", 18)  # "Microsoft YaHei" 为字体类型，18 为字体大小
+        version_label.setFont(param_font)
+        version_label.setAlignment(Qt.AlignRight)
+        top_layout.addWidget(version_label, 0, Qt.AlignRight)
+        top_layout.addSpacerItem(QSpacerItem(60, 100, QSizePolicy.Fixed, QSizePolicy.Minimum))
+
+        global_layout.addLayout(top_layout)
         # 内容区域布局
         content_layout = QHBoxLayout()
         global_layout.addLayout(content_layout)
@@ -65,12 +76,13 @@ class MainWindow(QWidget):
         button_layout = QVBoxLayout(self.button_frame)
         self.single_button = ImageChangeButton("",":Single",":SingleClicked",315,74)
         # 单头摆模式切换
-        self.single_button.clicked.connect(self.switch_motion_param_single_frame)
+        self.single_button.clicked.connect(self.switch_motion_param_single_clicked)
         self.double_button = ImageChangeButton("",":Double",":DoubleClicked",315,74)
         # 双头摆模式切换
-        self.double_button.clicked.connect(self.switch_motion_param_double_frame)
+        self.double_button.clicked.connect(self.switch_motion_param_double_clicked)
 
         self.equal_button = ImageChangeButton("",":Equal",":EqualClicked",315,74)
+        self.equal_button.clicked.connect(self.switch_motion_param_equal_clicked)
 
         button_layout.setAlignment(Qt.AlignCenter)
         button_layout.addWidget(self.single_button)
@@ -94,38 +106,22 @@ class MainWindow(QWidget):
         image_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
         left_layout.addWidget(self.image_frame)
 
-
         # 区域3 - 主机参数(双头摆)
         self.host_param_double_frame = HostParamDoubleWidget()
         # self.main_param_frame.setFrameShape(QFrame.Box)
         self.host_param_double_frame.setFixedSize(self.left_frame_width,310)
-        self.host_param_double_frame.setContentsMargins(self.margin_value, 5, self.margin_value, self.margin_value)
-        # main_param_layout = QVBoxLayout(self.main_param_frame)
-
-        # param_label = QLabel("主机参数")
-        # # 设置字体大小和字体类型
-        # param_font = QFont("Microsoft YaHei", 18)  # "Microsoft YaHei" 为字体类型，18 为字体大小
-        # param_label.setFont(param_font)
-        # main_param_layout.addWidget(param_label)
-        # param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
-
-        # for i in range(4):
-        #     param_label = QLabel(f"主机参数{i + 1}")
-        #     param_edit = QLineEdit()
-        #     param_layout = QHBoxLayout()
-        #     param_layout.addWidget(param_label)
-        #     param_layout.addWidget(param_edit)
-        #     main_param_layout.addLayout(param_layout)
+        self.host_param_double_frame.setContentsMargins(50, 5, 50, self.margin_value)
 
         # 区域3 - 主机参数(单头摆)
         self.host_param_single_frame = HostParamSingleWidget()
         # self.main_param_frame.setFrameShape(QFrame.Box)
-        self.host_param_single_frame.setFixedSize(self.left_frame_width,310)
-        self.host_param_single_frame.setContentsMargins(self.margin_value, 5, self.margin_value, self.margin_value)
+        self.host_param_single_frame.setFixedSize(410,310)
+        self.host_param_single_frame.setContentsMargins(50, 5, 50, self.margin_value)
 
 
         self.host_param_stacked_widget.addWidget(self.host_param_single_frame)
         self.host_param_stacked_widget.addWidget(self.host_param_double_frame)
+
         left_layout.addWidget(self.host_param_stacked_widget)
 
         content_layout.addLayout(left_layout)
@@ -164,52 +160,58 @@ class MainWindow(QWidget):
 
         self.first_widget = QWidget()
         first_layout = QHBoxLayout(self.first_widget)
-        self.intelligent_search_mode = ImageChangeButton("智能寻优模式",":MiddleFrame",":MiddleFrameCliecked",236,56)
-        self.intelligent_search_mode.clicked.connect(self.switch_search_motion_param_intelligence_frame)
-        self.artificial_search_mode = ImageChangeButton("人工寻优模式",":MiddleFrame",":MiddleFrameCliecked",236,56)
-        self.artificial_search_mode.clicked.connect(self.switch_search_motion_param_manual_frame)
-        self.save_button = ImageChangeButton("参数保存",":SmallFrame",":SmallFrameCliecked",114,37)
+        self.intelligent_search_mode = ImageChangeButton("智能寻优模式",":MiddleFrame",":MiddleFrameClicked",236,56)
+        self.intelligent_search_mode.clicked.connect(self.switch_search_motion_param_intelligence_clicked)
+        self.artificial_search_mode = ImageChangeButton("人工寻优模式",":MiddleFrame",":MiddleFrameClicked",236,56)
+        self.artificial_search_mode.clicked.connect(self.switch_search_motion_param_manual_clicked)
+        self.save_button = ImageChangeButton("参数保存",":SmallFrame",":SmallFrameClicked",114,37,True)
+        first_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        first_layout.addWidget(QLabel("模式\n选择", styleSheet="font-size: 20px;"))
+        first_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         first_layout.addWidget(self.intelligent_search_mode)
+        first_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         first_layout.addWidget(self.artificial_search_mode)
+        first_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        first_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         first_layout.addWidget(self.save_button)
+        first_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        first_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
 
         self.second_widget = QWidget()
         second_layout = QHBoxLayout(self.second_widget)
-        self.button_energy_project = ImageChangeButton("节能方案", ":GreenFrame", ":GreenFrameCliecked",
-                                    236,56)
-        self.button_efficient_project = ImageChangeButton("高品质方案", ":GreenFrame", ":GreenFrameCliecked",
-                                    236,56)
-        self.button_selfdefine_project = ImageChangeButton("自定义修正方案", ":GreenFrame", ":GreenFrameCliecked",236,56)
+        self.button_energy_project = ImageChangeButton("节能方案", ":GreenFrame", ":GreenFrameClicked",    236,56,True)
+        self.button_efficient_project = ImageChangeButton("高品质方案", ":GreenFrame", ":GreenFrameClicked",236,56,True)
+        self.button_selfdefine_project = ImageChangeButton("自定义修正方案", ":GreenFrame", ":GreenFrameClicked",236,56,True)
+        second_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        second_layout.addWidget(QLabel("方案\n选择", styleSheet="font-size: 20px;"))
+        second_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         second_layout.addWidget(self.button_energy_project)
+        second_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         second_layout.addWidget(self.button_efficient_project)
+        second_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         second_layout.addWidget(self.button_selfdefine_project)
+        second_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
 
         self.third_widget = QWidget()
         third_layout = QHBoxLayout(self.third_widget)
-        self.button_synchronization_mode = ImageChangeButton("同步摆动模式", ":GreenFrame", ":GreenFrameCliecked",
-                                                       236, 56)
-        self.button_cross_mode = ImageChangeButton("交叉摆动模式", ":GreenFrame", ":GreenFrameCliecked",
-                                                          236, 56)
-        self.button_order_mode = ImageChangeButton("顺序摆动模式", ":GreenFrame", ":GreenFrameCliecked", 236,
-                                                           56)
+        self.button_synchronization_mode = ImageChangeButton("同步摆动模式", ":GreenFrame", ":GreenFrameClicked", 236, 56)
+        self.button_cross_mode = ImageChangeButton("交叉摆动模式", ":GreenFrame", ":GreenFrameClicked", 236, 56)
+        self.button_order_mode = ImageChangeButton("顺序摆动模式", ":GreenFrame", ":GreenFrameClicked", 236, 56)
+        third_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        third_layout.addWidget(QLabel("方案\n选择", styleSheet="font-size: 20px;"))
+        third_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_synchronization_mode)
+        third_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_cross_mode)
+        third_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_order_mode)
-
-
+        third_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
 
         calc_button_layout.addWidget(self.first_widget)
         calc_button_layout.addWidget(self.second_widget)
         calc_button_layout.addWidget(self.third_widget)
-        # for i in range(3):
-        #     calc_button = QPushButton("高效计算")
-        #     calc_button_layout.addWidget(calc_button)
-
         center_layout.addWidget(self.calc_button_frame)
-
         content_layout.addLayout(center_layout)
-
-
 
 
         right_layout = QVBoxLayout()
@@ -219,95 +221,65 @@ class MainWindow(QWidget):
         # 区域4 - 运动输入参数
         self.motion_in_param_frame = MotionInputParamWidget()
         motion_in_param_layout = QVBoxLayout(self.motion_in_param_frame)
-        # motion_in_param_label = QLabel("运动输入参数")
-        # motion_in_param_layout.addWidget(motion_in_param_label)
-        # motion_in_font = QFont("Microsoft YaHei",18)
-        # motion_in_param_label.setFont(motion_in_font)
-        # motion_in_param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
         self.motion_in_param_frame.setFixedWidth(self.right_frame_width)
-        self.motion_in_param_frame.setContentsMargins(self.margin_value,5,self.margin_value,self.margin_value)
-
-        # for i in range(4):
-        #     param_label = QLabel(f"运动参数{i + 1}")
-        #     param_edit = QLineEdit()
-        #     param_layout = QHBoxLayout()
-        #     param_layout.addWidget(param_label)
-        #     param_layout.addWidget(param_edit)
-        #     motion_in_param_layout.addLayout(param_layout)
-
-        # right_layout.addWidget(self.motion_in_param_frame)
+        self.motion_in_param_frame.setContentsMargins(30,5,30,self.margin_value)
 
         # 区域5 - 运动输出参数
         self.motion_out_param_frame = MotionOutputParamWidget()
         self.motion_out_param_frame.setFixedWidth(self.right_frame_width)
-        self.motion_out_param_frame.setContentsMargins(self.margin_value,5,self.margin_value,self.margin_value)
-        # motion_out_param_layout = QVBoxLayout(self.motion_out_param_frame)
-        # motion_out_param_label = QLabel("运动输出参数")
-        # motion_out_param_layout.addWidget(motion_out_param_label)
-        # motion_out_font = QFont("Microsoft YaHei",18)
-        # motion_out_param_label.setFont(motion_out_font)
-        # motion_out_param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
-
-        # product_quality_param_label = QLabel("产品质量参数")
-        # motion_out_param_layout.addWidget(product_quality_param_label)
-        # product_quality_font = QFont("Microsoft YaHei", 18)
-        # product_quality_param_label.setFont(product_quality_font)
-        # product_quality_param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
-
-
-        # for i in range(4):
-        #     param_label = QLabel(f"计算参数{i + 1}")
-        #     param_edit = QLineEdit()
-        #     param_layout = QHBoxLayout()
-        #     param_layout.addWidget(param_label)
-        #     param_layout.addWidget(param_edit)
-        #     motion_out_param_layout.addLayout(param_layout)
-
-        # right_layout.addWidget(self.motion_out_param_frame)
+        self.motion_out_param_frame.setContentsMargins(30,5,30,self.margin_value)
 
         self.right_intelligent_search_mode_layout.addWidget(self.motion_in_param_frame)
         self.right_intelligent_search_mode_layout.addWidget(self.motion_out_param_frame)
+        self.right_intelligent_search_mode_layout.setContentsMargins(0,0,0,0)
 
         self.combine_frame = QFrame()
+        self.combine_frame.setFixedSize(410,830)
+        self.combine_frame.setContentsMargins(0,0,0,0)
         self.combine_frame.setLayout(self.right_intelligent_search_mode_layout)
 
 
-
-        # 运动参数-人工寻优模式
+        # 运动参数-人工寻优界面
         self.motion_input_out_param_manual_frame = MotionInputOutputParamCombineWidget()
-
         self.motion_input_out_param_manual_frame.setFixedSize(self.right_frame_width,830)
+        self.motion_input_out_param_manual_frame.setContentsMargins(30,0,30,0)
 
-        # 右侧切换部分
+
+        # 右侧切换部分stacked_widget
         self.motion_param_stacked_widget.addWidget(self.combine_frame)
         self.motion_param_stacked_widget.addWidget(self.motion_input_out_param_manual_frame)
         right_layout.addWidget(self.motion_param_stacked_widget)
-
         content_layout.addLayout(right_layout)
 
         # 底部按钮区域布局
         bottom_layout = QHBoxLayout()
 
         # 底部 - 输出报告按钮
-        report_button = ImageChangeWithTextButton("输出报告",":SmallFrame",":SmallFrameCliecked",73,64)
-
-        # report_button = QPushButton("输出报告")
-        report_button.setFixedHeight(50)
-        bottom_layout.addWidget(report_button, alignment=Qt.AlignRight)
-        bottom_layout.addSpacerItem(QSpacerItem(100,60,QSizePolicy.Fixed, QSizePolicy.Fixed))
+        report_button = ImageChangeButton("输出报告",":SmallFrame",":SmallFrameClicked",114,37,True)
+        bottom_layout.addWidget(report_button, alignment=Qt.AlignRight | Qt.AlignBottom)
+        bottom_layout.addSpacerItem(QSpacerItem(170,60,QSizePolicy.Fixed, QSizePolicy.Fixed))
 
         main_layout.addLayout(bottom_layout)
 
         # 设置各个组件的背景图片
         self.update_background_image()
 
+        # 初始化界面值
+        self.setInitValues()
+
+        self.setInitButtonClicked()
+
         # 设置主窗口布局
         self.setLayout(main_layout)
-
-
-
         self.third_widget.setVisible(False)
-        # self.showMaximized()
+        self.showMaximized()
+
+    def setInitValues(self):
+        self.motion_in_param_frame.content_layout.set_line_edit_value('lineEdit_accelerate','650')
+        self.motion_in_param_frame.content_layout.set_line_edit_value('lineEdit_overlap','10')
+    def setInitButtonClicked(self):
+        self.intelligent_search_mode.init_clicked_background()
+        self.single_button.init_clicked_background()
 
     def set_frame_image(self, image_path):
         # 加载图片
@@ -329,7 +301,7 @@ class MainWindow(QWidget):
 
     def set_background_image(self):
 
-        # 主窗口背景AAAAAAAAAAAAA
+        # 主窗口背景
         # 设置背景图片路径
         self.background_image_path = ":background"
         self.background_image = QPixmap(self.background_image_path)
@@ -344,7 +316,7 @@ class MainWindow(QWidget):
         # self.setAutoFillBackground(True)  # 确保背景填充
 
 
-        # 单头摆/双头摆/同步摆设备选择AAAAAAAAAAAAAAAAAA
+        # 单头摆/双头摆/同步摆设备选择
         # 设置背景图片路径
         self.button_frame_image_path = ":SwingAndHostParameter"
         self.button_frame_image = QPixmap(self.button_frame_image_path)
@@ -357,7 +329,7 @@ class MainWindow(QWidget):
         self.button_frame.setPalette(palette1)
         self.button_frame.setAutoFillBackground(True)
 
-        # 机型图AAAAAAAAAAAAAAAAAA
+        # 机型图
         # 设置背景图片路径
         self.image_frame_image_path = ":Machine"
         self.image_frame_image = QPixmap(self.image_frame_image_path)
@@ -370,7 +342,7 @@ class MainWindow(QWidget):
         self.image_frame.setPalette(palette2)
         self.image_frame.setAutoFillBackground(True)
 
-        # 主机参数-双头摆AAAAAAAAAAAAAAAAAAAAA
+        # 主机参数-双头摆
         # 设置背景图片路径
         self.main_param_frame_image_path = ":SwingAndHostParameter"
         self.main_param_frame_image = QPixmap(self.main_param_frame_image_path)
@@ -383,7 +355,7 @@ class MainWindow(QWidget):
         self.host_param_double_frame.setPalette(palette3)
         self.host_param_double_frame.setAutoFillBackground(True)
 
-        # 主机参数-单头摆AAAAAAAAAAAAAAAAAAAAA
+        # 主机参数-单头摆
         # 设置背景图片路径
         self.main_param_frame_image_path = ":SwingAndHostParameter"
         self.main_param_frame_image = QPixmap(self.main_param_frame_image_path)
@@ -397,7 +369,7 @@ class MainWindow(QWidget):
         self.host_param_single_frame.setPalette(palette3)
         self.host_param_single_frame.setAutoFillBackground(True)
 
-        # 轨迹分布AAAAAAAAAAAAAA
+        # 轨迹分布
         # 设置背景图片路径
         self.sim_image_path = ":Line"
         self.sim_image = QPixmap(self.sim_image_path)
@@ -410,7 +382,7 @@ class MainWindow(QWidget):
         self.chart_frame1.setPalette(palette4)
         self.chart_frame1.setAutoFillBackground(True)
 
-        # 轨迹动画AAAAAAAAAAAAAA
+        # 轨迹动画
         # 设置背景图片路径
         self.animation_image_path = ":Line"
         self.animation_image = QPixmap(self.animation_image_path)
@@ -423,7 +395,7 @@ class MainWindow(QWidget):
         self.chart_frame2.setPalette(palette5)
         self.chart_frame2.setAutoFillBackground(True)
 
-        # 模式选择AAAAAAAAAAAAAA
+        # 模式选择
         # 设置背景图片路径
         self.animation_image_path = ":Select"
         self.animation_image = QPixmap(self.animation_image_path)
@@ -436,8 +408,7 @@ class MainWindow(QWidget):
         self.calc_button_frame.setPalette(palette6)
         self.calc_button_frame.setAutoFillBackground(True)
 
-
-        # 运动输入参数AAAAAAAAAAAAAA
+        # 运动输入参数
         # 设置背景图片路径
         self.motion_param_image_path = ":InputOutput"
         self.motion_param_image = QPixmap(self.motion_param_image_path)
@@ -450,9 +421,7 @@ class MainWindow(QWidget):
         self.motion_in_param_frame.setPalette(palette7)
         self.motion_in_param_frame.setAutoFillBackground(True)
 
-
-
-        # 运动输出参数AAAAAAAAAAAAAA
+        # 运动输出参数
         # 设置背景图片路径
         self.motion_out_param_image_path = ":InputOutput"
         self.motion_out_param_image = QPixmap(self.motion_out_param_image_path)
@@ -465,8 +434,7 @@ class MainWindow(QWidget):
         self.motion_out_param_frame.setPalette(palette8)
         self.motion_out_param_frame.setAutoFillBackground(True)
 
-        # 运动参数-合并AAAAAAAAAAAAA
-
+        # 运动参数-合并
         self.motion_input_out_param_manual_image_path = ":SimInputOutput"
         self.motion_input_out_param_manual_image = QPixmap(self.motion_input_out_param_manual_image_path)
         # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
@@ -490,20 +458,31 @@ class MainWindow(QWidget):
         # 继承父类的 resizeEvent
         super(MainWindow, self).resizeEvent(event)
 
-    def switch_motion_param_single_frame(self):
+    def switch_motion_param_single_clicked(self):
+        self.double_button.reset_background()
+        self.equal_button.reset_background()
         self.host_param_stacked_widget.setCurrentIndex(0);
         self.current_mode = 1
 
-    def switch_motion_param_double_frame(self):
+    def switch_motion_param_double_clicked(self):
+        self.single_button.reset_background()
+        self.equal_button.reset_background()
         self.host_param_stacked_widget.setCurrentIndex(1);
         self.current_mode = 2
+    def switch_motion_param_equal_clicked(self):
+        self.single_button.reset_background()
+        self.double_button.reset_background()
+        # self.host_param_stacked_widget.setCurrentIndex(1);
+        self.current_mode = 3
 
-    def switch_search_motion_param_intelligence_frame(self):
-        self.second_widget.setVisible(True)
+    def switch_search_motion_param_intelligence_clicked(self):
+        self.artificial_search_mode.reset_background()
         self.third_widget.setVisible(False)
+        self.second_widget.setVisible(True)
         self.motion_param_stacked_widget.setCurrentIndex(0);
 
-    def switch_search_motion_param_manual_frame(self):
+    def switch_search_motion_param_manual_clicked(self):
+        self.intelligent_search_mode.reset_background()
         self.second_widget.setVisible(False)
         self.third_widget.setVisible(True)
         self.motion_param_stacked_widget.setCurrentIndex(1);
@@ -511,7 +490,7 @@ class MainWindow(QWidget):
     def set_main_param_frame_visible(self, visible):
         if visible:
             # 重新设置背景
-            # 运动输入参数AAAAAAAAAAAAAA
+            # 运动输入参数
             # 设置背景图片路径
             self.motion_param_image_path = ":InputOutput"
             self.motion_param_image = QPixmap(self.motion_param_image_path)

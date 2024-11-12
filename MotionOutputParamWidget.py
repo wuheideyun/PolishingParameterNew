@@ -4,6 +4,10 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QFormLayout, QGroupBox, QHBoxLayout
 
+from ImageChangeButton import ImageChangeButton
+from JustifiedGridLayout import JustifiedGridLayout
+
+
 class MotionOutputParamWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -18,59 +22,54 @@ class MotionOutputParamWidget(QWidget):
         param_label = QLabel("运动输出参数")
         param_label.setFixedHeight(50)
         # 设置字体大小和字体类型
-        param_font = QFont("Microsoft YaHei", 18)  # "Microsoft YaHei" 为字体类型，18 为字体大小
+        param_font = QFont("Microsoft YaHei", 16)  # "Microsoft YaHei" 为字体类型，18 为字体大小
         param_label.setFont(param_font)
         param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
-
         main_layout.addWidget(param_label)
-        # 创建运动输出参数的组框
-        motion_group_box = QGroupBox("运动输出参数")
-        motion_layout = QFormLayout()
 
-        # 添加主皮带速度输入框
-        self.lineEdit_belt_speed = QLineEdit()
-        motion_layout.addRow(QLabel("主皮带速度："), self.lineEdit_belt_speed)
+        # 定义标签和编辑框的文本
+        labels = [
+            "主皮带速度：", "摆动速度：", "匀速摆动时间：", "边部停留时间：", "摆幅：", "同粒度磨头数："
+        ]
+        # 定义编辑框的名称
+        line_edit_names = [
+            "lineEdit_belt_speed", "lineEdit_beam_swing_speed", "lineEdit_beam_constant_time", "lineEdit_stay_time_input",
+            "lineEdit_swing", "lineEdit_num_output"
+        ]
+        # 创建自定义的网格布局
+        self.content_up_layout = JustifiedGridLayout(labels, line_edit_names)
+        main_layout.addLayout(self.content_up_layout)
 
-        # 添加摆动速度输入框
-        self.lineEdit_beam_swing_speed = QLineEdit()
-        motion_layout.addRow(QLabel("摆动速度："), self.lineEdit_beam_swing_speed)
+        param_label = QLabel("产品质量参数")
+        param_label.setFixedHeight(50)
+        # 设置字体大小和字体类型
+        param_font = QFont("Microsoft YaHei", 16)  # "Microsoft YaHei" 为字体类型，18 为字体大小
+        param_label.setFont(param_font)
+        param_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+        main_layout.addWidget(param_label)
 
-        # 添加匀速摆动时间输入框
-        self.lineEdit_beam_constant_time = QLineEdit()
-        motion_layout.addRow(QLabel("匀速摆动时间："), self.lineEdit_beam_constant_time)
+        # 定义标签和编辑框的文本
+        labels = [
+            "均匀系数："
+        ]
+        # 定义编辑框的名称
+        line_edit_names = [
+             "lineEdit_coefficient"
+        ]
+        # 创建自定义的网格布局
+        self.content_down_layout = JustifiedGridLayout(labels, line_edit_names)
+        main_layout.addLayout(self.content_down_layout)
 
-        # 添加边部停留时间输入框
-        self.lineEdit_stay_time_input = QLineEdit()
-        motion_layout.addRow(QLabel("边部停留时间："), self.lineEdit_stay_time_input)
+        # 添加保存按钮
+        self.save_button = QPushButton("参数保存")
+        self.save_button = ImageChangeButton("参数保存", ":SmallFrame", ":SmallFrameClicked", 114, 37,True)
+        self.save_button.clicked.connect(self.save_parameters)
 
-        # 添加摆幅输入框
-        self.lineEdit_swing = QLineEdit()
-        motion_layout.addRow(QLabel("摆幅："), self.lineEdit_swing)
-
-        # 添加同粒度磨头数输入框
-        self.lineEdit_num_output = QLineEdit()
-        motion_layout.addRow(QLabel("同粒度磨头数："), self.lineEdit_num_output)
-
-        # 将运动输出参数的布局添加到组框中
-        motion_group_box.setLayout(motion_layout)
-
-        # 将组框添加到主布局中
-        main_layout.addWidget(motion_group_box)
-
-        # 创建产品质量参数的组框
-        quality_group_box = QGroupBox("产品质量参数")
-        quality_layout = QFormLayout()
-
-        # 添加均匀系数输入框
-        self.lineEdit_coefficient = QLineEdit()
-        quality_layout.addRow(QLabel("均匀系数："), self.lineEdit_coefficient)
-
-        # 将产品质量参数的布局添加到组框中
-        quality_group_box.setLayout(quality_layout)
-
-        # 将组框添加到主布局中
-        main_layout.addWidget(quality_group_box)
-
+        button_layout = QHBoxLayout()
+        button_layout.addStretch()
+        button_layout.addWidget(self.save_button)
+        main_layout.addStretch()
+        main_layout.addLayout(button_layout)
 
         # 设置主布局
         self.setLayout(main_layout)
