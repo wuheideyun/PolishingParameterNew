@@ -1,8 +1,8 @@
 from PySide6.QtGui import QPainter, QPixmap, QColor, QPalette, QBrush, QFont
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, \
-    QLineEdit, QFrame, QSizePolicy, QSpacerItem, QStackedWidget
+    QLineEdit, QFrame, QSizePolicy, QSpacerItem, QStackedWidget, QScrollArea
 from PySide6.QtCore import Qt, QSize
-
+from JustifiedLabel import JustifiedLabel
 
 from HostParamDoubleWidget import HostParamDoubleWidget
 from HostParamSingleWidget import HostParamSingleWidget
