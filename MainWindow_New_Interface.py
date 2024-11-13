@@ -1,8 +1,7 @@
 from PySide6.QtGui import QPainter, QPixmap, QColor, QPalette, QBrush, QFont
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, \
-    QLineEdit, QFrame, QSizePolicy, QSpacerItem, QStackedWidget
+    QLineEdit, QFrame, QSizePolicy, QSpacerItem, QStackedWidget, QScrollArea
 from PySide6.QtCore import Qt, QSize
-
 
 from HostParamDoubleWidget import HostParamDoubleWidget
 from HostParamSingleWidget import HostParamSingleWidget
@@ -13,7 +12,15 @@ from MotionInputOutputParamCombineWidget import MotionInputOutputParamCombineWid
 from MotionInputParamWidget import MotionInputParamWidget
 from MotionOutputParamWidget import MotionOutputParamWidget
 from TitleBar import TitleBar
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+from PySide6.QtGui import QColor
 
+class MplCanvas(FigureCanvas):
+    def __init__(self, parent=None, width=12, height=8, dpi=100):
+        self.fig = Figure(figsize=(width, height), dpi=dpi)
+        super().__init__(self.fig)
+        self.setParent(parent)
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -137,6 +144,7 @@ class MainWindow(QWidget):
         self.chart_frame1 = QFrame()
         chart1_layout = QVBoxLayout(self.chart_frame1)
         self.chart_frame1.setContentsMargins(self.margin_value,5,self.margin_value,self.margin_value)
+
         chart_label1 = QLabel("轨迹分布")
         chart1_font = QFont("Microsoft YaHei",18)
         chart_label1.setFont(chart1_font)
@@ -144,6 +152,76 @@ class MainWindow(QWidget):
         chart_label1.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
         self.chart_frame1.setFixedHeight(300)
         center_layout.addWidget(self.chart_frame1)
+
+        # 创建一个QWidget作为图框--轨迹分布
+        self.central_widget = QWidget()
+        #self.central_widget.setStyleSheet("border: 2px solid skyblue;border-radius: 10px")  # 设置边框为红色，宽度为3px
+        self.central_widget.setStyleSheet("""
+                                    QWidget {
+                                        border: 2px solid white;
+                                        border-radius: 10px;
+                                    }
+                                """)
+        layout_widget = QVBoxLayout(self.central_widget)
+        self.canvas = MplCanvas(self, width=8, height=4, dpi=100)
+
+        deep_blue = (31/255, 55/255, 96/255)
+        self.canvas.figure.set_facecolor(deep_blue)  # 设置画布背景颜色为底色
+
+        # 创建拖动条
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidgetResizable(False)  # 强制显示拖动条
+
+        # 自定义滚动条样式
+        scroll_area.verticalScrollBar().setStyleSheet("""
+                    QScrollBar:vertical {
+                        border: 1px solid #999999;
+                        border-radius: 10px;
+                        background: #f0f0f0;
+                        width: 16px;
+                        margin: 16px 0 16px 0;
+                    }
+                    QScrollBar::handle:vertical {
+                        background: #5d99c6;
+                        min-height: 20px;
+                        border-radius: 8px;
+                    }
+                    QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+                        background: none;
+                        height: 0px;
+                    }
+                    QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+                        background: #e0e0e0;
+                    }
+                """)
+
+        scroll_area.horizontalScrollBar().setStyleSheet("""
+                    QScrollBar:horizontal {
+                        border: 1px solid #999999;
+                        border-radius: 10px;
+                        background: #f0f0f0;
+                        height: 16px;
+                        margin: 0px 16px 0px 16px;
+                    }
+                    QScrollBar::handle:horizontal {
+                        background: #5d99c6;
+                        min-width: 20px;
+                        border-radius: 8px;
+                    }
+                    QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+                        background: none;
+                        width: 0px;
+                    }
+                    QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+                        background: #e0e0e0;
+                    }
+                """)
+
+        scroll_area.setWidget(self.canvas)
+        # 将拖动条加入widget中
+        layout_widget.addWidget(scroll_area)
+        # 将widget加入QFrame中
+        chart1_layout.addWidget(self.central_widget)
 
         # 区域7 - 轨迹动画
         self.chart_frame2 = QFrame()
@@ -304,10 +382,8 @@ class MainWindow(QWidget):
         # 设置主窗口布局
         self.setLayout(main_layout)
 
-
-
         self.third_widget.setVisible(False)
-        # self.showMaximized()
+        self.showMaximized()
 
     def set_frame_image(self, image_path):
         # 加载图片
@@ -328,7 +404,6 @@ class MainWindow(QWidget):
 
 
     def set_background_image(self):
-
         # 主窗口背景AAAAAAAAAAAAA
         # 设置背景图片路径
         self.background_image_path = ":background"
@@ -526,22 +601,11 @@ class MainWindow(QWidget):
             self.motion_in_param_frame.setAutoFillBackground(True)
         else:
             # 移除背景
-
             self.motion_in_param_frame.setPalette(QPalette())
             self.motion_in_param_frame.setAutoFillBackground(False)
 
         # 设置可见性
         self.motion_in_param_frame.setVisible(visible)
-        # -------------------------按钮逻辑部分---------------------
-        self.button_energy_project.clicked.connect()
-        self.button_efficient_project.clicked.connect()
-        self.button_selfdefine_project.clicked.connect()
-
-        self.button_synchronization_mode.clicked.connect()
-        self.button_cross_mode.clicked.connect()
-        self.button_order_mode.clicked.connect()
-
-
 
 
 if __name__ == "__main__":

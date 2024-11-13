@@ -6,137 +6,186 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import time as te
 import multiprocessing
 from matplotlib.patches import Rectangle  # 导入 Rectangle
+from PySide6.QtCore import Qt, Signal, QThread
 # ——————————————出图程序（主程序）———————————————
-def data_figure_plot(v1,ceramic_width,between,beam_between,R,a,mo):
-    # 抛磨量分布子程序
-    result = double_num_calculate(v1,ceramic_width,between,beam_between,R,a)
-    v2 = result[0,1]
-    constant_time =result[0,2]
-    stay_time =result[0,3]
-    num = result[0,4]
-    delay_time = result[0,5]
-    r_P_d = Polishing_distribution_Thread_order(v1, v2, constant_time, stay_time, a, between, beam_between, num, R, mo,delay_time)
-    result_P_d_matrix,result_P_d_par = r_P_d.emit()
-    # 轨迹中心线分布
-    m_l_p = middle_line_plot_order(v1, v2, constant_time, stay_time, a, num, between, beam_between,delay_time)
-    #result_middle_line_x,result_middle_line_y = m_l_p.inner_calculate()
-    # ---------绘制组合图-----------
-    plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
-    plt.rcParams['axes.unicode_minus'] = False  # 避免坐标轴不能正常的显示负号
-    fig = plt.figure('抛磨强度分布仿真')
+# 子线程执行多进程计算任务
+class Double_enerage_WorkerThread(QThread):
+    result_signal = Signal(object)  # 创建一个信号用于传递结果
+    def __init__(self,v1, ceramic_width, between, beam_between, R, a,mo):
+        super().__init__()
+        self.v1 = v1
+        self.ceramic_width = ceramic_width
+        self.between = between
+        self.beam_between = beam_between
+        self.R = R
+        self.a = a
+        self.mo = mo
 
-    # 绘制抛磨量分布仿真
-    ax_1 = fig.add_subplot(211)
-    ax_1.set_aspect('equal', adjustable='box')
-    object_matrix = result_P_d_matrix
-    # 设置权重操作
-    max_set = np.max(object_matrix)
-    # 计算第90百分位的阈值（前15%）
-    percentile_85 = np.percentile(object_matrix, 85)
-    # 对矩阵中大于等于该阈值的元素乘以0.85
-    object_matrix[object_matrix >= percentile_85] *= 0.85
-    im = ax_1.contourf(object_matrix, levels=15, alpha=1, cmap='jet', vmin=0, vmax=max_set)
-    ax_1.set_xlabel('Tile feed direction')
-    ax_1.set_ylabel('Beam swing direction')
-    divider = make_axes_locatable(ax_1)
-    cax = divider.append_axes("right", size="5%", pad=0.1)
-    plt.colorbar(im, cax=cax)
-    # 绘制矩形线框
-    ceramic_width_ = float(ceramic_width) * 0.1
-    width, length = np.shape(object_matrix)
-    x_begin = 0
-    y_begin = (width - ceramic_width_) / 2
-    rect = Rectangle((x_begin, y_begin), length - 1, ceramic_width_, edgecolor='red', linestyle='--', linewidth=2,
-                     fill=False)
-    ax_1.add_patch(rect)
+    def run(self):
+        # 参数计算
+        result = self.double_num_calculate(self.v1, self.ceramic_width, self.between, self.beam_between, self.R, self.a)
+        v2 = result[0, 1]
+        constant_time = result[0, 2]
+        stay_time = result[0, 3]
+        num = result[0, 4]
+        delay_time = result[0, 5]
+        # 抛磨量分布--计算
+        PD_order = Polishing_distribution_Thread_order(self.v1, v2, constant_time, stay_time, self.a, self.between, self.beam_between, num,
+                                                       self.R,self.mo, delay_time)
+        self.result_P_d_matrix, self.result_P_d_par = PD_order.emit()
+        # 中心轨迹曲线--计算
+        Mlp_order = Middle_line_plot_order(self.v1, v2, constant_time, stay_time, self.a, num, self.between, self.beam_between, delay_time)
+        self.single_X_location, self.single_Y_location = Mlp_order.inner_calculate()
+        # 参数传递
+        self.result = result
+        # 结果输出
+        list_1 = [self.result_P_d_matrix, self.result_P_d_par, self.single_X_location, self.single_Y_location]
+        par_dict = {"v1":self.result[0,0] ,"v2":self.result[0,1] ,"constant_time":self.result[0,2],"stay_time":self.result[0,3],
+                    "num":self.result[0,4],"delay_time":self.result[0,5],"swing":self.result[0,6],"ceramic_width":self.ceramic_width,
+                    "between":self.between,"beam_between":self.beam_between,"R":self.R,"a":self.a}
+        list= [list_1, par_dict]
+        data = list
+        self.result_signal.emit(data)  # 发射信号将结果传回主线程
+    # 参数计算函数
+    def double_num_calculate(self,v1, ceramic_width, between, beam_between, R, a):
+        # 轨迹重叠量（0~200），可调整轨迹优化性能
+        overlap = 10
+        # 摆动速度上限值（防止摆动速度过载）
+        beam_speed_up = 800
+        # coef_1-边部停留时间系数，参数范围（0.5~1.0）可调整轨迹优化性能
+        coef_1 = 0.9
+        theta = math.asin((2 * R - overlap) / between)
+        k = math.tan(theta)
+        # 判断皮带速度是否过快
+        v2_mid = k * v1
+        if v2_mid <= beam_speed_up:
+            v2_ = v2_mid
+        else:
+            v2_ = beam_speed_up
+        # 中间计算(边部停留时长为单倍磨头间距)
+        B = (ceramic_width + 120) - 2 * R  # 摆幅（要求两极限位置各伸出60mm）
+        t_a_ = v2_ / a  # 加速时间
+        t_e = (B - a * t_a_ ** 2) / v2_  # 匀速时间
+        t_between = between / v1 * coef_1  # 边部停留时长
+        period_1 = 4 * t_a_ + 2 * t_e + 2 * t_between  # 单周期时间
+        num_1 = math.ceil(v1 * period_1 / between)  # 同粒度磨头数目
+        if num_1 % 2 != 0:
+            num_1 = num_1 + 1
+        t_beam = (num_1 * between - 2 * t_between * v1) / (2 * v1)  # 2 * t_a + t_e
+        #
+        # f_1 = a * t_a ^ 2 - t_beam * a * t_a + B;
+        #
+        if (t_beam * a) ** 2 - 4 * a * B >= 0:
+            t_a = (-((t_beam * a) ** 2 - 4 * a * B) ** 0.5 + a * t_beam) / (2 * a)
+            # t1 = (((t_beam * a) ^ 2 - 4 * a * B) ^ 0.5 + a * t_beam) / (2 * a)
+        else:
+            t_a = t_beam / 2
+        v2 = round(t_a * a, 2)
+        t_e = round(t_beam - 2 * t_a, 2)
+        # 结果输出
+        result = np.zeros((2, 7))
+        # 方案一 节能方案
+        result[0, 0] = round(v1, 2)
+        result[0, 1] = round(v2, 2)
+        result[0, 2] = round(t_e, 2)
+        result[0, 3] = round(t_between, 2)
+        result[0, 4] = round(num_1)
+        result[0, 5] = round((beam_between - 2 * between) / v1, 2)
+        result[0, 6] = round(a * t_a ** 2 + v2 * t_e, 2)
+        # 方案二 高光泽度方案
+        result[1, 0] = round(v1, 2)
+        result[1, 1] = round(v2, 2)
+        result[1, 2] = round(t_e, 2)
+        result[1, 3] = round(t_between * 2, 2)
+        result[1, 4] = round(num_1 + 2, 2)
+        result[1, 5] = round((beam_between - 2 * between) / v1, 2)
+        result[1, 6] = round(a * t_a ** 2 + v2 * t_e, 2)
+        return result
 
-    # 绘制轨迹中心线
-    accelerate_t = v2 / a
-    constant_t = constant_time
-    motionless_t = stay_time
-    period = 4 * accelerate_t + 2 * motionless_t + 2 * constant_t
-    single_X_location, single_Y_location = m_l_p.inner_calculate()
-    # 设置图层属性
-    ax_2 = fig.add_subplot(212)
-    ax_2.set_xlim((-200, period * 3 * v1 + between))
-    ax_2.set_ylim((-200, a * (v2 / a) ** 2 + v2 * constant_t + 600))
-    ax_2.set_aspect('equal', adjustable='box')
-    # 设置图片文本
-    ani_text = ax_2.text(0.7, 0.82, '', transform=ax_2.transAxes, fontsize=10)
-    ani_text.set_text('Same_grinding_num=%.0f' % float(num))
-    # 设置坐标轴名称
-    ax_2.set_xlabel('Tile feed direction')
-    ax_2.set_ylabel('Beam swing direction')
-    num_two = math.ceil(num / 2)
-    color_7 = ['red', 'orange', 'green', 'cyan', 'blue', 'purple', 'yellow', 'lightgreen',
-               'slategrey', 'cornflowerblue', 'navy', 'indigo', 'violet', 'plum', 'oldlace', 'maroon',
-               'lightcyan', 'lightseagreen', 'seagreen', 'springgreen']  # 红橙黄绿青蓝紫
-    all_time_n = math.floor(period / 0.01) * 3
-    # all_time_n = math.floor(period / msize) * n
-    for i in range(0, num_two):
-        ax_2.scatter(single_X_location[0, 0:all_time_n - 1] + i * beam_between - i * delay_time * v1,
-                   single_Y_location[0, 0:all_time_n - 1],
-                   color=color_7[i], s=1)
-        ax_2.scatter(single_X_location[0,
-                   0:all_time_n - 1] + i * beam_between + between - i * delay_time * v1,
-                   single_Y_location[0, 0:all_time_n - 1],
-                   color=color_7[i], s=1)
-    plt.show()
+
+
+
+
+
+
+
+# def data_figure_plot(v1,ceramic_width,between,beam_between,R,a,mo):
+#     # 参数计算
+#     result = double_num_calculate(v1,ceramic_width,between,beam_between,R,a)
+#     v2 = result[0,1]
+#     constant_time =result[0,2]
+#     stay_time =result[0,3]
+#     num = result[0,4]
+#     delay_time = result[0,5]
+#     r_P_d = Polishing_distribution_Thread_order(v1, v2, constant_time, stay_time, a, between, beam_between, num, R, mo,delay_time)
+#     result_P_d_matrix,result_P_d_par = r_P_d.emit()
+#     # 轨迹中心线分布
+#     m_l_p = middle_line_plot_order(v1, v2, constant_time, stay_time, a, num, between, beam_between,delay_time)
+#     #result_middle_line_x,result_middle_line_y = m_l_p.inner_calculate()
+#     # ---------绘制组合图-----------
+#     plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
+#     plt.rcParams['axes.unicode_minus'] = False  # 避免坐标轴不能正常的显示负号
+#     fig = plt.figure('抛磨强度分布仿真')
+#
+#     # 绘制抛磨量分布仿真
+#     ax_1 = fig.add_subplot(211)
+#     ax_1.set_aspect('equal', adjustable='box')
+#     object_matrix = result_P_d_matrix
+#     # 设置权重操作
+#     max_set = np.max(object_matrix)
+#     # 计算第90百分位的阈值（前15%）
+#     percentile_85 = np.percentile(object_matrix, 85)
+#     # 对矩阵中大于等于该阈值的元素乘以0.85
+#     object_matrix[object_matrix >= percentile_85] *= 0.85
+#     im = ax_1.contourf(object_matrix, levels=15, alpha=1, cmap='jet', vmin=0, vmax=max_set)
+#     ax_1.set_xlabel('Tile feed direction')
+#     ax_1.set_ylabel('Beam swing direction')
+#     divider = make_axes_locatable(ax_1)
+#     cax = divider.append_axes("right", size="5%", pad=0.1)
+#     plt.colorbar(im, cax=cax)
+#     # 绘制矩形线框
+#     ceramic_width_ = float(ceramic_width) * 0.1
+#     width, length = np.shape(object_matrix)
+#     x_begin = 0
+#     y_begin = (width - ceramic_width_) / 2
+#     rect = Rectangle((x_begin, y_begin), length - 1, ceramic_width_, edgecolor='red', linestyle='--', linewidth=2,
+#                      fill=False)
+#     ax_1.add_patch(rect)
+#
+#     # 绘制轨迹中心线
+#     accelerate_t = v2 / a
+#     constant_t = constant_time
+#     motionless_t = stay_time
+#     period = 4 * accelerate_t + 2 * motionless_t + 2 * constant_t
+#     single_X_location, single_Y_location = m_l_p.inner_calculate()
+#     # 设置图层属性
+#     ax_2 = fig.add_subplot(212)
+#     ax_2.set_xlim((-200, period * 3 * v1 + between))
+#     ax_2.set_ylim((-200, a * (v2 / a) ** 2 + v2 * constant_t + 600))
+#     ax_2.set_aspect('equal', adjustable='box')
+#     # 设置图片文本
+#     ani_text = ax_2.text(0.7, 0.82, '', transform=ax_2.transAxes, fontsize=10)
+#     ani_text.set_text('Same_grinding_num=%.0f' % float(num))
+#     # 设置坐标轴名称
+#     ax_2.set_xlabel('Tile feed direction')
+#     ax_2.set_ylabel('Beam swing direction')
+#     num_two = math.ceil(num / 2)
+#     color_7 = ['red', 'orange', 'green', 'cyan', 'blue', 'purple', 'yellow', 'lightgreen',
+#                'slategrey', 'cornflowerblue', 'navy', 'indigo', 'violet', 'plum', 'oldlace', 'maroon',
+#                'lightcyan', 'lightseagreen', 'seagreen', 'springgreen']  # 红橙黄绿青蓝紫
+#     all_time_n = math.floor(period / 0.01) * 3
+#     # all_time_n = math.floor(period / msize) * n
+#     for i in range(0, num_two):
+#         ax_2.scatter(single_X_location[0, 0:all_time_n - 1] + i * beam_between - i * delay_time * v1,
+#                    single_Y_location[0, 0:all_time_n - 1],
+#                    color=color_7[i], s=1)
+#         ax_2.scatter(single_X_location[0,
+#                    0:all_time_n - 1] + i * beam_between + between - i * delay_time * v1,
+#                    single_Y_location[0, 0:all_time_n - 1],
+#                    color=color_7[i], s=1)
+#     plt.show()
 # --------------参数计算函数---------------
-def double_num_calculate(v1,ceramic_width,between,beam_between,R,a):
-    # 轨迹重叠量（0~200），可调整轨迹优化性能
-    overlap = 10
-    # 摆动速度上限值（防止摆动速度过载）
-    beam_speed_up = 800
-    # coef_1-边部停留时间系数，参数范围（0.5~1.0）可调整轨迹优化性能
-    coef_1 = 0.9
-    theta = math.asin((2 * R - overlap) / between)
-    k = math.tan(theta)
-    # 判断皮带速度是否过快
-    v2_mid = k * v1
-    if v2_mid <= beam_speed_up:
-        v2_ = v2_mid
-    else:
-        v2_ = beam_speed_up
-    # 中间计算(边部停留时长为单倍磨头间距)
-    B = (ceramic_width + 120) - 2 * R           # 摆幅（要求两极限位置各伸出60mm）
-    t_a_ = v2_ / a                    # 加速时间
-    t_e = (B - a * t_a_ ** 2) / v2_   # 匀速时间
-    t_between = between / v1 * coef_1          # 边部停留时长
-    period_1 = 4 * t_a_ + 2 * t_e + 2 * t_between     # 单周期时间
-    num_1 = math.ceil(v1 * period_1 / between)       # 同粒度磨头数目
-    if num_1 % 2 != 0:
-        num_1 = num_1 + 1
-    t_beam = (num_1 * between - 2 * t_between*v1) / (2 * v1)   # 2 * t_a + t_e
-    #
-    # f_1 = a * t_a ^ 2 - t_beam * a * t_a + B;
-    #
-    if (t_beam * a) ** 2 - 4 * a * B >= 0:
-        t_a = (-((t_beam * a) ** 2 - 4 * a * B) ** 0.5 + a * t_beam) / (2 * a)
-        # t1 = (((t_beam * a) ^ 2 - 4 * a * B) ^ 0.5 + a * t_beam) / (2 * a)
-    else:
-        t_a = t_beam / 2
-    v2 = round(t_a * a, 2)
-    t_e = round(t_beam - 2 * t_a, 2)
-    # 结果输出
-    result = np.zeros((2, 7))
-    # 方案一 节能方案
-    result[0,0] = round(v1,2)
-    result[0,1] = round(v2,2)
-    result[0,2] = round(t_e,2)
-    result[0,3] = round(t_between,2)
-    result[0,4] = round(num_1)
-    result[0,5] = round((beam_between-2*between)/v1,2)
-    result[0,6] = round(a*t_a**2+v2*t_e,2)
-    # 方案二 高光泽度方案
-    result[1,0] = round(v1,2)
-    result[1,1] = round(v2,2)
-    result[1,2] = round(t_e,2)
-    result[1,3] = round(t_between * 2,2)
-    result[1,4] = round(num_1 + 2,2)
-    result[1,5] = round((beam_between-2*between)/v1,2)
-    result[1,6] = round(a*t_a**2+v2*t_e,2)
-    return result
+
 # ------------抛磨量分布仿真函数-------------
 # 多进程计算函数
 def polishing_cal(begin,end,v1,v2,constant_t,stay_t,a,R,mod_rho,mod_theta,mo):
@@ -405,7 +454,7 @@ class Polishing_distribution_Thread_order():
         matrix_results = sum(result.get() for result in results)
         return matrix_results
 # ------------- 轨迹中心线分布---------------
-class middle_line_plot_order():
+class Middle_line_plot_order():
     def __init__(self, v1, v2, t1, t2, a, num, between, beam_between,delay_time):
         # 变量输入
         self.v1 = v1
