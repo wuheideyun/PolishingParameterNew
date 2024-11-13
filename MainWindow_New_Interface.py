@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxL
     QLineEdit, QFrame, QSizePolicy, QSpacerItem, QStackedWidget, QScrollArea
 from PySide6.QtCore import Qt, QSize
 from JustifiedLabel import JustifiedLabel
-
+from PySide6.QtGui import QMovie
 from HostParamDoubleWidget import HostParamDoubleWidget
 from HostParamSingleWidget import HostParamSingleWidget
 from ImageButton import ImageButton
@@ -18,8 +18,10 @@ from matplotlib.figure import Figure
 from PySide6.QtGui import QColor
 
 class MplCanvas(FigureCanvas):
-    def __init__(self, parent=None, width=12, height=8, dpi=100):
+    def __init__(self, parent=None, width=8, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
+        deep_blue = (31 / 255, 55 / 255, 96 / 255)
+        self.fig.patch.set_facecolor(deep_blue)
         super().__init__(self.fig)
         self.setParent(parent)
 
@@ -154,23 +156,29 @@ class MainWindow(QWidget):
 
         # 创建一个QWidget作为图框--轨迹分布
         self.central_widget = QWidget()
-        #self.central_widget.setStyleSheet("border: 2px solid skyblue;border-radius: 10px")  # 设置边框为红色，宽度为3px
+        # 设置 QWidget 尺寸大小
+        self.central_widget.setFixedSize(950, 200)  # 最大尺寸为 500x400
+        # 设置 QWidget 边框、样式
         self.central_widget.setStyleSheet("""
                                     QWidget {
                                         border: 2px solid white;
                                         border-radius: 10px;
                                     }
                                 """)
+        # 设置 QWidget 布局
         layout_widget = QVBoxLayout(self.central_widget)
-        self.canvas = MplCanvas(self, width=8, height=4, dpi=100)
-
+        # 创建画布
+        self.canvas = MplCanvas(self, width=10, height=4, dpi=100)
+        # 设置画布颜色
         deep_blue = (31/255, 55/255, 96/255)
         self.canvas.figure.set_facecolor(deep_blue)  # 设置画布背景颜色为底色
-
         # 创建拖动条
         scroll_area = QScrollArea(self)
+        # 设置拖动条大小
+        scroll_area.setFixedSize(900, 180)
         scroll_area.setWidgetResizable(False)  # 强制显示拖动条
-
+        # 给画布设置拖动条
+        scroll_area.setWidget(self.canvas)
         # 自定义滚动条样式
         scroll_area.verticalScrollBar().setStyleSheet("""
                     QScrollBar:vertical {
@@ -215,12 +223,10 @@ class MainWindow(QWidget):
                         background: #e0e0e0;
                     }
                 """)
-
-        scroll_area.setWidget(self.canvas)
-        # 将拖动条加入widget中
-        layout_widget.addWidget(scroll_area)
-        # 将widget加入QFrame中
-        chart1_layout.addWidget(self.central_widget)
+        # 将拖动条加入widget中,并设为居中
+        layout_widget.addWidget(scroll_area,alignment=Qt.AlignmentFlag.AlignCenter)
+        # 将widget加入QFrame中,并设为居中
+        chart1_layout.addWidget(self.central_widget,alignment=Qt.AlignmentFlag.AlignCenter)
 
         # 区域7 - 轨迹动画
         self.chart_frame2 = QFrame()
@@ -233,6 +239,19 @@ class MainWindow(QWidget):
         chart2_layout.addWidget(chart_label2)
         self.chart_frame2.setFixedHeight(300)
         center_layout.addWidget(self.chart_frame2)
+
+        # 创建一个 QLabel ，用来播放轨迹动画
+        self.animation_QLabel = QLabel()
+        self.animation_QLabel.setFixedSize(900,220)
+        # 设置 QLabel 背景颜色
+        #self.animation_QLabel.setStyleSheet("background-color: white;")  # 设置背景色为 lightgray
+        chart2_layout.addWidget(self.animation_QLabel,alignment=Qt.AlignmentFlag.AlignCenter)
+
+        self.animation_QLabel.setAlignment(Qt.AlignCenter)
+
+        # # 初始加载第一个 GIF
+        # self.movie = QMovie('donghua.gif')  # 替换为实际 GIF 文件路径
+        # self.animation_QLabel.setMovie(self.movie)
 
         # 区域8 - 计算模式按钮
         self.calc_button_frame = QFrame()

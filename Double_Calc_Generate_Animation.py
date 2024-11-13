@@ -170,7 +170,7 @@ class Animation_produce_order(QThread):
         
         self.result_ready.emit(self.animation_name)
         plt.close(self.fig)
-        
+
         
         
 # 自定义动画 待做
