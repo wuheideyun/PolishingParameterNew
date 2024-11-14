@@ -1,13 +1,12 @@
 import sys
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSettings
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QFormLayout, \
     QGridLayout, QHBoxLayout
 
 from ImageChangeButton import ImageChangeButton
 from JustifiedGridLayout import JustifiedGridLayout
-from JustifiedLabel import JustifiedLabel
 
 
 class HostParamSingleWidget(QWidget):
@@ -17,6 +16,8 @@ class HostParamSingleWidget(QWidget):
         # 设置窗口标题和大小
         self.setWindowTitle("主机参数(单头摆)设置")
         # self.setGeometry(100, 100, 300, 200)
+
+        self.settings = QSettings("config.ini", QSettings.IniFormat)
 
         # 创建布局
         layout = QVBoxLayout()
@@ -42,33 +43,27 @@ class HostParamSingleWidget(QWidget):
         self.content_layout = JustifiedGridLayout(labels, line_edit_names)
 
         # 添加保存按钮
-        self.save_button = QPushButton("参数保存")
         self.save_button = ImageChangeButton("参数保存",":SmallFrame",":SmallFrameClicked",114,37,True)
-        self.save_button.clicked.connect(self.save_parameters)
+        self.save_button.clicked.connect(self.saveParameters)
         layout.addLayout(self.content_layout)
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         button_layout.addWidget(self.save_button)
         layout.addStretch()
         layout.addLayout(button_layout)
+
+        self.loadParameter()
         # 设置主布局
         self.setLayout(layout)
 
-    def save_parameters(self):
-        # 获取输入的参数
-        beam_between = self.content_layout.get_line_edit_value('lineEdit_beam_between')
-        diameter = self.content_layout.get_line_edit_value('lineEdit_diameter')
-        grind_size = self.content_layout.get_line_edit_value('lineEdit_grind_size')
+    def saveParameters(self):
+        """保存各个LineEdit控件的数据到配置文件"""
+        self.settings.setValue("host_param_single_lineEdit_beam_between", self.content_layout.get_line_edit_value("lineEdit_beam_between"))
+        self.settings.setValue("host_param_single_lineEdit_diameter", self.content_layout.get_line_edit_value("lineEdit_diameter"))
+        self.settings.setValue("host_param_single_lineEdit_grind_length", self.content_layout.get_line_edit_value("lineEdit_grind_length"))
 
-        # 打印参数（实际应用中可以保存到文件或数据库）
-        print("横梁间距:", beam_between)
-        print("磨头直径:", diameter)
-        print("磨块长度:", grind_size)
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-
-    window = HostParamDoubleWidget()
-    window.show()
-
-    sys.exit(app.exec())
+    def loadParameter(self):
+        """加载配置文件中的数据到各个LineEdit控件"""
+        self.content_layout.set_line_edit_value("lineEdit_beam_between",self.settings.value("host_param_single_lineEdit_beam_between", ""))
+        self.content_layout.set_line_edit_value("lineEdit_diameter",self.settings.value("host_param_single_lineEdit_diameter", ""))
+        self.content_layout.set_line_edit_value("lineEdit_grind_length",self.settings.value("host_param_single_lineEdit_grind_length", ""))

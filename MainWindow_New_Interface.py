@@ -1,7 +1,7 @@
 from PySide6.QtGui import QPainter, QPixmap, QColor, QPalette, QBrush, QFont
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, \
     QLineEdit, QFrame, QSizePolicy, QSpacerItem, QStackedWidget, QScrollArea
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt, QSize, QSettings
 from JustifiedLabel import JustifiedLabel
 from PySide6.QtGui import QMovie
 from HostParamDoubleWidget import HostParamDoubleWidget
@@ -33,13 +33,14 @@ class MainWindow(QWidget):
 
         self.selectedFunction = 1
 
-        self.left_frame_width = 410
-        self.right_frame_width = 410
+        self.left_frame_width = 395
+        self.right_frame_width = 400
         self.setWindowTitle("抛光参数计算系统")
         self.setStyleSheet("color: white;")
         # 模式切换标签    1：单头摆  2：双头摆  3：同步摆
         self.current_mode = 1
         # self.setAttribute(Qt.WA_TranslucentBackground)# 设置窗口背景透明
+        self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
 
         # 创建 QStackedWidget
         self.host_param_stacked_widget = QStackedWidget()
@@ -47,7 +48,7 @@ class MainWindow(QWidget):
 
         # 创建 QStackedWidget
         self.motion_param_stacked_widget = QStackedWidget()
-        self.motion_param_stacked_widget.setFixedWidth(420)
+        self.motion_param_stacked_widget.setFixedWidth(400)
 
         # 初始窗口大小
         self.resize(1560, 540)
@@ -127,7 +128,7 @@ class MainWindow(QWidget):
         # 区域3 - 主机参数(单头摆)
         self.host_param_single_frame = HostParamSingleWidget()
         # self.main_param_frame.setFrameShape(QFrame.Box)
-        self.host_param_single_frame.setFixedSize(410,310)
+        self.host_param_single_frame.setFixedSize(self.left_frame_width,310)
         self.host_param_single_frame.setContentsMargins(50, 5, 50, self.margin_value)
 
 
@@ -379,7 +380,9 @@ class MainWindow(QWidget):
         self.motion_in_param_frame.content_layout.set_line_edit_value('lineEdit_overlap','10')
     def setInitButtonClicked(self):
         self.intelligent_search_mode.init_clicked_background()
+        self.intelligent_search_mode.is_clicked = True
         self.single_button.init_clicked_background()
+        self.single_button.is_clicked = True
 
     def set_frame_image(self, image_path):
         # 加载图片
