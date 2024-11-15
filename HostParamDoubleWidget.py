@@ -38,7 +38,7 @@ class HostParamDoubleWidget(QWidget):
             "lineEdit_between", "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length"
         ]
         # 创建自定义的网格布局
-        self.content_layout = JustifiedGridLayout(labels, line_edit_names,None,-1,'','')
+        self.content_layout = JustifiedGridLayout(labels, line_edit_names,6,None,-1,'','')
 
         # 添加保存按钮
         self.save_button = ImageChangeButton("参数保存", ":SmallFrame", ":SmallFrameClicked", 114, 37,True)

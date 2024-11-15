@@ -24,6 +24,7 @@ class MotionInputOutputParamCombineWidget(QWidget):
         param_font = QFont("Microsoft YaHei", 16)  # "Microsoft YaHei" 为字体类型，18 为字体大小
         param_label.setFont(param_font)
         param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        main_layout.addSpacerItem(QSpacerItem(5, 5, QSizePolicy.Fixed, QSizePolicy.Fixed))
         main_layout.addWidget(param_label)
 
         # 定义标签和编辑框的文本
@@ -38,7 +39,7 @@ class MotionInputOutputParamCombineWidget(QWidget):
         ]
 
         # 创建自定义的网格布局
-        self.content_up_layout = JustifiedGridLayout(labels, line_edit_names)
+        self.content_up_layout = JustifiedGridLayout(labels, line_edit_names,40)
         main_layout.addLayout(self.content_up_layout)
 
         main_layout.addStretch()

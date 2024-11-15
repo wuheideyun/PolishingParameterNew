@@ -8,13 +8,14 @@ from JustifiedLabel import JustifiedLabel
 class JustifiedGridLayout(QGridLayout):
     textChanged = Signal(str, str)  # 定义一个信号，用于通知外部逻辑
 
-    def __init__(self, labels, line_edit_names, line_edit_names2=None, rownum=-1, text='', color='', parent=None):
+    def __init__(self, labels, line_edit_names, verticalSpacing = 6, line_edit_names2=None, rownum=-1, text='', color='', parent=None):
         super().__init__(parent)
         self.labels = labels
         self.line_edit_names = line_edit_names
         self.line_edit_names2 = line_edit_names2 or []
         self.rownum = rownum
         self.text = text
+        self.verticalSpacing = verticalSpacing
         self.color = color
         self.max_iterations = len(self.labels)
         self.current_iteration = 0
@@ -35,13 +36,14 @@ class JustifiedGridLayout(QGridLayout):
             line_edit.setObjectName(line_edit_name)  # 设置编辑框的名称
             line_edit.setFont(param_font)
             line_edit.setStyleSheet("color: white")
-            line_edit.setMinimumSize(15, 28)  # 设置编辑框的最小大小
+            line_edit.setMinimumSize(15, 30)  # 设置编辑框的最小大小
             self.line_edits.append(line_edit)  # 将编辑框添加到集合中
             self.addWidget(label, self.current_row, 0)  # 标签放在第0列
             self.addWidget(line_edit, self.current_row, 1)  # 编辑框放在第1列
             self.add_text(self.current_row)
             self.current_iteration += 1
             self.current_row += 1
+            self.setVerticalSpacing(self.verticalSpacing)
 
         # 为需要监听的 QLineEdit 添加 textChanged 信号的监听
         for line_edit_name in self.line_edit_names2:
@@ -91,7 +93,7 @@ if __name__ == "__main__":
     line_edit_names2 = ["edit1", "edit3"]  # 需要监听的 QLineEdit
 
     window = QWidget()
-    layout = JustifiedGridLayout(labels, line_edit_names, line_edit_names2, rownum=1, text="Special Text", color="red")
+    layout = JustifiedGridLayout(labels, line_edit_names,6, line_edit_names2, rownum=1, text="Special Text", color="red")
     window.setLayout(layout)
 
     # 连接信号到槽函数

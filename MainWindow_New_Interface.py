@@ -9,6 +9,7 @@ from HostParamSingleWidget import HostParamSingleWidget
 from ImageButton import ImageButton
 from ImageChangeButton import ImageChangeButton
 from ImageChangeWithTextButton import ImageChangeWithTextButton
+from LoggerHelper import LoggerHelper
 from MotionInputOutputParamCombineWidget import MotionInputOutputParamCombineWidget
 from MotionInputParamWidget import MotionInputParamWidget
 from MotionOutputParamWidget import MotionOutputParamWidget
@@ -30,7 +31,7 @@ class MainWindow(QWidget):
         super().__init__()
         self.margin_value = 15
         self.flag = False
-
+        self.logger = LoggerHelper('param_change')
         self.selectedFunction = 1
 
         self.left_frame_width = 395
@@ -566,6 +567,7 @@ class MainWindow(QWidget):
         self.equal_button.reset_background()
         self.host_param_stacked_widget.setCurrentIndex(0);
         self.current_mode = 1
+        self.logger.log_multiple_params('info',('current_mode',self.current_mode))
 
     def switch_motion_param_double_clicked(self):
         self.single_button.reset_background()

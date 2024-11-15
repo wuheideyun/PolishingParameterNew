@@ -43,7 +43,7 @@ class MotionInputParamWidget(QWidget):
             "lineEdit_production_volume"
         ]
         # 创建自定义的网格布局
-        self.content_layout = JustifiedGridLayout(labels, line_edit_names,line_edit_names2,3,'以下参数仅在自定义修正方案使用','yellow')
+        self.content_layout = JustifiedGridLayout(labels, line_edit_names,6,line_edit_names2,3,'以下参数仅在自定义修正方案使用','yellow')
 
         # 添加保存按钮
         self.save_button = ImageChangeButton("参数保存", ":SmallFrame", ":SmallFrameClicked", 114, 37,True)
