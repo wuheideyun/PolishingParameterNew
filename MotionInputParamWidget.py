@@ -35,7 +35,7 @@ class MotionInputParamWidget(QWidget):
 
         # 定义编辑框的名称
         line_edit_names = [
-            "lineEdit_production_volume", "lineEdit_ceramic_width", "lineEdit_accelerate", "lineEdit_overlap", "lineEdit_num_input","lineEdit_group_count", "lineEdit_stay_time_output"
+            "lineEdit_production_volume", "lineEdit_ceramic_width", "lineEdit_accelerate", "lineEdit_overlap", "lineEdit_num_input","lineEdit_group_count", "lineEdit_stay_time_input"
         ]
 
         # 定义编辑框的名称
@@ -73,7 +73,7 @@ class MotionInputParamWidget(QWidget):
         self.settings.setValue("motion_input_lineEdit_overlap", self.content_layout.get_line_edit_value("lineEdit_overlap"))
         self.settings.setValue("motion_input_lineEdit_num_input", self.content_layout.get_line_edit_value("lineEdit_num_input"))
         self.settings.setValue("motion_input_lineEdit_group_count", self.content_layout.get_line_edit_value("lineEdit_group_count"))
-        self.settings.setValue("motion_input_lineEdit_stay_time_output", self.content_layout.get_line_edit_value("lineEdit_stay_time_output"))
+        self.settings.setValue("motion_input_lineEdit_stay_time_input", self.content_layout.get_line_edit_value("lineEdit_stay_time_input"))
     def loadParameter(self):
         """加载配置文件中的数据到各个LineEdit控件"""
         self.content_layout.set_line_edit_value("lineEdit_production_volume",self.settings.value("motion_input_lineEdit_production_volume", ""))
@@ -82,7 +82,7 @@ class MotionInputParamWidget(QWidget):
         self.content_layout.set_line_edit_value("lineEdit_overlap",self.settings.value("motion_input_lineEdit_overlap", ""))
         self.content_layout.set_line_edit_value("lineEdit_num_input",self.settings.value("motion_input_lineEdit_num_input", ""))
         self.content_layout.set_line_edit_value("lineEdit_group_count",self.settings.value("motion_input_lineEdit_group_count", ""))
-        self.content_layout.set_line_edit_value("lineEdit_stay_time_output",self.settings.value("motion_input_lineEdit_stay_time_output", ""))
+        self.content_layout.set_line_edit_value("lineEdit_stay_time_input",self.settings.value("motion_input_lineEdit_stay_time_input", ""))
 
 
 if __name__ == "__main__":

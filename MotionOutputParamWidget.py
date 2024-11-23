@@ -34,7 +34,7 @@ class MotionOutputParamWidget(QWidget):
         ]
         # 定义编辑框的名称
         line_edit_names = [
-            "lineEdit_belt_speed", "lineEdit_beam_swing_speed", "lineEdit_beam_constant_time", "lineEdit_stay_time_input",
+            "lineEdit_belt_speed", "lineEdit_beam_swing_speed", "lineEdit_beam_constant_time", "lineEdit_stay_time_output",
             "lineEdit_swing", "lineEdit_num_output"
         ]
         # 创建自定义的网格布局
@@ -80,7 +80,7 @@ class MotionOutputParamWidget(QWidget):
         self.settings.setValue("motion_output_param_lineEdit_belt_speed", self.content_up_layout.get_line_edit_value("lineEdit_belt_speed"))
         self.settings.setValue("motion_output_param_lineEdit_beam_swing_speed", self.content_up_layout.get_line_edit_value("lineEdit_beam_swing_speed"))
         self.settings.setValue("motion_output_param_lineEdit_beam_constant_time", self.content_up_layout.get_line_edit_value("lineEdit_beam_constant_time"))
-        self.settings.setValue("motion_output_param_lineEdit_stay_time_input", self.content_up_layout.get_line_edit_value("lineEdit_stay_time_input"))
+        self.settings.setValue("motion_output_param_lineEdit_stay_time_output", self.content_up_layout.get_line_edit_value("lineEdit_stay_time_output"))
         self.settings.setValue("motion_output_param_lineEdit_lineEdit_swing", self.content_up_layout.get_line_edit_value("lineEdit_swing"))
         self.settings.setValue("motion_output_param_lineEdit_lineEdit_num_output", self.content_up_layout.get_line_edit_value("lineEdit_num_output"))
         self.settings.setValue("motion_output_param_lineEdit_lineEdit_coefficient", self.content_down_layout.get_line_edit_value("lineEdit_coefficient"))
@@ -90,7 +90,7 @@ class MotionOutputParamWidget(QWidget):
         self.content_up_layout.set_line_edit_value("lineEdit_belt_speed", self.settings.value("motion_output_param_lineEdit_belt_speed", ""))
         self.content_up_layout.set_line_edit_value("lineEdit_beam_swing_speed", self.settings.value("motion_output_param_lineEdit_beam_swing_speed", ""))
         self.content_up_layout.set_line_edit_value("lineEdit_beam_constant_time", self.settings.value("motion_output_param_lineEdit_beam_constant_time", ""))
-        self.content_up_layout.set_line_edit_value("lineEdit_stay_time_input", self.settings.value("motion_output_param_lineEdit_stay_time_input", ""))
+        self.content_up_layout.set_line_edit_value("lineEdit_stay_time_output", self.settings.value("motion_output_param_lineEdit_stay_time_output", ""))
         self.content_up_layout.set_line_edit_value("lineEdit_swing", self.settings.value("motion_output_param_lineEdit_lineEdit_swing", ""))
         self.content_up_layout.set_line_edit_value("lineEdit_num_output", self.settings.value("motion_output_param_lineEdit_lineEdit_num_output", ""))
         self.content_down_layout.set_line_edit_value("lineEdit_coefficient", self.settings.value("motion_output_param_lineEdit_lineEdit_coefficient", ""))
