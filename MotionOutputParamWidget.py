@@ -38,7 +38,7 @@ class MotionOutputParamWidget(QWidget):
             "lineEdit_swing", "lineEdit_num_output"
         ]
         # 创建自定义的网格布局
-        self.content_up_layout = JustifiedGridLayout(labels, line_edit_names)
+        self.content_up_layout = JustifiedGridLayout(labels, line_edit_names,line_edit_names2 = line_edit_names)
         self.main_layout.addLayout(self.content_up_layout)
 
         param_label = QLabel("产品质量参数")

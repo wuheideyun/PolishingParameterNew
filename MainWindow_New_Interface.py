@@ -29,6 +29,7 @@ class MplCanvas(FigureCanvas):
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+
         self.margin_value = 15
         self.flag = False
         self.logger = LoggerHelper('param_change')
@@ -131,7 +132,6 @@ class MainWindow(QWidget):
         # self.main_param_frame.setFrameShape(QFrame.Box)
         self.host_param_single_frame.setFixedSize(self.left_frame_width,310)
         self.host_param_single_frame.setContentsMargins(50, 5, 50, self.margin_value)
-
 
         self.host_param_stacked_widget.addWidget(self.host_param_single_frame)
         self.host_param_stacked_widget.addWidget(self.host_param_double_frame)
@@ -340,12 +340,10 @@ class MainWindow(QWidget):
         self.combine_frame.setContentsMargins(0,0,0,0)
         self.combine_frame.setLayout(self.right_intelligent_search_mode_layout)
 
-
         # 运动参数-人工寻优界面
         self.motion_input_out_param_manual_frame = MotionInputOutputParamCombineWidget()
         self.motion_input_out_param_manual_frame.setFixedSize(self.right_frame_width,830)
         self.motion_input_out_param_manual_frame.setContentsMargins(30,0,30,0)
-
 
         # 右侧切换部分stacked_widget
         self.motion_param_stacked_widget.addWidget(self.combine_frame)
@@ -616,7 +614,7 @@ class MainWindow(QWidget):
 
         # 设置可见性
         self.motion_in_param_frame.setVisible(visible)
-        # -------------------------按钮逻辑部分---------------------
+        # -------------------------按钮逻辑部分-------------------------
         self.button_energy_project.clicked.connect()
         self.button_efficient_project.clicked.connect()
         self.button_selfdefine_project.clicked.connect()
@@ -624,9 +622,6 @@ class MainWindow(QWidget):
         self.button_synchronization_mode.clicked.connect()
         self.button_cross_mode.clicked.connect()
         self.button_order_mode.clicked.connect()
-
-
-
 
 if __name__ == "__main__":
     app = QApplication([])

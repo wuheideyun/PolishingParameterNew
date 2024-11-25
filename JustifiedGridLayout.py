@@ -50,7 +50,9 @@ class JustifiedGridLayout(QGridLayout):
             for line_edit in self.line_edits:
                 if line_edit.objectName() == line_edit_name:
                     # 使用 partial 来绑定当前的 line_edit_name
-                    line_edit.textChanged.connect(partial(self.on_text_changed, line_edit_name))
+                    #line_edit.textChanged.connect(partial(self.on_text_changed, line_edit_name))
+                    # 修改为 数据输入确定后触发监听
+                    line_edit.editingFinished.connect(partial(self.on_text_changed, line_edit_name))
 
     def add_text(self, row):
         if self.rownum > 0 and self.rownum == row:
@@ -77,9 +79,12 @@ class JustifiedGridLayout(QGridLayout):
             if line_edit.objectName() == name:
                 line_edit.setText(value)
 
-    def on_text_changed(self, name, text):
+    def on_text_changed(self, name):
         """当监听的 QLineEdit 的值发生变化时，触发外部接口"""
-        self.textChanged.emit(name, text)
+        # self.textChanged.emit(name, text)
+        value = self.get_line_edit_value(name)
+        self.textChanged.emit(name, value)
+
 
 
 # 示例使用
@@ -101,6 +106,7 @@ if __name__ == "__main__":
         print(f"Text changed in {name}: {text}")
 
     layout.textChanged.connect(on_text_changed)
+
 
     window.show()
     app.exec()

@@ -9,231 +9,655 @@ from matplotlib.pyplot import colorbar
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import multiprocessing
 from matplotlib.patches import Rectangle  # 导入 Rectangle
+from functools import partial
 # 函数导入
-from Double_enerage_project import Double_enerage_WorkerThread
-from Double_efficient_project import double_num_calculate,polishing_cal,Polishing_distribution_Thread_order,middle_line_plot_order
+from Double_Function import DoubleWorkerThread,double_num_calculate,self_define_calculate
+from Single_Function import SingleWorkerThread,single_num_calculate,single_self_define_calculate
 class MainWindow_impl(MainWindow):
     def __init__(self):
         super().__init__()
+        # 单头摆-参数汇总
+        self.single_parameter_intelligent = {}  # 字典-用于储存输入参数
+        self.single_parameter_manual = {}  # 字典-用于储存输出参数（包括输入参数）
+
+        # 双头摆-参数汇总
+        self.double_parameter_intelligent = {}  # 字典-用于储存输入参数
+        self.double_parameter_manual = {}  # 字典-用于储存输出参数（包括输入参数）
+
+        # 同步摆-参数汇总
+        equal_parameter_intelligent = {}  # 字典-用于储存输入参数
+        equal_parameter_manual = {}  # 字典-用于储存输出参数（包括输入参数）
+
+        # 主机参数-双头摆- self.host_param_double_frame
+        host_param_double_line_edit_names = [
+            "lineEdit_between", "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length"
+        ]
+        for i in host_param_double_line_edit_names:
+            self.double_parameter_intelligent[i] = self.host_param_double_frame.content_layout.get_line_edit_value(i)
+            self.double_parameter_manual[i] = self.host_param_double_frame.content_layout.get_line_edit_value(i)
+        # 监听参数变更信息，并更新到数据集中
+        self.host_param_double_frame.content_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.double_parameter_intelligent))
+        self.host_param_double_frame.content_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.double_parameter_manual))
+
+        # 主机参数-单头摆- self.host_param_single_frame
+        host_param_single_line_edit_names = [
+            "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length"
+        ]
+        for i in host_param_single_line_edit_names:
+            self.single_parameter_intelligent[i] = self.host_param_single_frame.content_layout.get_line_edit_value(i)
+            self.single_parameter_manual[i] = self.host_param_single_frame.content_layout.get_line_edit_value(i)
+        # 监听参数变更信息，并更新到数据集中
+        self.host_param_single_frame.content_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.single_parameter_intelligent))
+        self.host_param_single_frame.content_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.single_parameter_manual))
+
+        # 运动输入参数- self.motion_in_param_frame
+        motion_in_param_line_edit_names = [
+            "lineEdit_production_volume", "lineEdit_ceramic_width", "lineEdit_accelerate", "lineEdit_overlap",
+            "lineEdit_num_input"
+            , "lineEdit_group_count", "lineEdit_stay_time_input"
+        ]
+        for i in motion_in_param_line_edit_names:
+            self.single_parameter_intelligent[i] = self.motion_in_param_frame.content_layout.get_line_edit_value(i)
+            self.double_parameter_intelligent[i] = self.motion_in_param_frame.content_layout.get_line_edit_value(i)
+        # 监听参数变更信息，并更新到数据集中
+        self.motion_in_param_frame.content_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.single_parameter_intelligent))
+        self.motion_in_param_frame.content_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.double_parameter_intelligent))
+
+        # 运动输出参数 and 产品质量参数- self.motion_out_param_frame
+        motion_out_param_line_edit_names = [
+            "lineEdit_belt_speed", "lineEdit_beam_swing_speed", "lineEdit_beam_constant_time",
+            "lineEdit_stay_time_output", "lineEdit_swing", "lineEdit_num_output"
+        ]
+        motion_out_param_line_edit_names_2 = [
+            "lineEdit_coefficient"
+        ]
+        for i in motion_out_param_line_edit_names:
+            self.single_parameter_intelligent[i] = self.motion_out_param_frame.content_up_layout.get_line_edit_value(i)
+            self.double_parameter_intelligent[i] = self.motion_out_param_frame.content_up_layout.get_line_edit_value(i)
+        for i in motion_out_param_line_edit_names_2:
+            self.single_parameter_intelligent[i] = self.motion_out_param_frame.content_down_layout.get_line_edit_value(i)
+            self.double_parameter_intelligent[i] = self.motion_out_param_frame.content_down_layout.get_line_edit_value(i)
+        # 监听参数变更信息，并更新到数据集中
+        self.motion_out_param_frame.content_up_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.single_parameter_intelligent))
+        self.motion_out_param_frame.content_up_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.double_parameter_intelligent))
+
+        self.motion_out_param_frame.content_down_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.single_parameter_intelligent))
+        self.motion_out_param_frame.content_down_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.double_parameter_intelligent))
+
+        # 运动参数-人工寻优界面--运动输入参数 and 运动输出参数 and 产品质量参数- self.motion_input_out_param_manual_frame
+        motion_out_param_param_manual__line_edit_names = [
+            "lineEdit_production_volume", "lineEdit_beam_swing_speed", "lineEdit_beam_constant_time",
+            "lineEdit_stay_time_input", "lineEdit_num_input", "lineEdit_accelerate", "lineEdit_ceramic_width",
+            "lineEdit_delay_time"
+        ]
+        # 运动输出参数
+        motion_out_param_param_manual__line_edit_names_2 = [
+            "lineEdit_belt_speed", "lineEdit_swing"
+        ]
+        # 产品质量参数
+        motion_out_param_param_manual__line_edit_names_3 = ["lineEdit_coefficient"]
+        for i in motion_out_param_param_manual__line_edit_names:
+            self.single_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(
+                i)
+            self.double_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(
+                i)
+        for i in motion_out_param_param_manual__line_edit_names_2:
+            self.single_parameter_manual[
+                i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
+            self.double_parameter_manual[
+                i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
+        for i in motion_out_param_param_manual__line_edit_names_3:
+            self.single_parameter_manual[
+                i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
+            self.double_parameter_manual[
+                i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
+        # 监听参数变更信息，并更新到数据集中
+        self.motion_input_out_param_manual_frame.content_up_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.single_parameter_manual))
+        self.motion_input_out_param_manual_frame.content_up_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.double_parameter_manual))
+        self.motion_input_out_param_manual_frame.content_middle_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.single_parameter_manual))
+        self.motion_input_out_param_manual_frame.content_middle_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.double_parameter_manual))
+        self.motion_input_out_param_manual_frame.content_bottom_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.single_parameter_manual))
+        self.motion_input_out_param_manual_frame.content_bottom_layout.textChanged.connect(
+            partial(self.line_eidt_textchange, list=self.double_parameter_manual))
+
+        print(self.single_parameter_manual)
+
 
         # -------------------------按钮逻辑部分---------------------
         self.button_energy_project.clicked.connect(self.enerage_project_clicked)
-        self.button_efficient_project.clicked.connect(self.efficient_project)
-        # self.button_selfdefine_project.clicked.connect(self.selfdefine_project)
-        #
-        # self.button_synchronization_mode.clicked.connect(self.syn_mode)
-        # self.button_cross_mode.clicked.connect(self.cross_project)
-        # self.button_order_mode.clicked.connect(self.order_project)
+        self.button_efficient_project.clicked.connect(self.efficient_project_clicked)
+        self.button_selfdefine_project.clicked.connect(self.self_define_project_clicked)
+
+        self.button_synchronization_mode.clicked.connect(self.syn_project)
+        self.button_cross_mode.clicked.connect(self.cross_project)
+        self.button_order_mode.clicked.connect(self.order_project)
+        # 界面所有编辑框收集
+        # self.lineEdit_beam_between.setText(600)
+        self.button_list=[self.button_energy_project,self.button_efficient_project,self.button_selfdefine_project
+                     ,self.button_synchronization_mode,self.button_cross_mode,self.button_order_mode]
+
     # 按钮点击槽函数(计算)
     def enerage_project_clicked(self):
+        # 按钮不可用
+        self.button_disable(self.button_list)
+        # 字符类型转换
+        single_parameter_intelligent = self.dict_value_float(self.single_parameter_intelligent)
+        double_parameter_intelligent = self.dict_value_float(self.double_parameter_intelligent)
+        if self.current_mode == 1:     # 单头摆
+            self.single_enerage_project(animation_name='111',**single_parameter_intelligent)
+        elif self.current_mode == 2:   # 双头摆
+            self.double_enerage_project(animation_name='111',**double_parameter_intelligent)
+        elif self.current_mode == 3:   # 同步摆
+            # 待开发---
+            return
+
+    def efficient_project_clicked(self):
+        # 按钮不可用
+        self.button_disable(self.button_list)
+        # 字符类型转换
+        single_parameter_intelligent = self.dict_value_float(self.single_parameter_intelligent)
+        double_parameter_intelligent = self.dict_value_float(self.double_parameter_intelligent)
         if self.current_mode == 1:
-            self.single_enerage_project()
+            self.single_efficient_project(animation_name='111',**single_parameter_intelligent)
         elif self.current_mode == 2:
-            self.double_enerage_project(300, 900, 600, 1900, 270, 650, 170,111)
+            self.double_efficient_project(animation_name='111',**double_parameter_intelligent)
         elif self.current_mode == 3:
             # 待开发---
             return
 
-    def efficient_project(self):
+    def self_define_project_clicked(self):
+        self.button_disable(self.button_list)
+        # 字符类型转换
+        single_parameter_intelligent = self.dict_value_float(self.single_parameter_intelligent)
+        double_parameter_intelligent = self.dict_value_float(self.double_parameter_intelligent)
         if self.current_mode == 1:
-            self.single_efficient_project()
+            self.single_self_project(animation_name='111',**single_parameter_intelligent)
         elif self.current_mode == 2:
-            self.double_efficient_project()
+            self.double_self_project(animation_name='111',**double_parameter_intelligent)
         elif self.current_mode == 3:
             # 待开发---
             return
 
-    def selfdefine_project(self):
+    # 按钮点击槽函数(仿真)
+    def syn_project(self):
+        self.button_disable(self.button_list)
+        # 字符类型转换
+        single_parameter_manual = self.dict_value_float(self.single_parameter_manual)
+        double_parameter_manual = self.dict_value_float(self.double_parameter_manual)
         if self.current_mode == 1:
-            self.single_self_project()
+            self.single_synchronization_project(animation_name='111',**single_parameter_manual)
         elif self.current_mode == 2:
-            self.double_self_project()
+            self.double_synchronization_project(animation_name='111',**double_parameter_manual)
         elif self.current_mode == 3:
             # 待开发---
             return
 
-    # # 按钮点击槽函数(仿真)
-    # def syn_project(self):
-    #     if self.current_mode == 1:
-    #         self.single_synchronization_project()
-    #     elif self.current_mode == 2:
-    #         self.double_synchronization_project()
-    #     elif self.current_mode == 3:
-    #         # 待开发---
-    #         return
-    #
-    # def cross_project(self):
-    #     if self.current_mode == 1:
-    #         self.single_cross_project()
-    #     elif self.current_mode == 2:
-    #         self.double_cross_project()
-    #     elif self.current_mode == 3:
-    #         # 待开发---
-    #         return
-    #
-    # def order_project(self):
-    #     if self.current_mode == 1:
-    #         self.single_order_project()
-    #     elif self.current_mode == 2:
-    #         self.double_order_project()
-    #     elif self.current_mode == 3:
-    #         # 待开发---
-    #         return
+    def cross_project(self):
+        self.button_disable(self.button_list)
+        # 字符类型转换
+        single_parameter_manual = self.dict_value_float(self.single_parameter_manual)
+        double_parameter_manual = self.dict_value_float(self.double_parameter_manual)
+        if self.current_mode == 1:
+            self.single_cross_project(animation_name='111',**single_parameter_manual)
+        elif self.current_mode == 2:
+            self.double_cross_project(animation_name='111',**double_parameter_manual)
+        elif self.current_mode == 3:
+            # 待开发---
+            return
 
-    # 单头摆-智能计算逻辑函数
-    # def single_enerage_project(self):
+    def order_project(self):
+        self.button_disable(self.button_list)
+        # 字符类型转换
+        single_parameter_manual = self.dict_value_float(self.single_parameter_manual)
+        double_parameter_manual = self.dict_value_float(self.double_parameter_manual)
+        if self.current_mode == 1:
+            self.single_order_project(animation_name='111',**single_parameter_manual)
+        elif self.current_mode == 2:
+            self.double_order_project(animation_name='111',**double_parameter_manual)
+        elif self.current_mode == 3:
+            # 待开发---
+            return
 
-    # def single_efficient_project(self):
-
-    # def single_self_project(self):
-
-    # 单头摆-人工寻优逻辑函数
-    # def single_synchronization_project(self):
-    #
-    # def single_cross_project(self):
-    #
-    # def single_order_project(self):
-
-    # 双头摆-节能计算-子进程启动函数
-    def double_enerage_project(self, v1, ceramic_width, between, beam_between, R, a, mo,animation_name):
+    # -------------------------单头摆-智能计算逻辑函数---------------------------------
+    def single_enerage_project(self,animation_name,**kwargs):
+        v1 = kwargs.get('lineEdit_belt_speed')
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        beam_between = kwargs.get('lineEdit_beam_between')
+        R = kwargs.get('lineEdit_diameter')/2
+        a = kwargs.get('lineEdit_accelerate')
+        mo = kwargs.get('lineEdit_grind_length')
         # 绘图、动画模块子线程
-        self.worker_thread_plot = Double_enerage_WorkerThread(v1, ceramic_width, between, beam_between, R, a,mo,animation_name)
-        self.worker_thread_plot.result_signal.connect(self.double_enerage_project_signal)  # 连接子线程的信号
+        params = single_num_calculate(v1,ceramic_width,beam_between,R,a,mo,mode='enerage')
+        # 计算结果-数据集更新
+        self.single_parameter_intelligent.update(params)
+
+        params.update({'mode': 'order', 'fig': self.canvas.fig})
+        self.worker_thread_plot = SingleWorkerThread(**params)
+        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
-    # 双头摆-智能计算-子进程信号输出函数-绘图
-    def double_enerage_project_signal(self, result):
-        result_1 = result[0]
-        result_2 = result[1]
-        animation_name = str(result[2])
-        # 计算结果
-        result_P_d_matrix, result_P_d_par, single_X_location, single_Y_location = result_1
-        # 参数继承
-        ceramic_width = float(result_2["ceramic_width"])
-        between = float(result_2["between"])
-        beam_between = float(result_2["beam_between"])
-        num = float(result_2["num"])
-        delay_time = float(result_2["delay_time"])
-        v1 = float(result_2["v1"])
-        v2 = float(result_2["v2"])
-        a = float(result_2["a"])
-        # --------------------------------------------------------------------------------------
-        # -------------------------------------绘制组合图-----------------------------------------
-        # --------------------------------------------------------------------------------------
-        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
-        plt.rcParams['axes.unicode_minus'] = False  # 避免坐标轴不能正常的显示负号
-        # 清空画布
-        self.canvas.fig.clear()
-        ax_1 = self.canvas.fig.add_subplot(211)
-        ax_2 = self.canvas.fig.add_subplot(212)
-        # 设置画布背景、刻度、字体颜色
-        deep_blue = (31 / 255, 55 / 255, 96 / 255)
-        list = [ax_1, ax_2]
-        for ax in list:
-            # 设置 子图背景颜色
-            ax.set_facecolor(deep_blue)
-            # 设置坐标轴线的颜色为白色
-            ax.spines['bottom'].set_color('white')
-            ax.spines['top'].set_color('white')
-            ax.spines['right'].set_color('white')
-            ax.spines['left'].set_color('white')
-            # 设置坐标轴的刻度颜色为白色
-            ax.tick_params(axis='x', colors='white')
-            ax.tick_params(axis='y', colors='white')
-            # 设置坐标轴标签的颜色为白色
-            ax.xaxis.label.set_color('white')
-            ax.yaxis.label.set_color('white')
-            # 设置坐标轴标题字体颜色为白色
-            ax.title.set_color('white')
-            # 设置 子图 标签
-            ax.set_xlabel('主皮带进给方向')
-            ax.set_ylabel('横梁摆动方向')
-        # 绘制抛磨量分布仿真
-        ax_1.set_aspect('equal', adjustable='box')
-        object_matrix = result_P_d_matrix
-        # 设置权重操作
-        max_set = np.max(object_matrix)
-        # 计算第90百分位的阈值（前15%）
-        percentile_85 = np.percentile(object_matrix, 85)
-        # 对矩阵中大于等于该阈值的元素乘以0.85
-        object_matrix[object_matrix >= percentile_85] *= 0.85
+    def single_efficient_project(self,animation_name,**kwargs):
+        # 参数赋值
+        v1 = kwargs.get('lineEdit_belt_speed')
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        beam_between = kwargs.get('lineEdit_beam_between')
+        R = kwargs.get('lineEdit_diameter')/2
+        a = kwargs.get('lineEdit_accelerate')
+        mo = kwargs.get('lineEdit_grind_length')
+        # 绘图、动画模块子线程
+        params = single_num_calculate(v1, ceramic_width, beam_between, R, a, mo, mode='efficient')
+        # 计算结果-数据集更新
+        self.single_parameter_intelligent.update(params)
 
-        im = ax_1.contourf(object_matrix, levels=15, alpha=1, cmap='jet', vmin=0, vmax=max_set)
+        params.update({'mode': 'order', 'fig': self.canvas.fig})
+        self.worker_thread_plot = SingleWorkerThread(**params)
+        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.start()  # 启动子线程
 
-        divider = make_axes_locatable(ax_1)
-        cax = divider.append_axes("right", size="5%", pad=0.1)
+    def single_self_project(self,animation_name,**kwargs):
+        v1 = kwargs.get('lineEdit_belt_speed')
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        beam_between = kwargs.get('lineEdit_beam_between')
+        R = kwargs.get('lineEdit_diameter')/2
+        a = kwargs.get('lineEdit_accelerate')
+        num_input = kwargs.get('lineEdit_num_input')
+        group = kwargs.get('lineEdit_group_count')
+        stay_time = kwargs.get('lineEdit_stay_time_input')
+        mo = kwargs.get('lineEdit_grind_length')
 
-        colorbar = self.canvas.fig.colorbar(im, cax=cax)
+        # 绘图、动画模块子线程
+        params = single_self_define_calculate(v1, ceramic_width, beam_between, R, a,num_input,group,stay_time,mo, mode='self_order')
+        # 计算结果-数据集更新
+        self.single_parameter_intelligent.update(params)
 
-        colorbar.ax.tick_params(labelcolor='white')  # 设置刻度标签颜色
-        colorbar.set_label('抛磨量大小', color='white')  # 设置 colorbar 标签的颜色
-        # 绘制矩形线框
-        ceramic_width_ = float(ceramic_width) * 0.1
-        width, length = np.shape(object_matrix)
+        params.update({'mode': 'self_order', 'fig': self.canvas.fig})
+        self.worker_thread_plot = SingleWorkerThread(**params)
+        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.start()  # 启动子线程
 
-        x_begin = 0
-        y_begin = (width - ceramic_width_) / 2
+    # -------------------------单头摆-人工寻优逻辑函数--------------------------------
+    def single_synchronization_project(self,animation_name,**kwargs):
+        v1 = kwargs.get('lineEdit_belt_speed')
+        v2 = kwargs.get('lineEdit_beam_swing_speed')
+        constant_time = kwargs.get('lineEdit_beam_constant_time')
+        stay_time = kwargs.get('lineEdit_stay_time_input')
+        a = kwargs.get('lineEdit_accelerate')
+        beam_between = kwargs.get('lineEdit_beam_between')
+        mo = kwargs.get('lineEdit_grind_length')
+        num = kwargs.get('lineEdit_num_input')
+        R = kwargs.get('lineEdit_diameter')/2
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        params = {
+            'mode': 'equal',
+            'fig': self.canvas.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_input': stay_time,
+            'lineEdit_accelerate': a,
+            #'between': between,
+            'lineEdit_beam_between': beam_between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_input': num,
+            'lineEdit_diameter': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width': ceramic_width,
+            # 顺序摆参数
+            # 'delay_time': delay_time,
+            # 自定义计算参数
+            # 'group': group,
+        }
+        self.worker_thread_plot = SingleWorkerThread(**params)
+        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.start()  # 启动子线程
 
-        rect = Rectangle((x_begin, y_begin), length - 1, ceramic_width_, edgecolor='red', linestyle='--', linewidth=2,
-                         fill=False)
-        ax_1.add_patch(rect)
-        # 绘制轨迹中心线
-        accelerate_t = v2 / a
-        constant_t = float(result_2["constant_time"])
-        motionless_t = float(result_2["stay_time"])
-        period = 4 * accelerate_t + 2 * motionless_t + 2 * constant_t
-        # 设置图层属性
-        ax_2.set_xlim((-200, period * 3 * v1 + between))
-        ax_2.set_ylim((-200, a * (v2 / a) ** 2 + v2 * constant_t + 600))
-        ax_2.set_aspect('equal', adjustable='box')
-        # 设置图片文本
-        ani_text = ax_2.text(0.7, 0.82, '', transform=ax_2.transAxes, fontsize=10, color='white')
-        ani_text.set_text('Same_grinding_num=%.0f' % float(num))
-        num_two = math.ceil(num / 2)
-        color_7 = ['red', 'orange', 'green', 'cyan', 'blue', 'purple', 'yellow', 'lightgreen',
-                   'slategrey', 'cornflowerblue', 'navy', 'indigo', 'violet', 'plum', 'oldlace', 'maroon',
-                   'lightcyan', 'lightseagreen', 'seagreen', 'springgreen']  # 红橙黄绿青蓝紫
-        all_time_n = math.floor(period / 0.01) * 3
-        for i in range(0, num_two):
-            ax_2.scatter(single_X_location[0, 0:all_time_n - 1] + i * beam_between - i * delay_time * v1,
-                         single_Y_location[0, 0:all_time_n - 1],
-                         color=color_7[i], s=1)
-            ax_2.scatter(single_X_location[0,
-                         0:all_time_n - 1] + i * beam_between + between - i * delay_time * v1,
-                         single_Y_location[0, 0:all_time_n - 1],
-                         color=color_7[i], s=1)
+    def single_cross_project(self,animation_name,**kwargs):
+        v1 = kwargs.get('lineEdit_belt_speed')
+        v2 = kwargs.get('lineEdit_beam_swing_speed')
+        constant_time = kwargs.get('lineEdit_beam_constant_time')
+        stay_time = kwargs.get('lineEdit_stay_time_input')
+        a = kwargs.get('lineEdit_accelerate')
+        beam_between = kwargs.get('lineEdit_beam_between')
+        mo = kwargs.get('lineEdit_grind_length')
+        num = kwargs.get('lineEdit_num_input')
+        R = kwargs.get('lineEdit_diameter')/2
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        params = {
+            'mode': 'cross',
+            'fig': self.canvas.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_input': stay_time,
+            'lineEdit_accelerate': a,
+            # 'between': between,
+            'lineEdit_beam_between': beam_between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_input': num,
+            'R': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width': ceramic_width,
+            # 顺序摆参数
+            # 'delay_time': delay_time,
+            # 自定义计算参数
+            # 'group': group,
+        }
+        self.worker_thread_plot = SingleWorkerThread(**params)
+        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.start()  # 启动子线程
+
+    def single_order_project(self,animation_name,**kwargs):
+        v1 = kwargs.get('lineEdit_belt_speed')
+        v2 = kwargs.get('lineEdit_beam_swing_speed')
+        constant_time = kwargs.get('lineEdit_beam_constant_time')
+        stay_time = kwargs.get('lineEdit_stay_time_input')
+        a = kwargs.get('lineEdit_accelerate')
+        beam_between = kwargs.get('lineEdit_beam_between')
+        mo = kwargs.get('lineEdit_grind_length')
+        num = kwargs.get('lineEdit_num_input')
+        R = kwargs.get('lineEdit_diameter')/2
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        delay_time = kwargs.get('lineEdit_delay_time')
+
+        params = {
+            'mode': 'order',
+            'fig': self.canvas.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_input': stay_time,
+            'lineEdit_accelerate': a,
+            #'between': between,
+            'lineEdit_beam_between': beam_between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_input': num,
+            'R': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width': ceramic_width,
+            # 顺序摆参数
+            'lineEdit_delay_time': delay_time,
+            # 自定义计算参数
+            # 'group': group,
+        }
+
+        self.worker_thread_plot = SingleWorkerThread(**params)
+        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.start()  # 启动子线程
+
+#--------------------------------------双头摆智能计算------------------------------------------------------------------------------
+    # 双头摆-节能计算-子进程启动函数
+    def double_enerage_project(self,animation_name,**kwargs):
+        # 绘图、动画模块子线程
+        v1 = kwargs.get('lineEdit_belt_speed')
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        between = kwargs.get('lineEdit_between')
+        beam_between = kwargs.get('lineEdit_beam_between')
+        R = kwargs.get('lineEdit_diameter')/2
+        a = kwargs.get('lineEdit_accelerate')
+        mo = kwargs.get('lineEdit_grind_length')
+
+        params = double_num_calculate(v1,ceramic_width,between,beam_between,R,a,mo,mode = 'enerage')
+        # 计算结果-数据集更新
+        self.double_parameter_intelligent.update(params)
+
+        params.update({'mode': 'order','fig': self.canvas.fig})
+        self.worker_thread_plot = DoubleWorkerThread(**params)
+        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.start()  # 启动子线程
+
+    # 双头摆-高效计算-子进程启动函数
+    def double_efficient_project(self,animation_name,**kwargs):
+        v1 = kwargs.get('lineEdit_belt_speed')
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        between = kwargs.get('lineEdit_between')
+        beam_between = kwargs.get('lineEdit_beam_between')
+        R = kwargs.get('lineEdit_diameter')/2
+        a = kwargs.get('lineEdit_accelerate')
+        mo = kwargs.get('lineEdit_grind_length')
+        # 参数计算
+        params = double_num_calculate(v1, ceramic_width, between, beam_between, R, a, mo, mode='efficient')
+        # 计算结果-数据集更新
+        self.double_parameter_intelligent.update(params)
+
+        params.update({'mode': 'order', 'fig': self.canvas.fig})
+        self.worker_thread_plot = DoubleWorkerThread(**params)
+        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.start()  # 启动子线程
+
+    # 双头摆-自定义修正计算-子进程启动函数
+    def double_self_project(self,animation_name,**kwargs):
+        v1 = kwargs.get('lineEdit_belt_speed')
+        t2 = kwargs.get('lineEdit_stay_time_input')
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        between = kwargs.get('lineEdit_between')
+        beam_between = kwargs.get('lineEdit_beam_between')
+        R = kwargs.get('lineEdit_diameter')/2
+        a = kwargs.get('lineEdit_accelerate')
+        num_input = kwargs.get('lineEdit_num_input')
+        group = kwargs.get('lineEdit_group_count')
+        mo = kwargs.get('lineEdit_grind_length')
+        # 参数计算
+        params = self_define_calculate(v1,t2,ceramic_width,between,beam_between,R,a,num_input,mo,group)
+        # 计算结果-数据集更新
+        self.double_parameter_intelligent.update(params)
+        params.update({'mode': 'self_order', 'fig': self.canvas.fig})
+        self.worker_thread_plot = DoubleWorkerThread(**params)
+        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.start()  # 启动子线程
+
+    # ------------------------------------双头摆人工寻优------------------------------------------------------------------------------
+    # 双头摆-同步摆模式-子进程启动函数
+    def double_synchronization_project(self,animation_name,**kwargs):
+        v1 = kwargs.get('lineEdit_belt_speed')
+        v2 = kwargs.get('lineEdit_beam_swing_speed')
+        constant_time = kwargs.get('lineEdit_beam_constant_time')
+        stay_time = kwargs.get('lineEdit_stay_time_input')
+        a = kwargs.get('lineEdit_accelerate')
+        between = kwargs.get('lineEdit_between')
+        beam_between = kwargs.get('lineEdit_beam_between')
+        num = kwargs.get('lineEdit_num_input')
+        R = kwargs.get('lineEdit_diameter')/2
+        mo = kwargs.get('lineEdit_grind_length')
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+
+        params = {
+            'mode': 'equal',
+            'fig': self.canvas.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_input': stay_time,
+            'lineEdit_accelerate': a,
+            'lineEdit_between': between,
+            'lineEdit_beam_between': beam_between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_input': num,
+            'R': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width':ceramic_width,
+            # 顺序摆参数
+            #'delay_time': delay_time,
+            # 自定义计算参数
+            #'group': group,
+        }
+        self.worker_thread_plot = DoubleWorkerThread(**params)
+        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.start()  # 启动子线程
+
+    # 双头摆-交叉摆模式-子进程启动函数
+    def double_cross_project(self,animation_name,**kwargs):
+        v1 = kwargs.get('lineEdit_belt_speed')
+        v2 = kwargs.get('lineEdit_beam_swing_speed')
+        constant_time = kwargs.get('lineEdit_beam_constant_time')
+        stay_time = kwargs.get('lineEdit_stay_time_input')
+        a = kwargs.get('lineEdit_accelerate')
+        between = kwargs.get('lineEdit_between')
+        beam_between = kwargs.get('lineEdit_beam_between')
+        mo = kwargs.get('lineEdit_grind_length')
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        num = kwargs.get('lineEdit_num_input')
+        R = kwargs.get('lineEdit_diameter')/2
+
+        params = {
+            'mode': 'cross',
+            'fig': self.canvas.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_input': stay_time,
+            'lineEdit_accelerate': a,
+            'lineEdit_between': between,
+            'lineEdit_beam_between': beam_between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_input': num,
+            'R': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width': ceramic_width,
+            # 顺序摆参数
+            # 'delay_time': delay_time,
+            # 自定义计算参数
+            # 'group': group,
+        }
+
+        self.worker_thread_plot = DoubleWorkerThread(**params)
+        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.start()  # 启动子线程
+
+    # 双头摆-顺序摆模式-子进程启动函数
+    def double_order_project(self,animation_name,**kwargs):
+        v1 = kwargs.get('lineEdit_belt_speed')
+        v2 = kwargs.get('lineEdit_beam_swing_speed')
+        constant_time = kwargs.get('lineEdit_beam_constant_time')
+        stay_time = kwargs.get('lineEdit_stay_time_input')
+        a = kwargs.get('lineEdit_accelerate')
+        between = kwargs.get('lineEdit_between')
+        beam_between = kwargs.get('lineEdit_beam_between')
+        mo = kwargs.get('lineEdit_grind_length')
+        num = kwargs.get('lineEdit_num_input')
+        R = kwargs.get('lineEdit_diameter')/2
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        delay_time = kwargs.get('lineEdit_delay_time')
+
+        params = {
+            'mode': 'order',
+            'fig': self.canvas.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_input': stay_time,
+            'lineEdit_accelerate': a,
+            'lineEdit_between': between,
+            'lineEdit_beam_between': beam_between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_input': num,
+            'R': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width': ceramic_width,
+            # 顺序摆参数
+            'lineEdit_delay_time': delay_time,
+            # 自定义计算参数
+            #'group': group,
+        }
+
+        self.worker_thread_plot = DoubleWorkerThread(**params)
+        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.start()  # 启动子线程
+
+    # 单头摆-智能计算-子进程信号接收函数
+    def single_intelligent_thread_signal(self, result):
+        # 刷新画布
         self.canvas.draw()
-        # --------------------------------------------------------------------------------------
-        # -------------------------------------播放动画-----------------------------------------
-        # --------------------------------------------------------------------------------------
-        # self.movie.stop()
-        self.animation_QLabel.clear()
-        # 清空 QLabel 中的内容
-        self.animation_QLabel.clear()
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
         # 创建新的 QMovie 对象并设置到 QLabel
-        self.movie = QMovie(animation_name)
+        self.movie = QMovie('donghua.gif')
         self.animation_QLabel.setMovie(self.movie)
         # 启动新的动画
         self.movie.start()
-        print('计算完毕')
+        self.button_enable(self.button_list)
+        # 参数集更新
+        self.single_parameter_intelligent['lineEdit_coefficient'] = result
 
+    # 单头摆-人工寻优-子进程信号接收函数
+    def single_manual_signal(self, result):
+        # 刷新画布
+        self.canvas.draw()
+        # 清空 QLabel 中的内容
+        self.animation_QLabel.clear()
+        # 创建新的 QMovie 对象并设置到 QLabel
+        self.movie = QMovie('donghua.gif')
+        self.animation_QLabel.setMovie(self.movie)
+        # 启动新的动画
+        self.movie.start()
+        self.button_enable(self.button_list)
+        # 参数集更新
+        self.single_parameter_intelligent['lineEdit_coefficient'] = result
 
-    # 双头摆-高效计算-子进程启动函数
-    def double_efficient_project(self):
-        # self.canvas.figure.add_subplot(211).clear()
-        # self.canvas.figure.add_subplot(212).clear()
-        self.canvas.figure.clear()
-        self.canvas.draw()  # 更新显示新的绘图内容
-    # 双头摆-高效计算-子进程信号输出函数
-    def update_result_double_efficient_project(self, result):
-        None
-    # def double_self_project(self):
-    #
-    # # 双头摆-人工寻优逻辑函数
-    # def double_synchronization_project(self):
-    #
-    # def double_cross_project(self):
-    #
-    # def double_order_project(self):
+    # 双头摆-智能计算-子进程信号接收函数
+    def double_intelligent_thread_signal(self, result):
+        # 刷新画布
+        self.canvas.draw()
+        # 清空 QLabel 中的内容
+        self.animation_QLabel.clear()
+        # 创建新的 QMovie 对象并设置到 QLabel
+        self.movie = QMovie('donghua.gif')
+        self.animation_QLabel.setMovie(self.movie)
+        # 启动新的动画
+        self.movie.start()
+        self.button_enable(self.button_list)
+        # 参数集更新
+        self.double_parameter_intelligent['lineEdit_coefficient'] = result
+
+    # 双头摆-智能计算-子进程信号接收函数
+    def double_manual_thread_signal(self, result):
+        # 刷新画布
+        self.canvas.draw()
+        # 清空 QLabel 中的内容
+        self.animation_QLabel.clear()
+        # 创建新的 QMovie 对象并设置到 QLabel
+        self.movie = QMovie('donghua.gif')
+        self.animation_QLabel.setMovie(self.movie)
+        # 启动新的动画
+        self.movie.start()
+        self.button_enable(self.button_list)
+        # 参数集更新
+        self.double_parameter_intelligent['lineEdit_coefficient'] = result
+
+    # 当有计算运行时，屏蔽其他按钮功能
+    def button_disable(self,button_list):
+        for button in button_list:
+            button.setEnabled(False)
+
+    # 计算完毕，按钮恢复正常
+    def button_enable(self,button_list):
+        for button in button_list:
+            button.setEnabled(True)
+
+    # 将字典中所有的值转换为数值类型
+    def dict_value_float(self,dict):
+        dict_keys = dict.keys()
+        for key in dict_keys:
+            if dict[key] != '' and dict[key] is not None:
+                dict[key] = float(dict[key])
+        return dict
+
+    # 编辑框值发生变化时，值同步到参数集合中-监听
+    def line_eidt_textchange(self,name, text, list):
+        list[name] = text
+        # if list['lineEdit_production_volume'] != '' and list['lineEdit_ceramic_width'] != '':
+

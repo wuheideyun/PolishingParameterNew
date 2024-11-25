@@ -43,7 +43,7 @@ class MotionInputParamWidget(QWidget):
             "lineEdit_production_volume"
         ]
         # 创建自定义的网格布局
-        self.content_layout = JustifiedGridLayout(labels, line_edit_names,6,line_edit_names2,3,'以下参数仅在自定义修正方案使用','yellow')
+        self.content_layout = JustifiedGridLayout(labels, line_edit_names,6,line_edit_names,3,'以下参数仅在自定义修正方案使用','yellow')
 
         # 添加保存按钮
         self.save_button = ImageChangeButton("参数保存", ":SmallFrame", ":SmallFrameClicked", 114, 37,True)
@@ -55,15 +55,15 @@ class MotionInputParamWidget(QWidget):
         main_layout.addStretch()
         main_layout.addLayout(button_layout)
 
-        self.content_layout.textChanged.connect(self.on_text_changed)
+        #self.content_layout.textChanged.connect(self.on_text_changed)
 
         self.loadParameter()  # 在初始化时加载设置
         # 设置主布局
         self.setLayout(main_layout)
 
     # 连接信号到槽函数
-    def on_text_changed(name, text):
-        print(f"Text changed in {name}: {text}")
+    # def on_text_changed(name, text):
+    #     print(f"Text changed in {name}: {text}")
     def save_parameters(self):
         # 获取输入的参数
         """保存各个LineEdit控件的数据到配置文件"""

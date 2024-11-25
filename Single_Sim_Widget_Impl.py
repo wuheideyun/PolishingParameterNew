@@ -98,7 +98,7 @@ class SingleSimWidgetImpl(QWidget, Single_Sim.Ui_MainWindow):
         self.button_simulation_equal.setEnabled(False)
         self.button_simulation_cross.setEnabled(False)
         self.button_simulation_order.setEnabled(False)
-        log_single_simulation(self.button_simulation_equal.objectName(), self.lineEdit_belt_speed.text(),
+        log_single_simulation(self.button_simulation_equal.objectName(), self.lineEdit_0belt_speed.text(),
                               self.lineEdit_beam_swing_speed.text(), self.lineEdit_beam_constant_time.text(),
                               self.lineEdit_stay_time.text(), self.lineEdit_accelerate.text(), self.lineEdit_num.text(),
                               self.lineEdit_beam_between.text(), self.lineEdit_grind_size.text(),

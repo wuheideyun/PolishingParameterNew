@@ -35,11 +35,11 @@ class MotionInputOutputParamCombineWidget(QWidget):
         # 定义编辑框的名称
         line_edit_names = [
             "lineEdit_production_volume", "lineEdit_beam_swing_speed", "lineEdit_beam_constant_time", "lineEdit_stay_time_input",
-            "lineEdit_num_output", "lineEdit_accelerate", "lineEdit_ceramic_width", "lineEdit_delay_time"
+            "lineEdit_num_input", "lineEdit_accelerate", "lineEdit_ceramic_width", "lineEdit_delay_time"
         ]
 
         # 创建自定义的网格布局
-        self.content_up_layout = JustifiedGridLayout(labels, line_edit_names,40)
+        self.content_up_layout = JustifiedGridLayout(labels, line_edit_names,40,line_edit_names2=line_edit_names)
         main_layout.addLayout(self.content_up_layout)
 
         main_layout.addStretch()
@@ -63,7 +63,7 @@ class MotionInputOutputParamCombineWidget(QWidget):
         ]
 
         # 创建自定义的网格布局
-        self.content_middle_layout = JustifiedGridLayout(labels, line_edit_names)
+        self.content_middle_layout = JustifiedGridLayout(labels, line_edit_names,line_edit_names2=line_edit_names)
         main_layout.addLayout(self.content_middle_layout)
 
         param_bottom_label = QLabel("产品质量参数")
