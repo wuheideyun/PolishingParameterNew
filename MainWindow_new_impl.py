@@ -248,7 +248,7 @@ class MainWindow_impl(MainWindow):
 
         params.update({'mode': 'order', 'fig': self.canvas.fig})
         self.worker_thread_plot = SingleWorkerThread(**params)
-        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
     def single_efficient_project(self,animation_name,**kwargs):
@@ -266,7 +266,7 @@ class MainWindow_impl(MainWindow):
 
         params.update({'mode': 'order', 'fig': self.canvas.fig})
         self.worker_thread_plot = SingleWorkerThread(**params)
-        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
     def single_self_project(self,animation_name,**kwargs):
@@ -287,7 +287,7 @@ class MainWindow_impl(MainWindow):
 
         params.update({'mode': 'self_order', 'fig': self.canvas.fig})
         self.worker_thread_plot = SingleWorkerThread(**params)
-        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
     # -------------------------单头摆-人工寻优逻辑函数--------------------------------
@@ -323,7 +323,7 @@ class MainWindow_impl(MainWindow):
             # 'group': group,
         }
         self.worker_thread_plot = SingleWorkerThread(**params)
-        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.result_signal.connect(self.single_manual_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
     def single_cross_project(self,animation_name,**kwargs):
@@ -358,7 +358,7 @@ class MainWindow_impl(MainWindow):
             # 'group': group,
         }
         self.worker_thread_plot = SingleWorkerThread(**params)
-        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.result_signal.connect(self.single_manual_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
     def single_order_project(self,animation_name,**kwargs):
@@ -396,7 +396,7 @@ class MainWindow_impl(MainWindow):
         }
 
         self.worker_thread_plot = SingleWorkerThread(**params)
-        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.result_signal.connect(self.single_manual_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
 #--------------------------------------双头摆智能计算------------------------------------------------------------------------------
@@ -417,7 +417,7 @@ class MainWindow_impl(MainWindow):
 
         params.update({'mode': 'order','fig': self.canvas.fig})
         self.worker_thread_plot = DoubleWorkerThread(**params)
-        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
     # 双头摆-高效计算-子进程启动函数
@@ -436,7 +436,7 @@ class MainWindow_impl(MainWindow):
 
         params.update({'mode': 'order', 'fig': self.canvas.fig})
         self.worker_thread_plot = DoubleWorkerThread(**params)
-        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
     # 双头摆-自定义修正计算-子进程启动函数
@@ -457,7 +457,7 @@ class MainWindow_impl(MainWindow):
         self.double_parameter_intelligent.update(params)
         params.update({'mode': 'self_order', 'fig': self.canvas.fig})
         self.worker_thread_plot = DoubleWorkerThread(**params)
-        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
     # ------------------------------------双头摆人工寻优------------------------------------------------------------------------------
@@ -496,7 +496,7 @@ class MainWindow_impl(MainWindow):
             #'group': group,
         }
         self.worker_thread_plot = DoubleWorkerThread(**params)
-        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.result_signal.connect(self.double_manual_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
     # 双头摆-交叉摆模式-子进程启动函数
@@ -535,7 +535,7 @@ class MainWindow_impl(MainWindow):
         }
 
         self.worker_thread_plot = DoubleWorkerThread(**params)
-        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.result_signal.connect(self.double_manual_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
     # 双头摆-顺序摆模式-子进程启动函数
@@ -575,7 +575,7 @@ class MainWindow_impl(MainWindow):
         }
 
         self.worker_thread_plot = DoubleWorkerThread(**params)
-        self.worker_thread_plot.result_signal.connect(self.thread_project_signal)  # 连接子线程的信号
+        self.worker_thread_plot.result_signal.connect(self.double_manual_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
     # 单头摆-智能计算-子进程信号接收函数
@@ -594,7 +594,7 @@ class MainWindow_impl(MainWindow):
         self.single_parameter_intelligent['lineEdit_coefficient'] = result
 
     # 单头摆-人工寻优-子进程信号接收函数
-    def single_manual_signal(self, result):
+    def single_manual_thread_signal(self, result):
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容
