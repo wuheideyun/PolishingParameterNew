@@ -149,6 +149,38 @@ class DatabaseHelper:
             );
             '''
         db.create_table(create_table_sql)
+
+    def test_create_table_sql3(self, db):
+        # 创建表的 SQL 语句
+        create_table_sql = """
+            CREATE TABLE param (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                lineEdit_between REAL,
+                lineEdit_beam_between REAL,
+                lineEdit_diameter REAL,
+                lineEdit_grind_length REAL,
+                lineEdit_ceramic_width REAL,
+                lineEdit_belt_speed REAL,
+                lineEdit_accelerate REAL,
+                lineEdit_overlap REAL,
+                lineEdit_beam_constant_time REAL,
+                lineEdit_stay_time_input REAL,
+                lineEdit_stay_time_output REAL,
+                lineEdit_beam_swing_speed REAL,
+                lineEdit_swing REAL,
+                lineEdit_num_output INTEGER,
+                lineEdit_delay_time REAL,
+                lineEdit_group_count INTEGER,
+                lineEdit_coefficient REAL,
+                lineEdit_num_input INTEGER,
+                lineEdit_production_volume INTEGER,
+                machine_model INTEGER,
+                mode INTEGER,
+                scheme INTEGER
+            );
+            """
+        db.create_table(create_table_sql)
     def test_insert_user(self, db):
         user_data = {
             'username': 'administrator',
@@ -184,7 +216,7 @@ if __name__ == '__main__':
     db = DatabaseHelper('database.db')
 
 
-    db.test_insert_user(db)
+    db.test_create_table_sql3(db)
     # db.test_insert_user(db)
 
 

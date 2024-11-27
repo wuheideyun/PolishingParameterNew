@@ -1,6 +1,6 @@
 import sys
 
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt, QSettings, Signal
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QFormLayout, QGroupBox, QHBoxLayout
 
@@ -16,8 +16,8 @@ class MotionOutputParamWidget(QWidget):
         self.setWindowTitle("运动输出参数和产品质量参数设置")
         # self.setGeometry(100, 100, 400, 300)
         self.settings = QSettings("config.ini", QSettings.IniFormat)
-
-        # self.setFixedSize(400,310)
+        self.sig_Saved = Signal()
+        self.setFixedSize(410,410)
         # 创建主布局
         self.main_layout = QVBoxLayout()
         param_label = QLabel("运动输出参数")
@@ -61,17 +61,17 @@ class MotionOutputParamWidget(QWidget):
         self.content_down_layout = JustifiedGridLayout(labels, line_edit_names)
         self.main_layout.addLayout(self.content_down_layout)
 
-        # 添加保存按钮
-        self.save_button = ImageChangeButton("参数保存", ":SmallFrame", ":SmallFrameClicked", 114, 37,True)
-        self.save_button.clicked.connect(self.saveParameters)
+        # # 添加保存按钮
+        # self.save_button = ImageChangeButton("参数保存", ":SmallFrame", ":SmallFrameClicked", 114, 37,True)
+        # self.save_button.clicked.connect(self.saveParameters)
 
-        button_layout = QHBoxLayout()
-        button_layout.addStretch()
-        button_layout.addWidget(self.save_button)
+        # button_layout = QHBoxLayout()
+        # button_layout.addStretch()
+        # button_layout.addWidget(self.save_button)
         self.main_layout.addStretch()
-        self.main_layout.addLayout(button_layout)
+        # self.main_layout.addLayout(button_layout)
 
-        self.loadParameter()
+        # self.loadParameter()
         # 设置主布局
         self.setLayout(self.main_layout)
 
@@ -84,7 +84,7 @@ class MotionOutputParamWidget(QWidget):
         self.settings.setValue("motion_output_param_lineEdit_lineEdit_swing", self.content_up_layout.get_line_edit_value("lineEdit_swing"))
         self.settings.setValue("motion_output_param_lineEdit_lineEdit_num_output", self.content_up_layout.get_line_edit_value("lineEdit_num_output"))
         self.settings.setValue("motion_output_param_lineEdit_lineEdit_coefficient", self.content_down_layout.get_line_edit_value("lineEdit_coefficient"))
-
+        self.sig_Saved.emit()
     def loadParameter(self):
         """加载配置文件中的数据到各个LineEdit控件"""
         self.content_up_layout.set_line_edit_value("lineEdit_belt_speed", self.settings.value("motion_output_param_lineEdit_belt_speed", ""))

@@ -9,14 +9,14 @@ from ImageChangeButton import ImageChangeButton
 from JustifiedGridLayout import JustifiedGridLayout
 
 
-class HostParamDoubleWidget(QWidget):
+class HostParamEqualWidget(QWidget):
     sig_Saved = Signal()
     def __init__(self):
 
         super().__init__()
 
         # 设置窗口标题和大小
-        self.setWindowTitle("主机参数(双头摆)设置")
+        self.setWindowTitle("主机参数(同步摆)设置")
         # self.setGeometry(100, 100, 300, 200)
 
         self.settings = QSettings("config.ini", QSettings.IniFormat)
@@ -57,17 +57,17 @@ class HostParamDoubleWidget(QWidget):
 
     def saveParameters(self):
         """保存各个LineEdit控件的数据到配置文件"""
-        self.settings.setValue("host_param_double_lineEdit_between", self.content_layout.get_line_edit_value("lineEdit_between"))
-        self.settings.setValue("host_param_double_lineEdit_beam_between", self.content_layout.get_line_edit_value("lineEdit_beam_between"))
-        self.settings.setValue("host_param_double_lineEdit_diameter", self.content_layout.get_line_edit_value("lineEdit_diameter"))
-        self.settings.setValue("host_param_double_lineEdit_grind_length", self.content_layout.get_line_edit_value("lineEdit_grind_length"))
-        self.settings.setValue("host_param_double_lineEdit_work_time", self.content_layout.get_line_edit_value("lineEdit_work_time"))
+        self.settings.setValue("host_param_equal_lineEdit_between", self.content_layout.get_line_edit_value("lineEdit_between"))
+        self.settings.setValue("host_param_equal_lineEdit_beam_between", self.content_layout.get_line_edit_value("lineEdit_beam_between"))
+        self.settings.setValue("host_param_equal_lineEdit_diameter", self.content_layout.get_line_edit_value("lineEdit_diameter"))
+        self.settings.setValue("host_param_equal_lineEdit_grind_length", self.content_layout.get_line_edit_value("lineEdit_grind_length"))
+        self.settings.setValue("host_param_equal_lineEdit_work_time", self.content_layout.get_line_edit_value("lineEdit_work_time"))
 
         self.sig_Saved.emit()
     def loadParameter(self):
         """加载配置文件中的数据到各个LineEdit控件"""
-        self.content_layout.set_line_edit_value("lineEdit_between",self.settings.value("host_param_double_lineEdit_between", ""))
-        self.content_layout.set_line_edit_value("lineEdit_beam_between",self.settings.value("host_param_double_lineEdit_beam_between", ""))
-        self.content_layout.set_line_edit_value("lineEdit_diameter",self.settings.value("host_param_double_lineEdit_diameter", ""))
-        self.content_layout.set_line_edit_value("lineEdit_grind_length",self.settings.value("host_param_double_lineEdit_grind_length", ""))
-        self.content_layout.set_line_edit_value("lineEdit_work_time",self.settings.value("host_param_double_lineEdit_work_time", ""))
+        self.content_layout.set_line_edit_value("lineEdit_between",self.settings.value("host_param_equal_lineEdit_between", ""))
+        self.content_layout.set_line_edit_value("lineEdit_beam_between",self.settings.value("host_param_equal_lineEdit_beam_between", ""))
+        self.content_layout.set_line_edit_value("lineEdit_diameter",self.settings.value("host_param_equal_lineEdit_diameter", ""))
+        self.content_layout.set_line_edit_value("lineEdit_grind_length",self.settings.value("host_param_equal_lineEdit_grind_length", ""))
+        self.content_layout.set_line_edit_value("lineEdit_work_time",self.settings.value("host_param_equal_lineEdit_work_time", ""))

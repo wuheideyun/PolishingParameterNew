@@ -1,6 +1,6 @@
 import sys
 
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt, QSettings, Signal
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QFormLayout, QGroupBox, QHBoxLayout
 
@@ -9,13 +9,14 @@ from JustifiedGridLayout import JustifiedGridLayout
 
 
 class MotionInputParamWidget(QWidget):
+    sig_Saved = Signal()
     def __init__(self):
         super().__init__()
         self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
         # 设置窗口标题和大小
         self.setWindowTitle("运动输入参数设置")
         # self.setGeometry(100, 100, 400, 300)
-        # self.setFixedSize(400,310)
+        self.setFixedSize(400,410)
 
         # 创建主布局
         main_layout = QVBoxLayout()
@@ -47,7 +48,7 @@ class MotionInputParamWidget(QWidget):
 
         # 添加保存按钮
         self.save_button = ImageChangeButton("参数保存", ":SmallFrame", ":SmallFrameClicked", 114, 37,True)
-        self.save_button.clicked.connect(self.save_parameters)
+        self.save_button.clicked.connect(self.saveParameters)
         main_layout.addLayout(self.content_layout)
         button_layout = QHBoxLayout()
         button_layout.addStretch()
@@ -64,7 +65,7 @@ class MotionInputParamWidget(QWidget):
     # 连接信号到槽函数
     # def on_text_changed(name, text):
     #     print(f"Text changed in {name}: {text}")
-    def save_parameters(self):
+    def saveParameters(self):
         # 获取输入的参数
         """保存各个LineEdit控件的数据到配置文件"""
         self.settings.setValue("motion_input_lineEdit_production_volume", self.content_layout.get_line_edit_value("lineEdit_production_volume"))
@@ -74,6 +75,7 @@ class MotionInputParamWidget(QWidget):
         self.settings.setValue("motion_input_lineEdit_num_input", self.content_layout.get_line_edit_value("lineEdit_num_input"))
         self.settings.setValue("motion_input_lineEdit_group_count", self.content_layout.get_line_edit_value("lineEdit_group_count"))
         self.settings.setValue("motion_input_lineEdit_stay_time_input", self.content_layout.get_line_edit_value("lineEdit_stay_time_input"))
+        self.sig_Saved.emit()
     def loadParameter(self):
         """加载配置文件中的数据到各个LineEdit控件"""
         self.content_layout.set_line_edit_value("lineEdit_production_volume",self.settings.value("motion_input_lineEdit_production_volume", ""))

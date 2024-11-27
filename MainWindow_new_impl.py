@@ -1,3 +1,5 @@
+from PySide6.QtWidgets import QMessageBox
+
 from MainWindow_New_Interface import MainWindow
 from PySide6.QtGui import QMovie
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
@@ -36,9 +38,9 @@ class MainWindow_impl(MainWindow):
             self.double_parameter_intelligent[i] = self.host_param_double_frame.content_layout.get_line_edit_value(i)
             self.double_parameter_manual[i] = self.host_param_double_frame.content_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
-        self.host_param_double_frame.content_layout.textChanged.connect(
+        self.host_param_double_frame.content_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.double_parameter_intelligent))
-        self.host_param_double_frame.content_layout.textChanged.connect(
+        self.host_param_double_frame.content_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.double_parameter_manual))
 
         # 主机参数-单头摆- self.host_param_single_frame
@@ -49,9 +51,9 @@ class MainWindow_impl(MainWindow):
             self.single_parameter_intelligent[i] = self.host_param_single_frame.content_layout.get_line_edit_value(i)
             self.single_parameter_manual[i] = self.host_param_single_frame.content_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
-        self.host_param_single_frame.content_layout.textChanged.connect(
+        self.host_param_single_frame.content_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.single_parameter_intelligent))
-        self.host_param_single_frame.content_layout.textChanged.connect(
+        self.host_param_single_frame.content_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.single_parameter_manual))
 
         # 运动输入参数- self.motion_in_param_frame
@@ -64,9 +66,9 @@ class MainWindow_impl(MainWindow):
             self.single_parameter_intelligent[i] = self.motion_in_param_frame.content_layout.get_line_edit_value(i)
             self.double_parameter_intelligent[i] = self.motion_in_param_frame.content_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
-        self.motion_in_param_frame.content_layout.textChanged.connect(
+        self.motion_in_param_frame.content_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.single_parameter_intelligent))
-        self.motion_in_param_frame.content_layout.textChanged.connect(
+        self.motion_in_param_frame.content_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.double_parameter_intelligent))
 
         # 运动输出参数 and 产品质量参数- self.motion_out_param_frame
@@ -84,14 +86,14 @@ class MainWindow_impl(MainWindow):
             self.single_parameter_intelligent[i] = self.motion_out_param_frame.content_down_layout.get_line_edit_value(i)
             self.double_parameter_intelligent[i] = self.motion_out_param_frame.content_down_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
-        self.motion_out_param_frame.content_up_layout.textChanged.connect(
+        self.motion_out_param_frame.content_up_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.single_parameter_intelligent))
-        self.motion_out_param_frame.content_up_layout.textChanged.connect(
+        self.motion_out_param_frame.content_up_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.double_parameter_intelligent))
 
-        self.motion_out_param_frame.content_down_layout.textChanged.connect(
+        self.motion_out_param_frame.content_down_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.single_parameter_intelligent))
-        self.motion_out_param_frame.content_down_layout.textChanged.connect(
+        self.motion_out_param_frame.content_down_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.double_parameter_intelligent))
 
         # 运动参数-人工寻优界面--运动输入参数 and 运动输出参数 and 产品质量参数- self.motion_input_out_param_manual_frame
@@ -122,17 +124,17 @@ class MainWindow_impl(MainWindow):
             self.double_parameter_manual[
                 i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
-        self.motion_input_out_param_manual_frame.content_up_layout.textChanged.connect(
+        self.motion_input_out_param_manual_frame.content_up_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.single_parameter_manual))
-        self.motion_input_out_param_manual_frame.content_up_layout.textChanged.connect(
+        self.motion_input_out_param_manual_frame.content_up_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.double_parameter_manual))
-        self.motion_input_out_param_manual_frame.content_middle_layout.textChanged.connect(
+        self.motion_input_out_param_manual_frame.content_middle_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.single_parameter_manual))
-        self.motion_input_out_param_manual_frame.content_middle_layout.textChanged.connect(
+        self.motion_input_out_param_manual_frame.content_middle_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.double_parameter_manual))
-        self.motion_input_out_param_manual_frame.content_bottom_layout.textChanged.connect(
+        self.motion_input_out_param_manual_frame.content_bottom_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.single_parameter_manual))
-        self.motion_input_out_param_manual_frame.content_bottom_layout.textChanged.connect(
+        self.motion_input_out_param_manual_frame.content_bottom_layout.sig_textChanged.connect(
             partial(self.line_eidt_textchange, list=self.double_parameter_manual))
 
         print(self.single_parameter_manual)
@@ -153,43 +155,62 @@ class MainWindow_impl(MainWindow):
 
     # 按钮点击槽函数(计算)
     def enerage_project_clicked(self):
+        # 校验输入框
+        if not self.check_input_valid():
+            return
         # 按钮不可用
         self.button_disable(self.button_list)
         # 字符类型转换
         single_parameter_intelligent = self.dict_value_float(self.single_parameter_intelligent)
         double_parameter_intelligent = self.dict_value_float(self.double_parameter_intelligent)
-        if self.current_mode == 1:     # 单头摆
+        if self.current_device == 1:     # 单头摆
             self.single_enerage_project(animation_name='111',**single_parameter_intelligent)
-        elif self.current_mode == 2:   # 双头摆
+        elif self.current_device == 2:   # 双头摆
             self.double_enerage_project(animation_name='111',**double_parameter_intelligent)
-        elif self.current_mode == 3:   # 同步摆
+        elif self.current_device == 3:   # 同步摆
             # 待开发---
             return
 
     def efficient_project_clicked(self):
+        # 校验输入框
+        if not self.check_input_valid():
+            return
         # 按钮不可用
         self.button_disable(self.button_list)
         # 字符类型转换
         single_parameter_intelligent = self.dict_value_float(self.single_parameter_intelligent)
         double_parameter_intelligent = self.dict_value_float(self.double_parameter_intelligent)
-        if self.current_mode == 1:
+        if self.current_device == 1:
             self.single_efficient_project(animation_name='111',**single_parameter_intelligent)
-        elif self.current_mode == 2:
+        elif self.current_device == 2:
             self.double_efficient_project(animation_name='111',**double_parameter_intelligent)
-        elif self.current_mode == 3:
+        elif self.current_device == 3:
             # 待开发---
             return
 
+    def check_input_valid(self):
+        if self.host_param_single_changed_flag:
+            self.show_message('←主机参数区域进行了参数修改，请先进行保存参数操作！')
+            return False
+        elif self.current_mode == 1:
+            if self.motion_input_intelligence_changed_flag:
+                self.show_message('→运动输入参数区域进行了参数修改，请先进行保存参数操作！')
+                return False
+        elif self.current_mode == 2:
+            if self.motion_input_manual_changed_flag:
+                self.show_message('→运动输入参数区域进行了参数修改，请先进行保存参数操作！')
+                return False
+        return True
     def self_define_project_clicked(self):
         self.button_disable(self.button_list)
         # 字符类型转换
         single_parameter_intelligent = self.dict_value_float(self.single_parameter_intelligent)
         double_parameter_intelligent = self.dict_value_float(self.double_parameter_intelligent)
-        if self.current_mode == 1:
+        if self.current_device == 1:
             self.single_self_project(animation_name='111',**single_parameter_intelligent)
-        elif self.current_mode == 2:
+        elif self.current_device == 2:
             self.double_self_project(animation_name='111',**double_parameter_intelligent)
-        elif self.current_mode == 3:
+        elif self.current_device == 3:
             # 待开发---
             return
 
@@ -199,11 +220,11 @@ class MainWindow_impl(MainWindow):
         # 字符类型转换
         single_parameter_manual = self.dict_value_float(self.single_parameter_manual)
         double_parameter_manual = self.dict_value_float(self.double_parameter_manual)
-        if self.current_mode == 1:
+        if self.current_device == 1:
             self.single_synchronization_project(animation_name='111',**single_parameter_manual)
-        elif self.current_mode == 2:
+        elif self.current_device == 2:
             self.double_synchronization_project(animation_name='111',**double_parameter_manual)
-        elif self.current_mode == 3:
+        elif self.current_device == 3:
             # 待开发---
             return
 
@@ -212,11 +233,11 @@ class MainWindow_impl(MainWindow):
         # 字符类型转换
         single_parameter_manual = self.dict_value_float(self.single_parameter_manual)
         double_parameter_manual = self.dict_value_float(self.double_parameter_manual)
-        if self.current_mode == 1:
+        if self.current_device == 1:
             self.single_cross_project(animation_name='111',**single_parameter_manual)
-        elif self.current_mode == 2:
+        elif self.current_device == 2:
             self.double_cross_project(animation_name='111',**double_parameter_manual)
-        elif self.current_mode == 3:
+        elif self.current_device == 3:
             # 待开发---
             return
 
@@ -225,11 +246,11 @@ class MainWindow_impl(MainWindow):
         # 字符类型转换
         single_parameter_manual = self.dict_value_float(self.single_parameter_manual)
         double_parameter_manual = self.dict_value_float(self.double_parameter_manual)
-        if self.current_mode == 1:
+        if self.current_device == 1:
             self.single_order_project(animation_name='111',**single_parameter_manual)
-        elif self.current_mode == 2:
+        elif self.current_device == 2:
             self.double_order_project(animation_name='111',**double_parameter_manual)
-        elif self.current_mode == 3:
+        elif self.current_device == 3:
             # 待开发---
             return
 
@@ -580,6 +601,8 @@ class MainWindow_impl(MainWindow):
 
     # 单头摆-智能计算-子进程信号接收函数
     def single_intelligent_thread_signal(self, result):
+        self.timer.stop()
+        self.status_label.setText("计算完毕，请查看计算结果。")
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容
@@ -595,6 +618,8 @@ class MainWindow_impl(MainWindow):
 
     # 单头摆-人工寻优-子进程信号接收函数
     def single_manual_thread_signal(self, result):
+        self.timer.stop()
+        self.status_label.setText("计算完毕，请查看计算结果。")
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容
@@ -610,6 +635,8 @@ class MainWindow_impl(MainWindow):
 
     # 双头摆-智能计算-子进程信号接收函数
     def double_intelligent_thread_signal(self, result):
+        self.timer.stop()
+        self.status_label.setText("计算完毕，请查看计算结果。")
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容
@@ -625,6 +652,8 @@ class MainWindow_impl(MainWindow):
 
     # 双头摆-智能计算-子进程信号接收函数
     def double_manual_thread_signal(self, result):
+        self.timer.stop()
+        self.status_label.setText("计算完毕，请查看计算结果。")
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容

@@ -6,7 +6,7 @@ from PySide6.QtCore import Signal
 from JustifiedLabel import JustifiedLabel
 
 class JustifiedGridLayout(QGridLayout):
-    textChanged = Signal(str, str)  # 定义一个信号，用于通知外部逻辑
+    sig_textChanged = Signal(str, str)  # 定义一个信号，用于通知外部逻辑
 
     def __init__(self, labels, line_edit_names, verticalSpacing = 6, line_edit_names2=None, rownum=-1, text='', color='', parent=None):
         super().__init__(parent)
@@ -83,7 +83,7 @@ class JustifiedGridLayout(QGridLayout):
         """当监听的 QLineEdit 的值发生变化时，触发外部接口"""
         # self.textChanged.emit(name, text)
         value = self.get_line_edit_value(name)
-        self.textChanged.emit(name, value)
+        self.sig_textChanged.emit(name, value)
 
 
 
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     def on_text_changed(name, text):
         print(f"Text changed in {name}: {text}")
 
-    layout.textChanged.connect(on_text_changed)
+    layout.sig_textChanged.connect(on_text_changed)
 
 
     window.show()

@@ -90,7 +90,7 @@ class EqualWidgetImpl(QWidget, Equal_Calc.Ui_MainWindow):
 
     def add_text_change_monitor(self, line_edit):
         """为QLineEdit控件添加内容变化监控"""
-        line_edit.textChanged.connect(self.on_text_changed)
+        line_edit.sig_textChanged.connect(self.on_text_changed)
 
     def on_text_changed(self, text):
         """当LineEdit内容发生变化时触发的回调函数"""

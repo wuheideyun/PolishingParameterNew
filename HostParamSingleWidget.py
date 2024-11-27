@@ -1,6 +1,6 @@
 import sys
 
-from PySide6.QtCore import Qt, QSettings
+from PySide6.QtCore import Qt, QSettings, Signal
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QFormLayout, \
     QGridLayout, QHBoxLayout
@@ -10,8 +10,10 @@ from JustifiedGridLayout import JustifiedGridLayout
 
 
 class HostParamSingleWidget(QWidget):
+    sig_Saved = Signal()
     def __init__(self):
         super().__init__()
+
 
         # 设置窗口标题和大小
         self.setWindowTitle("主机参数(单头摆)设置")
@@ -32,12 +34,12 @@ class HostParamSingleWidget(QWidget):
 
         # 定义标签和编辑框的文本
         labels = [
-            "横梁间距：", "磨头直径：", "磨块长度："
+            "横梁间距：", "磨头直径：", "磨块长度：", "工作时长："
         ]
 
         # 定义编辑框的名称
         line_edit_names = [
-            "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length"
+            "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length", "lineEdit_work_time"
         ]
         # 创建自定义的网格布局（增加监听）
         self.content_layout = JustifiedGridLayout(labels, line_edit_names,line_edit_names2=line_edit_names)
@@ -61,9 +63,11 @@ class HostParamSingleWidget(QWidget):
         self.settings.setValue("host_param_single_lineEdit_beam_between", self.content_layout.get_line_edit_value("lineEdit_beam_between"))
         self.settings.setValue("host_param_single_lineEdit_diameter", self.content_layout.get_line_edit_value("lineEdit_diameter"))
         self.settings.setValue("host_param_single_lineEdit_grind_length", self.content_layout.get_line_edit_value("lineEdit_grind_length"))
-
+        self.settings.setValue("host_param_single_lineEdit_work_time", self.content_layout.get_line_edit_value("lineEdit_work_time"))
+        self.sig_Saved.emit()
     def loadParameter(self):
         """加载配置文件中的数据到各个LineEdit控件"""
         self.content_layout.set_line_edit_value("lineEdit_beam_between",self.settings.value("host_param_single_lineEdit_beam_between", ""))
         self.content_layout.set_line_edit_value("lineEdit_diameter",self.settings.value("host_param_single_lineEdit_diameter", ""))
         self.content_layout.set_line_edit_value("lineEdit_grind_length",self.settings.value("host_param_single_lineEdit_grind_length", ""))
+        self.content_layout.set_line_edit_value("lineEdit_work_time",self.settings.value("host_param_single_lineEdit_work_time", ""))
