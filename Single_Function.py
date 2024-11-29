@@ -9,6 +9,7 @@ from matplotlib.patches import Rectangle  # 导入 Rectangle
 from PySide6.QtCore import Qt, Signal, QThread
 from matplotlib.patches import Circle
 from matplotlib import animation
+from PIL import Image, ImageSequence
 # 四种模式合并
 class SingleWorkerThread(QThread):
     result_signal = Signal(object)  # 创建一个信号用于传递结果
@@ -47,7 +48,7 @@ class SingleWorkerThread(QThread):
         # 自定义计算参数
         self.group = kwargs.get('lineEdit_group_count', 1)
 
-        self.animation_name = kwargs.get('Animation_name', 0)
+        self.animation_name = kwargs.get('animation_name', 0)
 
     def run(self):
         # 抛磨量分布矩阵
@@ -178,7 +179,7 @@ class SingleWorkerThread(QThread):
             # self.canvas.draw()
         else:
             raise ValueError('mode must be equal or cross or order or self_order')
-        data = result
+        data = [result,animation]
         self.result_signal.emit(data)  # 发射信号将结果传回主线程
 # ---------------抛磨量计算-------------
 class PolishingDistributionThread():
@@ -733,7 +734,7 @@ class AnimationProduce():
         #self.fig = figure
         self.ax = self.fig.add_subplot(111)  # 默认111代表1*1的图的第一个子图
         # 设置坐标轴范围
-        self.x_range = [-(self.num*self.between+(self.num-1)*(self.beam_between-self.between)+200),period * (self.n-2) * self.v1]
+        self.x_range = [-(self.num*self.between+(self.num-1)*(self.beam_between-self.between)+200),period * (self.n-4) * self.v1]
         self.ax.set_xlim(self.x_range)
         self.ax.set_ylim((-0.5 * 1.3 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2 * self.R),
                           0.5 * 2.5 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2 * self.R)))
@@ -930,16 +931,16 @@ class AnimationProduce():
         else:
             raise ValueError('mode must be equal or cross or order')
         ani = animation.FuncAnimation(self.fig, An_fun, frames=self.all_time_n_1, interval=100, repeat=False)
-        # ani.save('animation/' + self.animation_name + '.gif', fps=30, writer='pillow')
-        ani.save('donghua.gif', fps=30, writer='pillow')
+
+        ani.save('animation/' + self.animation_name + '.gif', fps=30, writer='pillow')
         # 动画分割
-        # input_gif = 'animation/' + self.animation_name + '.gif'
-        # split_frames = int(self.all_time_n / self.n * 4)
-        # output_gif_1 = 'animation/' + self.animation_name + '_1' + '.gif'
-        # output_gif_2 = 'animation/' + self.animation_name + '_2' + '.gif'
-        # split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
+        input_gif = 'animation/' + self.animation_name + '.gif'
+        split_frames = int(self.all_time_n / self.n * 3)
+        output_gif_1 = 'animation/' + self.animation_name + '_1' + '.gif'
+        output_gif_2 = 'animation/' + self.animation_name + '_2' + '.gif'
+        split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
         plt.close(self.fig)
-        return 'donghua.gif'
+        return (self.animation_name)
 # -----------------智能计算------------------
 def single_num_calculate(v1,ceramic_width,beam_between,R,a,mo,**kwargs):
     # mode = enerage or efficient
@@ -1054,6 +1055,39 @@ def single_self_define_calculate(v1,ceramic_width,beam_between,R,a,num_input,gro
     result[0,  8] = between
     '''
     return params
+# -----------------动画分割-------------------
+def split_gif(input_gif, split_frame, output_gif_1, output_gif_2):
+    # 打开输入的 GIF 文件
+    with Image.open(input_gif) as img:
+        # 提取所有帧
+        frames = [frame.copy() for frame in ImageSequence.Iterator(img)]
+
+    # 将帧按照指定的 split_frame 进行分割
+    frames_1 = frames[:split_frame]  # 前半部分帧
+    frames_2 = frames[split_frame:]  # 后半部分帧
+
+    # 保存前半部分为一个新的 GIF
+    frames_1[0].save(
+        output_gif_1,
+        save_all=True,
+        append_images=frames_1[1:],  # 保存所有帧
+        loop=1,  # 无限循环
+        duration=img.info['duration']  # 使用原始的帧持续时间
+    )
+    # 保存后半部分为另一个新的 GIF
+    frames_2[0].save(
+        output_gif_2,
+        save_all=True,
+        append_images=frames_2[1:],  # 保存所有帧
+        loop=0,  # 无限循环
+        duration=img.info['duration']  # 使用原始的帧持续时间
+    )
+
+
+
+
+
+
 
 
 

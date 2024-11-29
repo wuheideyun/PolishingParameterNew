@@ -10,6 +10,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import multiprocessing
 from matplotlib.patches import Rectangle  # 导入 Rectangle
 from functools import partial
+from PIL import Image, ImageSequence
 # 函数导入
 from Double_Function import DoubleWorkerThread,double_num_calculate,self_define_calculate
 from Single_Function import SingleWorkerThread,single_num_calculate,single_self_define_calculate
@@ -164,9 +165,9 @@ class MainWindow_impl(MainWindow):
         single_parameter_intelligent = dict_value_to_float(self.single_parameter_intelligent)
         double_parameter_intelligent = dict_value_to_float(self.double_parameter_intelligent)
         if self.current_device == 1:     # 单头摆
-            self.single_enerage_project(animation_name='111',**single_parameter_intelligent)
+            self.single_enerage_project(animation_name='animation',**single_parameter_intelligent)
         elif self.current_device == 2:   # 双头摆
-            self.double_enerage_project(animation_name='111',**double_parameter_intelligent)
+            self.double_enerage_project(animation_name='animation',**double_parameter_intelligent)
         elif self.current_device == 3:   # 同步摆
             # 待开发---
             return
@@ -181,9 +182,9 @@ class MainWindow_impl(MainWindow):
         single_parameter_intelligent = dict_value_to_float(self.single_parameter_intelligent)
         double_parameter_intelligent = dict_value_to_float(self.double_parameter_intelligent)
         if self.current_device == 1:
-            self.single_efficient_project(animation_name='111',**single_parameter_intelligent)
+            self.single_efficient_project(animation_name='animation',**single_parameter_intelligent)
         elif self.current_device == 2:
-            self.double_efficient_project(animation_name='111',**double_parameter_intelligent)
+            self.double_efficient_project(animation_name='animation',**double_parameter_intelligent)
         elif self.current_device == 3:
             # 待开发---
             return
@@ -207,9 +208,9 @@ class MainWindow_impl(MainWindow):
         single_parameter_intelligent = dict_value_to_float(self.single_parameter_intelligent)
         double_parameter_intelligent = dict_value_to_float(self.double_parameter_intelligent)
         if self.current_device == 1:
-            self.single_self_project(animation_name='111',**single_parameter_intelligent)
+            self.single_self_project(animation_name='animation',**single_parameter_intelligent)
         elif self.current_device == 2:
-            self.double_self_project(animation_name='111',**double_parameter_intelligent)
+            self.double_self_project(animation_name='animation',**double_parameter_intelligent)
         elif self.current_device == 3:
             # 待开发---
             return
@@ -221,9 +222,9 @@ class MainWindow_impl(MainWindow):
         single_parameter_manual = dict_value_to_float(self.single_parameter_manual)
         double_parameter_manual = dict_value_to_float(self.double_parameter_manual)
         if self.current_device == 1:
-            self.single_synchronization_project(animation_name='111',**single_parameter_manual)
+            self.single_synchronization_project(animation_name='animation',**single_parameter_manual)
         elif self.current_device == 2:
-            self.double_synchronization_project(animation_name='111',**double_parameter_manual)
+            self.double_synchronization_project(animation_name='animation',**double_parameter_manual)
         elif self.current_device == 3:
             # 待开发---
             return
@@ -234,9 +235,9 @@ class MainWindow_impl(MainWindow):
         single_parameter_manual = dict_value_to_float(self.single_parameter_manual)
         double_parameter_manual = dict_value_to_float(self.double_parameter_manual)
         if self.current_device == 1:
-            self.single_cross_project(animation_name='111',**single_parameter_manual)
+            self.single_cross_project(animation_name='animation',**single_parameter_manual)
         elif self.current_device == 2:
-            self.double_cross_project(animation_name='111',**double_parameter_manual)
+            self.double_cross_project(animation_name='animation',**double_parameter_manual)
         elif self.current_device == 3:
             # 待开发---
             return
@@ -247,9 +248,9 @@ class MainWindow_impl(MainWindow):
         single_parameter_manual = dict_value_to_float(self.single_parameter_manual)
         double_parameter_manual = dict_value_to_float(self.double_parameter_manual)
         if self.current_device == 1:
-            self.single_order_project(animation_name='111',**single_parameter_manual)
+            self.single_order_project(animation_name='animation',**single_parameter_manual)
         elif self.current_device == 2:
-            self.double_order_project(animation_name='111',**double_parameter_manual)
+            self.double_order_project(animation_name='animation',**double_parameter_manual)
         elif self.current_device == 3:
             # 待开发---
             return
@@ -267,7 +268,7 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.single_parameter_intelligent.update(params)
 
-        params.update({'mode': 'order', 'fig': self.canvas.fig})
+        params.update({'mode': 'order', 'fig': self.canvas.fig,'animation_name':animation_name})
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -285,7 +286,7 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.single_parameter_intelligent.update(params)
 
-        params.update({'mode': 'order', 'fig': self.canvas.fig})
+        params.update({'mode': 'order', 'fig': self.canvas.fig,'animation_name':animation_name})
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -306,7 +307,7 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.single_parameter_intelligent.update(params)
 
-        params.update({'mode': 'self_order', 'fig': self.canvas.fig})
+        params.update({'mode': 'self_order', 'fig': self.canvas.fig,'animation_name':animation_name})
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -438,7 +439,7 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.double_parameter_intelligent.update(params)
 
-        params.update({'mode': 'order','fig': self.canvas.fig})
+        params.update({'mode': 'order','fig': self.canvas.fig,'animation_name':animation_name})
         self.worker_thread_plot = DoubleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -457,7 +458,7 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.double_parameter_intelligent.update(params)
 
-        params.update({'mode': 'order', 'fig': self.canvas.fig})
+        params.update({'mode': 'order', 'fig': self.canvas.fig,'animation_name':animation_name})
         self.worker_thread_plot = DoubleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -478,7 +479,7 @@ class MainWindow_impl(MainWindow):
         params = self_define_calculate(v1,t2,ceramic_width,between,beam_between,R,a,num_input,mo,group)
         # 计算结果-数据集更新
         self.double_parameter_intelligent.update(params)
-        params.update({'mode': 'self_order', 'fig': self.canvas.fig})
+        params.update({'mode': 'self_order', 'fig': self.canvas.fig,'animation_name':animation_name})
         self.worker_thread_plot = DoubleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -610,13 +611,20 @@ class MainWindow_impl(MainWindow):
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
         # 创建新的 QMovie 对象并设置到 QLabel
-        self.movie = QMovie('donghua.gif')
+        animation_name = result[1]
+        # self.movie = QMovie(ani)
+        # self.animation_QLabel.setMovie(self.movie)
+        # 加载GIF动画
+        self.movie = QMovie('./animation/' + animation_name + '_1.gif')
+        self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
+        self.movie.updated.connect(self.updated)
+        # self.movie.setloopCount(1)  # 设置只播放一次
         self.animation_QLabel.setMovie(self.movie)
         # 启动新的动画
         self.movie.start()
         button_enable(self.button_list)
         # 参数集更新
-        self.single_parameter_intelligent['lineEdit_coefficient'] = result
+        self.single_parameter_intelligent['lineEdit_coefficient'] = result[0]
         # 字符转换
         dict_value_to_str(self.single_parameter_intelligent)
         # 界面输出参数赋值
@@ -634,13 +642,20 @@ class MainWindow_impl(MainWindow):
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
         # 创建新的 QMovie 对象并设置到 QLabel
-        self.movie = QMovie('donghua.gif')
+        animation_name = result[1]
+        # self.movie = QMovie(ani)
+        # self.animation_QLabel.setMovie(self.movie)
+        # 加载GIF动画
+        self.movie = QMovie('./animation/' + animation_name + '_1.gif')
+        self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
+        self.movie.updated.connect(self.updated)
+        # self.movie.setloopCount(1)  # 设置只播放一次
         self.animation_QLabel.setMovie(self.movie)
         # 启动新的动画
         self.movie.start()
         button_enable(self.button_list)
         # 参数集更新
-        self.single_parameter_manual['lineEdit_coefficient'] = result
+        self.single_parameter_intelligent['lineEdit_coefficient'] = result[0]
         # 字符转换
         dict_value_to_str(self.single_parameter_manual)
         # 界面输出参数赋值
@@ -658,13 +673,20 @@ class MainWindow_impl(MainWindow):
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
         # 创建新的 QMovie 对象并设置到 QLabel
-        self.movie = QMovie('donghua.gif')
+        animation_name = result[1]
+        # self.movie = QMovie(ani)
+        # self.animation_QLabel.setMovie(self.movie)
+        # 加载GIF动画
+        self.movie = QMovie('./animation/' + animation_name + '_1.gif')
+        self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
+        self.movie.updated.connect(self.updated)
+        # self.movie.setloopCount(1)  # 设置只播放一次
         self.animation_QLabel.setMovie(self.movie)
         # 启动新的动画
         self.movie.start()
         button_enable(self.button_list)
         # 参数集更新
-        self.double_parameter_intelligent['lineEdit_coefficient'] = result
+        self.single_parameter_intelligent['lineEdit_coefficient'] = result[0]
         # 字符转换
         dict_value_to_str(self.double_parameter_intelligent)
         # 界面输出参数赋值
@@ -682,13 +704,20 @@ class MainWindow_impl(MainWindow):
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
         # 创建新的 QMovie 对象并设置到 QLabel
-        self.movie = QMovie('donghua.gif')
+        animation_name = result[1]
+        # self.movie = QMovie(ani)
+        # self.animation_QLabel.setMovie(self.movie)
+        # 加载GIF动画
+        self.movie = QMovie('./animation/' + animation_name + '_1.gif')
+        self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
+        self.movie.updated.connect(self.updated)
+        # self.movie.setloopCount(1)  # 设置只播放一次
         self.animation_QLabel.setMovie(self.movie)
         # 启动新的动画
         self.movie.start()
         button_enable(self.button_list)
         # 参数集更新
-        self.double_parameter_manual['lineEdit_coefficient'] = result
+        self.single_parameter_intelligent['lineEdit_coefficient'] = result[0]
         # 字符转换
         dict_value_to_str(self.double_parameter_manual)
         # 界面输出参数赋值
@@ -696,6 +725,13 @@ class MainWindow_impl(MainWindow):
             self.motion_input_out_param_manual_frame.content_middle_layout.set_line_edit_value(i,self.double_parameter_manual[i])
         for i in self.motion_out_param_param_manual_line_edit_names_3:
             self.motion_input_out_param_manual_frame.content_bottom_layout.set_line_edit_value(i,self.double_parameter_manual[i])
+
+    # 动画切换函数
+    def updated(self):
+        if self.movie.currentFrameNumber() == self.movie.frameCount() - 1:
+            self.movie.stop()
+            self.animation_QLabel.setMovie(self.movie2)
+            self.movie2.start()
 
 # 编辑框值发生变化时，值同步到参数集合中-监听
 def line_eidt_textchange(name, text, list):
@@ -749,4 +785,3 @@ def belt_speed_calculate(dict):
     # 产量 = 主皮带速度 * 进砖宽度 * 工作时长
     belt_speed = round(volume/ceramic_width/work_time/0.0036,2)
     return str(belt_speed)
-
