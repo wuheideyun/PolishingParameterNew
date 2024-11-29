@@ -1,5 +1,3 @@
-from PySide6.QtWidgets import QMessageBox
-
 from MainWindow_New_Interface import MainWindow
 from PySide6.QtGui import QMovie
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
@@ -32,113 +30,115 @@ class MainWindow_impl(MainWindow):
 
         # 主机参数-双头摆- self.host_param_double_frame
         host_param_double_line_edit_names = [
-            "lineEdit_between", "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length"
+            "lineEdit_between", "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length", "lineEdit_work_time"
         ]
         for i in host_param_double_line_edit_names:
             self.double_parameter_intelligent[i] = self.host_param_double_frame.content_layout.get_line_edit_value(i)
             self.double_parameter_manual[i] = self.host_param_double_frame.content_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
         self.host_param_double_frame.content_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.double_parameter_intelligent))
+            partial(line_eidt_textchange, list=self.double_parameter_intelligent))
         self.host_param_double_frame.content_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.double_parameter_manual))
+            partial(line_eidt_textchange, list=self.double_parameter_manual))
 
         # 主机参数-单头摆- self.host_param_single_frame
         host_param_single_line_edit_names = [
-            "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length"
+            "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length", "lineEdit_work_time"
         ]
         for i in host_param_single_line_edit_names:
             self.single_parameter_intelligent[i] = self.host_param_single_frame.content_layout.get_line_edit_value(i)
             self.single_parameter_manual[i] = self.host_param_single_frame.content_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
         self.host_param_single_frame.content_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.single_parameter_intelligent))
+            partial(line_eidt_textchange, list=self.single_parameter_intelligent))
         self.host_param_single_frame.content_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.single_parameter_manual))
+            partial(line_eidt_textchange, list=self.single_parameter_manual))
 
         # 运动输入参数- self.motion_in_param_frame
         motion_in_param_line_edit_names = [
             "lineEdit_production_volume", "lineEdit_ceramic_width", "lineEdit_accelerate", "lineEdit_overlap",
-            "lineEdit_num_input"
-            , "lineEdit_group_count", "lineEdit_stay_time_input"
+            "lineEdit_num_input", "lineEdit_group_count", "lineEdit_stay_time_input"
         ]
         for i in motion_in_param_line_edit_names:
             self.single_parameter_intelligent[i] = self.motion_in_param_frame.content_layout.get_line_edit_value(i)
             self.double_parameter_intelligent[i] = self.motion_in_param_frame.content_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
         self.motion_in_param_frame.content_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.single_parameter_intelligent))
+            partial(line_eidt_textchange, list=self.single_parameter_intelligent))
         self.motion_in_param_frame.content_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.double_parameter_intelligent))
+            partial(line_eidt_textchange, list=self.double_parameter_intelligent))
 
         # 运动输出参数 and 产品质量参数- self.motion_out_param_frame
-        motion_out_param_line_edit_names = [
+        self.motion_out_param_line_edit_names = [
             "lineEdit_belt_speed", "lineEdit_beam_swing_speed", "lineEdit_beam_constant_time",
             "lineEdit_stay_time_output", "lineEdit_swing", "lineEdit_num_output"
         ]
-        motion_out_param_line_edit_names_2 = [
+        self.motion_out_param_line_edit_names_2 = [
             "lineEdit_coefficient"
         ]
-        for i in motion_out_param_line_edit_names:
+        for i in self.motion_out_param_line_edit_names:
             self.single_parameter_intelligent[i] = self.motion_out_param_frame.content_up_layout.get_line_edit_value(i)
             self.double_parameter_intelligent[i] = self.motion_out_param_frame.content_up_layout.get_line_edit_value(i)
-        for i in motion_out_param_line_edit_names_2:
+        for i in self.motion_out_param_line_edit_names_2:
             self.single_parameter_intelligent[i] = self.motion_out_param_frame.content_down_layout.get_line_edit_value(i)
             self.double_parameter_intelligent[i] = self.motion_out_param_frame.content_down_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
         self.motion_out_param_frame.content_up_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.single_parameter_intelligent))
+            partial(line_eidt_textchange, list=self.single_parameter_intelligent))
         self.motion_out_param_frame.content_up_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.double_parameter_intelligent))
+            partial(line_eidt_textchange, list=self.double_parameter_intelligent))
 
         self.motion_out_param_frame.content_down_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.single_parameter_intelligent))
+            partial(line_eidt_textchange, list=self.single_parameter_intelligent))
         self.motion_out_param_frame.content_down_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.double_parameter_intelligent))
+            partial(line_eidt_textchange, list=self.double_parameter_intelligent))
 
         # 运动参数-人工寻优界面--运动输入参数 and 运动输出参数 and 产品质量参数- self.motion_input_out_param_manual_frame
-        motion_out_param_param_manual__line_edit_names = [
+        motion_out_param_param_manual_line_edit_names = [
             "lineEdit_production_volume", "lineEdit_beam_swing_speed", "lineEdit_beam_constant_time",
             "lineEdit_stay_time_input", "lineEdit_num_input", "lineEdit_accelerate", "lineEdit_ceramic_width",
             "lineEdit_delay_time"
         ]
         # 运动输出参数
-        motion_out_param_param_manual__line_edit_names_2 = [
+        self.motion_out_param_param_manual_line_edit_names_2 = [
             "lineEdit_belt_speed", "lineEdit_swing"
         ]
         # 产品质量参数
-        motion_out_param_param_manual__line_edit_names_3 = ["lineEdit_coefficient"]
-        for i in motion_out_param_param_manual__line_edit_names:
+        self.motion_out_param_param_manual_line_edit_names_3 = ["lineEdit_coefficient"]
+
+        for i in motion_out_param_param_manual_line_edit_names:
             self.single_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(
                 i)
             self.double_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(
                 i)
-        for i in motion_out_param_param_manual__line_edit_names_2:
+        for i in self.motion_out_param_param_manual_line_edit_names_2:
             self.single_parameter_manual[
                 i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
             self.double_parameter_manual[
                 i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
-        for i in motion_out_param_param_manual__line_edit_names_3:
+        for i in self.motion_out_param_param_manual_line_edit_names_3:
             self.single_parameter_manual[
                 i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
             self.double_parameter_manual[
                 i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
         self.motion_input_out_param_manual_frame.content_up_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.single_parameter_manual))
+            partial(line_eidt_textchange, list=self.single_parameter_manual))
         self.motion_input_out_param_manual_frame.content_up_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.double_parameter_manual))
+            partial(line_eidt_textchange, list=self.double_parameter_manual))
         self.motion_input_out_param_manual_frame.content_middle_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.single_parameter_manual))
+            partial(line_eidt_textchange, list=self.single_parameter_manual))
         self.motion_input_out_param_manual_frame.content_middle_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.double_parameter_manual))
+            partial(line_eidt_textchange, list=self.double_parameter_manual))
         self.motion_input_out_param_manual_frame.content_bottom_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.single_parameter_manual))
+            partial(line_eidt_textchange, list=self.single_parameter_manual))
         self.motion_input_out_param_manual_frame.content_bottom_layout.sig_textChanged.connect(
-            partial(self.line_eidt_textchange, list=self.double_parameter_manual))
-
-        print(self.single_parameter_manual)
-
+            partial(line_eidt_textchange, list=self.double_parameter_manual))
+        # 主皮带速度初始-计算赋值
+        edit_list = [self.single_parameter_intelligent, self.double_parameter_intelligent,self.single_parameter_manual,self.double_parameter_manual]
+        for i in edit_list:
+            if belt_speed_value_empty(i):
+                i['lineEdit_belt_speed'] = belt_speed_calculate(i)
 
         # -------------------------按钮逻辑部分---------------------
         self.button_energy_project.clicked.connect(self.enerage_project_clicked)
@@ -159,10 +159,10 @@ class MainWindow_impl(MainWindow):
         if not self.check_input_valid():
             return
         # 按钮不可用
-        self.button_disable(self.button_list)
+        button_disable(self.button_list)
         # 字符类型转换
-        single_parameter_intelligent = self.dict_value_float(self.single_parameter_intelligent)
-        double_parameter_intelligent = self.dict_value_float(self.double_parameter_intelligent)
+        single_parameter_intelligent = dict_value_to_float(self.single_parameter_intelligent)
+        double_parameter_intelligent = dict_value_to_float(self.double_parameter_intelligent)
         if self.current_device == 1:     # 单头摆
             self.single_enerage_project(animation_name='111',**single_parameter_intelligent)
         elif self.current_device == 2:   # 双头摆
@@ -176,10 +176,10 @@ class MainWindow_impl(MainWindow):
         if not self.check_input_valid():
             return
         # 按钮不可用
-        self.button_disable(self.button_list)
+        button_disable(self.button_list)
         # 字符类型转换
-        single_parameter_intelligent = self.dict_value_float(self.single_parameter_intelligent)
-        double_parameter_intelligent = self.dict_value_float(self.double_parameter_intelligent)
+        single_parameter_intelligent = dict_value_to_float(self.single_parameter_intelligent)
+        double_parameter_intelligent = dict_value_to_float(self.double_parameter_intelligent)
         if self.current_device == 1:
             self.single_efficient_project(animation_name='111',**single_parameter_intelligent)
         elif self.current_device == 2:
@@ -202,10 +202,10 @@ class MainWindow_impl(MainWindow):
                 return False
         return True
     def self_define_project_clicked(self):
-        self.button_disable(self.button_list)
+        button_disable(self.button_list)
         # 字符类型转换
-        single_parameter_intelligent = self.dict_value_float(self.single_parameter_intelligent)
-        double_parameter_intelligent = self.dict_value_float(self.double_parameter_intelligent)
+        single_parameter_intelligent = dict_value_to_float(self.single_parameter_intelligent)
+        double_parameter_intelligent = dict_value_to_float(self.double_parameter_intelligent)
         if self.current_device == 1:
             self.single_self_project(animation_name='111',**single_parameter_intelligent)
         elif self.current_device == 2:
@@ -216,10 +216,10 @@ class MainWindow_impl(MainWindow):
 
     # 按钮点击槽函数(仿真)
     def syn_project(self):
-        self.button_disable(self.button_list)
+        button_disable(self.button_list)
         # 字符类型转换
-        single_parameter_manual = self.dict_value_float(self.single_parameter_manual)
-        double_parameter_manual = self.dict_value_float(self.double_parameter_manual)
+        single_parameter_manual = dict_value_to_float(self.single_parameter_manual)
+        double_parameter_manual = dict_value_to_float(self.double_parameter_manual)
         if self.current_device == 1:
             self.single_synchronization_project(animation_name='111',**single_parameter_manual)
         elif self.current_device == 2:
@@ -229,10 +229,10 @@ class MainWindow_impl(MainWindow):
             return
 
     def cross_project(self):
-        self.button_disable(self.button_list)
+        button_disable(self.button_list)
         # 字符类型转换
-        single_parameter_manual = self.dict_value_float(self.single_parameter_manual)
-        double_parameter_manual = self.dict_value_float(self.double_parameter_manual)
+        single_parameter_manual = dict_value_to_float(self.single_parameter_manual)
+        double_parameter_manual = dict_value_to_float(self.double_parameter_manual)
         if self.current_device == 1:
             self.single_cross_project(animation_name='111',**single_parameter_manual)
         elif self.current_device == 2:
@@ -242,10 +242,10 @@ class MainWindow_impl(MainWindow):
             return
 
     def order_project(self):
-        self.button_disable(self.button_list)
+        button_disable(self.button_list)
         # 字符类型转换
-        single_parameter_manual = self.dict_value_float(self.single_parameter_manual)
-        double_parameter_manual = self.dict_value_float(self.double_parameter_manual)
+        single_parameter_manual = dict_value_to_float(self.single_parameter_manual)
+        double_parameter_manual = dict_value_to_float(self.double_parameter_manual)
         if self.current_device == 1:
             self.single_order_project(animation_name='111',**single_parameter_manual)
         elif self.current_device == 2:
@@ -323,18 +323,19 @@ class MainWindow_impl(MainWindow):
         num = kwargs.get('lineEdit_num_input')
         R = kwargs.get('lineEdit_diameter')/2
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        self.single_parameter_manual['lineEdit_swing'] = round(a*(v2/a)**2+v2*constant_time,2)
         params = {
             'mode': 'equal',
             'fig': self.canvas.fig,
             'lineEdit_belt_speed': v1,
             'lineEdit_beam_swing_speed': v2,
             'lineEdit_beam_constant_time': constant_time,
-            'lineEdit_stay_time_input': stay_time,
+            'lineEdit_stay_time_output': stay_time,
             'lineEdit_accelerate': a,
             #'between': between,
             'lineEdit_beam_between': beam_between,
             'lineEdit_grind_length': mo,
-            'lineEdit_num_input': num,
+            'lineEdit_num_output': num,
             'lineEdit_diameter': R,
             'animation_name': animation_name,
             'lineEdit_ceramic_width': ceramic_width,
@@ -358,18 +359,19 @@ class MainWindow_impl(MainWindow):
         num = kwargs.get('lineEdit_num_input')
         R = kwargs.get('lineEdit_diameter')/2
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        self.single_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
         params = {
             'mode': 'cross',
             'fig': self.canvas.fig,
             'lineEdit_belt_speed': v1,
             'lineEdit_beam_swing_speed': v2,
             'lineEdit_beam_constant_time': constant_time,
-            'lineEdit_stay_time_input': stay_time,
+            'lineEdit_stay_time_output': stay_time,
             'lineEdit_accelerate': a,
             # 'between': between,
             'lineEdit_beam_between': beam_between,
             'lineEdit_grind_length': mo,
-            'lineEdit_num_input': num,
+            'lineEdit_num_output': num,
             'R': R,
             'animation_name': animation_name,
             'lineEdit_ceramic_width': ceramic_width,
@@ -394,19 +396,19 @@ class MainWindow_impl(MainWindow):
         R = kwargs.get('lineEdit_diameter')/2
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
         delay_time = kwargs.get('lineEdit_delay_time')
-
+        self.single_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
         params = {
             'mode': 'order',
             'fig': self.canvas.fig,
             'lineEdit_belt_speed': v1,
             'lineEdit_beam_swing_speed': v2,
             'lineEdit_beam_constant_time': constant_time,
-            'lineEdit_stay_time_input': stay_time,
+            'lineEdit_stay_time_output': stay_time,
             'lineEdit_accelerate': a,
             #'between': between,
             'lineEdit_beam_between': beam_between,
             'lineEdit_grind_length': mo,
-            'lineEdit_num_input': num,
+            'lineEdit_num_output': num,
             'R': R,
             'animation_name': animation_name,
             'lineEdit_ceramic_width': ceramic_width,
@@ -495,19 +497,19 @@ class MainWindow_impl(MainWindow):
         R = kwargs.get('lineEdit_diameter')/2
         mo = kwargs.get('lineEdit_grind_length')
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
-
+        self.double_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
         params = {
             'mode': 'equal',
             'fig': self.canvas.fig,
             'lineEdit_belt_speed': v1,
             'lineEdit_beam_swing_speed': v2,
             'lineEdit_beam_constant_time': constant_time,
-            'lineEdit_stay_time_input': stay_time,
+            'lineEdit_stay_time_output': stay_time,
             'lineEdit_accelerate': a,
             'lineEdit_between': between,
             'lineEdit_beam_between': beam_between,
             'lineEdit_grind_length': mo,
-            'lineEdit_num_input': num,
+            'lineEdit_num_output': num,
             'R': R,
             'animation_name': animation_name,
             'lineEdit_ceramic_width':ceramic_width,
@@ -533,19 +535,19 @@ class MainWindow_impl(MainWindow):
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
         num = kwargs.get('lineEdit_num_input')
         R = kwargs.get('lineEdit_diameter')/2
-
+        self.double_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
         params = {
             'mode': 'cross',
             'fig': self.canvas.fig,
             'lineEdit_belt_speed': v1,
             'lineEdit_beam_swing_speed': v2,
             'lineEdit_beam_constant_time': constant_time,
-            'lineEdit_stay_time_input': stay_time,
+            'lineEdit_stay_time_output': stay_time,
             'lineEdit_accelerate': a,
             'lineEdit_between': between,
             'lineEdit_beam_between': beam_between,
             'lineEdit_grind_length': mo,
-            'lineEdit_num_input': num,
+            'lineEdit_num_output': num,
             'R': R,
             'animation_name': animation_name,
             'lineEdit_ceramic_width': ceramic_width,
@@ -573,19 +575,19 @@ class MainWindow_impl(MainWindow):
         R = kwargs.get('lineEdit_diameter')/2
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
         delay_time = kwargs.get('lineEdit_delay_time')
-
+        self.double_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
         params = {
             'mode': 'order',
             'fig': self.canvas.fig,
             'lineEdit_belt_speed': v1,
             'lineEdit_beam_swing_speed': v2,
             'lineEdit_beam_constant_time': constant_time,
-            'lineEdit_stay_time_input': stay_time,
+            'lineEdit_stay_time_output': stay_time,
             'lineEdit_accelerate': a,
             'lineEdit_between': between,
             'lineEdit_beam_between': beam_between,
             'lineEdit_grind_length': mo,
-            'lineEdit_num_input': num,
+            'lineEdit_num_output': num,
             'R': R,
             'animation_name': animation_name,
             'lineEdit_ceramic_width': ceramic_width,
@@ -598,7 +600,7 @@ class MainWindow_impl(MainWindow):
         self.worker_thread_plot = DoubleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.double_manual_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
-
+    # ------------------------------------子进程信号接收函数------------------------------------------------------------------------
     # 单头摆-智能计算-子进程信号接收函数
     def single_intelligent_thread_signal(self, result):
         self.timer.stop()
@@ -612,9 +614,16 @@ class MainWindow_impl(MainWindow):
         self.animation_QLabel.setMovie(self.movie)
         # 启动新的动画
         self.movie.start()
-        self.button_enable(self.button_list)
+        button_enable(self.button_list)
         # 参数集更新
         self.single_parameter_intelligent['lineEdit_coefficient'] = result
+        # 字符转换
+        dict_value_to_str(self.single_parameter_intelligent)
+        # 界面输出参数赋值
+        for i in self.motion_out_param_line_edit_names:
+            self.motion_out_param_frame.content_up_layout.set_line_edit_value(i,self.single_parameter_intelligent[i])
+        for i in self.motion_out_param_line_edit_names_2:
+            self.motion_out_param_frame.content_down_layout.set_line_edit_value(i,self.single_parameter_intelligent[i])
 
     # 单头摆-人工寻优-子进程信号接收函数
     def single_manual_thread_signal(self, result):
@@ -629,9 +638,16 @@ class MainWindow_impl(MainWindow):
         self.animation_QLabel.setMovie(self.movie)
         # 启动新的动画
         self.movie.start()
-        self.button_enable(self.button_list)
+        button_enable(self.button_list)
         # 参数集更新
-        self.single_parameter_intelligent['lineEdit_coefficient'] = result
+        self.single_parameter_manual['lineEdit_coefficient'] = result
+        # 字符转换
+        dict_value_to_str(self.single_parameter_manual)
+        # 界面输出参数赋值
+        for i in self.motion_out_param_param_manual_line_edit_names_2:
+            self.motion_input_out_param_manual_frame.content_middle_layout.set_line_edit_value(i,self.single_parameter_manual[i])
+        for i in self.motion_out_param_param_manual_line_edit_names_3:
+            self.motion_input_out_param_manual_frame.content_bottom_layout.set_line_edit_value(i,self.single_parameter_manual[i])
 
     # 双头摆-智能计算-子进程信号接收函数
     def double_intelligent_thread_signal(self, result):
@@ -646,11 +662,18 @@ class MainWindow_impl(MainWindow):
         self.animation_QLabel.setMovie(self.movie)
         # 启动新的动画
         self.movie.start()
-        self.button_enable(self.button_list)
+        button_enable(self.button_list)
         # 参数集更新
         self.double_parameter_intelligent['lineEdit_coefficient'] = result
+        # 字符转换
+        dict_value_to_str(self.double_parameter_intelligent)
+        # 界面输出参数赋值
+        for i in self.motion_out_param_line_edit_names:
+            self.motion_out_param_frame.content_up_layout.set_line_edit_value(i,self.double_parameter_intelligent[i])
+        for i in self.motion_out_param_line_edit_names_2:
+            self.motion_out_param_frame.content_down_layout.set_line_edit_value(i,self.double_parameter_intelligent[i])
 
-    # 双头摆-智能计算-子进程信号接收函数
+    # 双头摆-人工寻优-子进程信号接收函数
     def double_manual_thread_signal(self, result):
         self.timer.stop()
         self.status_label.setText("计算完毕，请查看计算结果。")
@@ -663,30 +686,67 @@ class MainWindow_impl(MainWindow):
         self.animation_QLabel.setMovie(self.movie)
         # 启动新的动画
         self.movie.start()
-        self.button_enable(self.button_list)
+        button_enable(self.button_list)
         # 参数集更新
-        self.double_parameter_intelligent['lineEdit_coefficient'] = result
+        self.double_parameter_manual['lineEdit_coefficient'] = result
+        # 字符转换
+        dict_value_to_str(self.double_parameter_manual)
+        # 界面输出参数赋值
+        for i in self.motion_out_param_param_manual_line_edit_names_2:
+            self.motion_input_out_param_manual_frame.content_middle_layout.set_line_edit_value(i,self.double_parameter_manual[i])
+        for i in self.motion_out_param_param_manual_line_edit_names_3:
+            self.motion_input_out_param_manual_frame.content_bottom_layout.set_line_edit_value(i,self.double_parameter_manual[i])
 
-    # 当有计算运行时，屏蔽其他按钮功能
-    def button_disable(self,button_list):
-        for button in button_list:
-            button.setEnabled(False)
+# 编辑框值发生变化时，值同步到参数集合中-监听
+def line_eidt_textchange(name, text, list):
+    list[name] = text
+    # 实时更新住皮带速度
+    if belt_speed_value_empty(list):
+        list['lineEdit_belt_speed'] = belt_speed_calculate(list)
 
-    # 计算完毕，按钮恢复正常
-    def button_enable(self,button_list):
-        for button in button_list:
-            button.setEnabled(True)
+# 当有计算运行时，屏蔽其他按钮功能
+def button_disable(button_list):
+    for button in button_list:
+        button.setEnabled(False)
 
-    # 将字典中所有的值转换为数值类型
-    def dict_value_float(self,dict):
-        dict_keys = dict.keys()
-        for key in dict_keys:
-            if dict[key] != '' and dict[key] is not None:
-                dict[key] = float(dict[key])
-        return dict
+# 计算完毕，按钮恢复正常
+def button_enable(button_list):
+    for button in button_list:
+        button.setEnabled(True)
 
-    # 编辑框值发生变化时，值同步到参数集合中-监听
-    def line_eidt_textchange(self,name, text, list):
-        list[name] = text
-        # if list['lineEdit_production_volume'] != '' and list['lineEdit_ceramic_width'] != '':
+# 将字典中所有的值转换为数值类型
+def dict_value_to_float(dict):
+    dict_keys = dict.keys()
+    for key in dict_keys:
+        if dict[key] != '' and dict[key] is not None:
+            dict[key] = float(dict[key])
+    return dict
+
+# 将字典中所有的值转换为字符类型
+def dict_value_to_str(dict):
+    dict_keys = dict.keys()
+    for key in dict_keys:
+        if dict[key] != '' and dict[key] is not None:
+            dict[key] = str(dict[key])
+    return dict
+
+# 判断计算主皮带速度的值是否为空
+def belt_speed_value_empty(dict):
+    line_edit_names = ["lineEdit_work_time","lineEdit_production_volume", "lineEdit_ceramic_width"]
+    for i in line_edit_names:
+        if dict[i] == '':
+            return False
+        else:
+            continue
+    return True
+
+# 计算住皮带速度
+def belt_speed_calculate(dict):
+    line_edit_names = ["lineEdit_work_time", "lineEdit_production_volume", "lineEdit_ceramic_width"]
+    work_time = float(dict["lineEdit_work_time"])
+    volume = float(dict["lineEdit_production_volume"])
+    ceramic_width = float(dict["lineEdit_ceramic_width"])
+    # 产量 = 主皮带速度 * 进砖宽度 * 工作时长
+    belt_speed = round(volume/ceramic_width/work_time/0.0036,2)
+    return str(belt_speed)
 

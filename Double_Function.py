@@ -9,6 +9,9 @@ from matplotlib.patches import Rectangle  # 导入 Rectangle
 from PySide6.QtCore import Qt, Signal, QThread
 from matplotlib.patches import Circle
 from matplotlib import animation
+from numpy.ma.core import shape
+
+
 # 四种模式合并
 class DoubleWorkerThread(QThread):
     result_signal = Signal(object)  # 创建一个信号用于传递结果
@@ -27,11 +30,17 @@ class DoubleWorkerThread(QThread):
         self.v1 = kwargs.get('lineEdit_belt_speed', 0)
         self.v2 = kwargs.get('lineEdit_beam_swing_speed', 0)
         self.constant_time = kwargs.get('lineEdit_beam_constant_time', 0)
-        self.stay_time = kwargs.get('lineEdit_stay_time_output', 0)
+
         self.a = kwargs.get('lineEdit_accelerate', 650)
         self.between = kwargs.get('lineEdit_between', 0)
         self.beam_between = kwargs.get('lineEdit_beam_between', 0)
-        self.num_input = kwargs.get('lineEdit_num_input', 0)
+
+        if self.mode == 'self_order':
+            self.num_input = round(kwargs.get('lineEdit_num_input', 0))
+            self.stay_time = kwargs.get('lineEdit_stay_time_input', 0)
+        else:
+            self.num_input = round(kwargs.get('lineEdit_num_output', 0))
+            self.stay_time = kwargs.get('lineEdit_stay_time_output', 0)
         self.R = kwargs.get('R', 270)
         self.mo = kwargs.get('lineEdit_grind_length', 150)
         self.ceramic_width = kwargs.get('lineEdit_ceramic_width', 800)
@@ -191,13 +200,13 @@ class PolishingDistributionThread():
         # 当前模式
         self.mode = kwargs.get('mode', None)
         # 基本运动参数
-        self.v1 = kwargs.get('v1', 0)
-        self.v2 = kwargs.get('v2', 0)
-        self.constant_time = kwargs.get('constant_time', 0)
-        self.stay_time = kwargs.get('stay_time', 0)
-        self.a = kwargs.get('a', 650)
-        self.between = kwargs.get('between', 0)
-        self.beam_between = kwargs.get('beam_between', 0)
+        self.v1 = round(kwargs.get('v1', 0),2)
+        self.v2 = round(kwargs.get('v2', 0),2)
+        self.constant_time = round(kwargs.get('constant_time', 0),2)
+        self.stay_time = round(kwargs.get('stay_time', 0),2)
+        self.a = round(kwargs.get('a', 650),2)
+        self.between = round(kwargs.get('between', 0),2)
+        self.beam_between = round(kwargs.get('beam_between', 0),2)
         self.num = kwargs.get('num_input', 0)
         self.R = kwargs.get('R', 270)
         self.mo = kwargs.get('mo', 150)
@@ -341,15 +350,16 @@ class PolishingDistributionThread():
         all_H = np.zeros((self.c_width_mulcell, self.c_length_mulcell))
         beam_between_cell = math.floor(self.beam_between / self.c_length_cell)
         cross_size=round((self.t1+self.t2+self.t3+self.t4)*self.v1/self.c_length_cell)
+        # 末尾减去50 防止切片溢出
         for i in range(0, num_two):
             if (i+2) % 2 == 0: # 第 奇数 个横梁
-                all_H[:, beam_between_cell * i:self.c_length_mulcell - 1] = (
-                        all_H[:,beam_between_cell * i:self.c_length_mulcell - 1] +
-                        mul_H[:,0:self.c_length_mulcell - beam_between_cell * i - 1])
+                all_H[:, beam_between_cell * i:self.c_length_mulcell - 1-50] = (
+                        all_H[:,beam_between_cell * i:self.c_length_mulcell - 1-50] +
+                        mul_H[:,0:self.c_length_mulcell - beam_between_cell * i - 1-50])
             else:
-                all_H[:, beam_between_cell * i:self.c_length_mulcell - 1] = (
-                        all_H[:, beam_between_cell * i : self.c_length_mulcell-1 ] +
-                        mul_H[:, cross_size : self.c_length_mulcell-1-beam_between_cell*i + cross_size ])
+                all_H[:, beam_between_cell * i:self.c_length_mulcell - 1-50] = (
+                        all_H[:, beam_between_cell * i : self.c_length_mulcell-1 -50] +
+                        mul_H[:, cross_size : self.c_length_mulcell-1-beam_between_cell*i + cross_size -50])
         # 计算 抛磨变异系数
         # 如果要计算此模块，周期数必须大于等于3
         cover_width = math.ceil(math.ceil(self.v2 * self.t2 + self.a * self.t1 ** 2 + 2 * self.R) / 10)
@@ -442,7 +452,7 @@ class PolishingDistributionThread():
         begin_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2)
         terminate_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2) + cover_width
         begin_length = math.ceil((50 + self.v1 * 3 * self.period) / 10)
-        terminate_length = begin_length + math.ceil((1 * self.v1 * self.period + 2 * self.R) / 10)
+        terminate_length = begin_length + math.ceil((2 * self.v1 * self.period + 2 * self.R) / 10)
         #object_matrix = np.zeros((terminate_width - begin_width, terminate_length - begin_length))
         object_matrix = all_group_H[begin_width + 1:terminate_width, begin_length + 1:terminate_length]
         equal_subsample = np.mean(object_matrix)  # 子样平均数
@@ -1044,12 +1054,12 @@ def double_num_calculate(v1,ceramic_width,between,beam_between,R,a,mo,**kwargs):
     # 方案一 节能方案
     if mode == 'enerage':
         params.update({'lineEdit_belt_speed':round(v1,2),'lineEdit_beam_swing_speed':round(v2,2),'lineEdit_beam_constant_time':round(t_e,2),'lineEdit_stay_time_output':round(t_between,2)
-                       ,'lineEdit_num_output':round(num_1),'lineEdit_num_input':round(num_1),'lineEdit_delay_time':round((beam_between-2*between)/v1,2),'lineEdit_swing':round(a*t_a**2+v2*t_e,2)
+                       ,'lineEdit_num_output':round(num_1),'lineEdit_delay_time':round((beam_between-2*between)/v1,2),'lineEdit_swing':round(a*t_a**2+v2*t_e,2)
                        ,'lineEdit_ceramic_width':ceramic_width,'lineEdit_between':between,'lineEdit_beam_between':beam_between,'R':R,'lineEdit_accelerate':a,'lineEdit_grind_length':mo})
     elif mode == 'efficient':
         params.update(
             {'lineEdit_belt_speed': round(v1, 2), 'lineEdit_beam_swing_speed': round(v2, 2), 'lineEdit_beam_constant_time': round(t_e, 2), 'lineEdit_stay_time_output': round(t_between * 2,2)
-                , 'lineEdit_num_output': round(num_1 + 2),'lineEdit_num_input':round(num_1+2), 'lineEdit_delay_time': round((beam_between - 2 * between) / v1, 2),
+                , 'lineEdit_num_output': round(num_1 + 2), 'lineEdit_delay_time': round((beam_between - 2 * between) / v1, 2),
              'lineEdit_swing': round(a * t_a ** 2 + v2 * t_e, 2)
                 , 'lineEdit_ceramic_width': ceramic_width, 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R, 'lineEdit_accelerate': a,'lineEdit_grind_length':mo})
     else:
@@ -1075,7 +1085,7 @@ def double_num_calculate(v1,ceramic_width,between,beam_between,R,a,mo,**kwargs):
     return params
 # -----------------自定义计算-----------------
 def self_define_calculate(v1,t2,ceramic_width,between,beam_between,R,a,num,mo,group):
-    B=ceramic_width+120-2*R
+    B=ceramic_width+200-2*R
     distance_period=between*num
     t_all=round(distance_period/v1,2)
     # 边部停留时间设定
@@ -1101,8 +1111,8 @@ def self_define_calculate(v1,t2,ceramic_width,between,beam_between,R,a,num,mo,gr
     params = {}
     params.update(
                 {'lineEdit_belt_speed': v1, 'lineEdit_beam_swing_speed': v2, 'lineEdit_beam_constant_time': t1, 'lineEdit_stay_time_output': t2
-                ,'lineEdit_num_input':num, 'lineEdit_num_output': num*group, 'lineEdit_delay_time': delay_time
-                ,'swing': round(a*t_a**2+v2*t1,2), 'lineEdit_ceramic_width': ceramic_width,'lineEdit_group_count':group
+                ,'lineEdit_num_input':num, 'lineEdit_num_output': num*group, 'lineEdit_delay_time': delay_time,'lineEdit_stay_time_input':t2
+                ,'lineEdit_swing': round(a*t_a**2+v2*t1,2), 'lineEdit_ceramic_width': ceramic_width,'lineEdit_group_count':group
                 , 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R, 'lineEdit_accelerate': a
                 ,'self_delay_time':self_delay_time,'lineEdit_grind_length':mo})
     '''

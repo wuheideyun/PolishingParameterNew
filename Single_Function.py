@@ -27,11 +27,18 @@ class SingleWorkerThread(QThread):
         self.v1 = kwargs.get('lineEdit_belt_speed', 0)
         self.v2 = kwargs.get('lineEdit_beam_swing_speed', 0)
         self.constant_time = kwargs.get('lineEdit_beam_constant_time', 0)
-        self.stay_time = kwargs.get('lineEdit_stay_time_output', 0)
+
         self.a = kwargs.get('lineEdit_accelerate', 650)
         self.between = kwargs.get('lineEdit_between', 0)
         self.beam_between = kwargs.get('lineEdit_beam_between', 0)
-        self.num = round(kwargs.get('lineEdit_num_input', 0))
+
+        if self.mode == 'self_order':
+            self.stay_time = kwargs.get('lineEdit_stay_time_input', 0)
+            self.num = round(kwargs.get('lineEdit_num_input', 0))
+        else:
+            self.stay_time = kwargs.get('lineEdit_stay_time_output', 0)
+            self.num = round(kwargs.get('lineEdit_num_output', 0))
+
         self.R = kwargs.get('R', 270)
         self.mo = kwargs.get('lineEdit_grind_length', 150)
         self.ceramic_width = kwargs.get('lineEdit_ceramic_width', 800)
@@ -971,14 +978,14 @@ def single_num_calculate(v1,ceramic_width,beam_between,R,a,mo,**kwargs):
     if mode == 'enerage':
         params.update(
             {'lineEdit_belt_speed': round(v1, 2), 'lineEdit_beam_swing_speed': round(v2, 2), 'lineEdit_beam_constant_time': round(t_e, 2)
-                , 'lineEdit_stay_time_output': round(t_between, 2), 'lineEdit_num_output': round(num_1), 'lineEdit_num_input': round(num_1)
+                , 'lineEdit_stay_time_output': round(t_between, 2), 'lineEdit_num_output': round(num_1)
                 ,'lineEdit_delay_time': t_delay, 'lineEdit_swing': round(a * t_a ** 2 + v2 * t_e, 2), 'lineEdit_ceramic_width': ceramic_width
                 , 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R, 'lineEdit_accelerate': a
                 ,'lineEdit_grind_length': mo})
     elif mode == 'efficient':
         params.update(
             {'lineEdit_belt_speed': round(v1, 2), 'lineEdit_beam_swing_speed': round(v2, 2), 'lineEdit_beam_constant_time': round(t_e, 2)
-            ,'lineEdit_stay_time_output': round(t_between * 2, 2), 'lineEdit_num_output': round(num_1 + 2), 'lineEdit_num_input': round(num_1 + 2)
+            ,'lineEdit_stay_time_output': round(t_between * 2, 2), 'lineEdit_num_output': round(num_1 + 2)
             ,'lineEdit_delay_time': t_delay,'lineEdit_swing': round(a * t_a ** 2 + v2 * t_e, 2), 'lineEdit_ceramic_width': ceramic_width
             , 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R, 'lineEdit_accelerate': a,'lineEdit_grind_length': mo})
     else:
@@ -1032,7 +1039,8 @@ def single_self_define_calculate(v1,ceramic_width,beam_between,R,a,num_input,gro
                 , 'lineEdit_stay_time_output': stay_time, 'lineEdit_num_output': num_input*group, 'lineEdit_num_input':num_input
                 ,'lineEdit_group_count':group,'lineEdit_delay_time': delay_time, 'lineEdit_swing': round(a*t_a**2+t_a*a*t_e,2)
                 , 'lineEdit_ceramic_width': ceramic_width, 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R
-                , 'lineEdit_accelerate': a,'lineEdit_grind_length': mo,'self_delay_time': self_delay_time})
+                , 'lineEdit_accelerate': a,'lineEdit_grind_length': mo,'self_delay_time': self_delay_time,'lineEdit_stay_time_input': stay_time}
+    )
     '''
     result=np.zeros((1,9))
     result[0 , 0] = v1
