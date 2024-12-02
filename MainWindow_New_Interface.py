@@ -109,7 +109,7 @@ class MainWindow(QWidget):
         self.double_button = ImageChangeButton("",":Double",":DoubleClicked",315,74)
         # 双头摆模式切换
         self.double_button.clicked.connect(self.switch_motion_param_double_clicked)
-
+        # 同步摆模式切换
         self.equal_button = ImageChangeButton("",":Equal",":EqualClicked",315,74)
         self.equal_button.clicked.connect(self.switch_motion_param_equal_clicked)
 
@@ -317,17 +317,23 @@ class MainWindow(QWidget):
         third_layout = QHBoxLayout(self.third_widget)
         self.button_synchronization_mode = ImageChangeButton("同步摆动模式", ":GreenFrame", ":GreenFrameClicked", 236, 56,True)
         self.button_cross_mode = ImageChangeButton("交叉摆动模式", ":GreenFrame", ":GreenFrameClicked", 236, 56,True)
+        self.placeholder1 = QWidget()
+        self.placeholder1.setFixedSize(236, 56)
         self.button_order_mode = ImageChangeButton("顺序摆动模式", ":GreenFrame", ":GreenFrameClicked", 236, 56,True)
+        self.placeholder2 = QWidget()
+        self.placeholder2.setFixedSize(236, 56)
         third_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
-        third_layout.addWidget(QLabel("方案\n选择", styleSheet="font-size: 20px;"))
+        third_layout.addWidget(QLabel("方案\n选择", styleSheet="font-size: 20px;"),alignment=Qt.AlignmentFlag.AlignLeft)
         third_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
-        third_layout.addWidget(self.button_synchronization_mode)
-        third_layout.addSpacerItem(QSpacerItem(505,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        third_layout.addWidget(self.button_synchronization_mode,alignment=Qt.AlignmentFlag.AlignLeft)
+        third_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_cross_mode)
-        self.button_cross_mode.setVisible(False)
+        third_layout.addWidget(self.placeholder1)
+        self.placeholder1.setVisible(False)
         third_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_order_mode)
-        self.button_order_mode.setVisible(False)
+        third_layout.addWidget(self.placeholder2)
+        self.placeholder2.setVisible(False)
         third_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
 
         calc_button_layout.addWidget(self.first_widget)
@@ -641,6 +647,10 @@ class MainWindow(QWidget):
         super(MainWindow, self).resizeEvent(event)
 
     def switch_motion_param_single_clicked(self):
+        self.placeholder1.setVisible(False)
+        self.placeholder2.setVisible(False)
+        self.button_cross_mode.setVisible(True)
+        self.button_order_mode.setVisible(True)
         self.double_button.reset_background()
         self.equal_button.reset_background()
         self.host_param_stacked_widget.setCurrentIndex(0);
@@ -648,11 +658,19 @@ class MainWindow(QWidget):
         self.logger.log_multiple_params('info', ('current_mode',self.current_device))
 
     def switch_motion_param_double_clicked(self):
+        self.placeholder1.setVisible(False)
+        self.placeholder2.setVisible(False)
+        self.button_cross_mode.setVisible(True)
+        self.button_order_mode.setVisible(True)
         self.single_button.reset_background()
         self.equal_button.reset_background()
         self.host_param_stacked_widget.setCurrentIndex(1);
         self.current_device = 2
     def switch_motion_param_equal_clicked(self):
+        self.button_cross_mode.setVisible(False)
+        self.button_order_mode.setVisible(False)
+        self.placeholder1.setVisible(True)
+        self.placeholder2.setVisible(True)
         self.single_button.reset_background()
         self.double_button.reset_background()
         self.host_param_stacked_widget.setCurrentIndex(2);
