@@ -33,11 +33,11 @@ class HostParamEqualWidget(QWidget):
 
         # 定义标签和编辑框的文本
         labels = [
-            "磨头间距：", "横梁间距：", "磨头直径：", "磨块长度：", "工作时长："
+            "磨头间距：",  "磨头直径：", "磨块长度：", "工作时长："
         ]
         # 定义编辑框的名称
         line_edit_names = [
-            "lineEdit_between", "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length", "lineEdit_work_time"
+            "lineEdit_between", "lineEdit_diameter", "lineEdit_grind_length", "lineEdit_work_time"
         ]
         # 创建自定义的网格布局(对所有参数增加监听)
         self.content_layout = JustifiedGridLayout(labels, line_edit_names,6,line_edit_names,-1,'','')

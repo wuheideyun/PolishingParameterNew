@@ -322,10 +322,12 @@ class MainWindow(QWidget):
         third_layout.addWidget(QLabel("方案\n选择", styleSheet="font-size: 20px;"))
         third_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_synchronization_mode)
-        third_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        third_layout.addSpacerItem(QSpacerItem(505,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_cross_mode)
+        self.button_cross_mode.setVisible(False)
         third_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_order_mode)
+        self.button_order_mode.setVisible(False)
         third_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
 
         calc_button_layout.addWidget(self.first_widget)
