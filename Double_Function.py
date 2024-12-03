@@ -733,7 +733,7 @@ class MiddleLinePlot():
             plt.scatter(single_X_location + i * self.beam_between + self.between,single_Y_location,color=color_7[i],s=1)
         plt.show()  # 显示函数图像
     '''
-# -----------------轨迹动画计算----------------------
+# ------------------轨迹动画计算----------------------
 class AnimationProduce():
     def __init__(self,**kwargs):
         # 动画名字
@@ -1008,7 +1008,7 @@ class AnimationProduce():
         split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
         plt.close(self.fig)
         return (self.animation_name)
-# -----------------智能计算------------------
+# -------------------智能计算------------------
 def double_num_calculate(v1,ceramic_width,between,beam_between,R,a,mo,**kwargs):
     # mode = enerage or efficient
     mode = kwargs.get('mode',None)
@@ -1047,18 +1047,26 @@ def double_num_calculate(v1,ceramic_width,between,beam_between,R,a,mo,**kwargs):
         ValueError('The swing cannot reach the set value')
     v2 = round(t_a * a, 2)
     t_e = round(t_beam - 2 * t_a, 2)
+    # 延时时间数组计算
+    t_delay = round((beam_between-2*between)/v1,2)
+    t_delay_list_enerage = []
+    t_delay_list_efficient = []
+    for i in range(0, round(num_1/2)):
+        t_delay_list_enerage.append(round(i * t_delay, 2))
+    for i in range(0, round(num_1/2 + 1)):
+        t_delay_list_efficient.append(round(i * t_delay, 2))
     # 结果输出
     params = {}
     # 方案一 节能方案
     if mode == 'enerage':
         params.update({'lineEdit_belt_speed':round(v1,2),'lineEdit_beam_swing_speed':round(v2,2),'lineEdit_beam_constant_time':round(t_e,2),'lineEdit_stay_time_output':round(t_between,2)
-                       ,'lineEdit_num_output':round(num_1),'lineEdit_delay_time':round((beam_between-2*between)/v1,2),'lineEdit_swing':round(a*t_a**2+v2*t_e,2)
+                       ,'lineEdit_num_output':round(num_1),'lineEdit_delay_time':t_delay,'lineEdit_delay_time_list':t_delay_list_enerage,'lineEdit_swing':round(a*t_a**2+v2*t_e,2)
                        ,'lineEdit_ceramic_width':ceramic_width,'lineEdit_between':between,'lineEdit_beam_between':beam_between,'R':R,'lineEdit_accelerate':a,'lineEdit_grind_length':mo})
     elif mode == 'efficient':
         params.update(
             {'lineEdit_belt_speed': round(v1, 2), 'lineEdit_beam_swing_speed': round(v2, 2), 'lineEdit_beam_constant_time': round(t_e, 2), 'lineEdit_stay_time_output': round(t_between * 2,2)
-                , 'lineEdit_num_output': round(num_1 + 2), 'lineEdit_delay_time': round((beam_between - 2 * between) / v1, 2),
-             'lineEdit_swing': round(a * t_a ** 2 + v2 * t_e, 2)
+                , 'lineEdit_num_output': round(num_1 + 2), 'lineEdit_delay_time': t_delay,'lineEdit_delay_time_list': t_delay_list_efficient
+                ,'lineEdit_swing': round(a * t_a ** 2 + v2 * t_e, 2)
                 , 'lineEdit_ceramic_width': ceramic_width, 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R, 'lineEdit_accelerate': a,'lineEdit_grind_length':mo})
     else:
         ValueError('mode must be enerage or efficient')
@@ -1081,7 +1089,7 @@ def double_num_calculate(v1,ceramic_width,between,beam_between,R,a,mo,**kwargs):
     result[1,6] = round(a*t_a**2+v2*t_e,2)
     '''
     return params
-# -----------------自定义计算-----------------
+# ------------------自定义计算-----------------
 def self_define_calculate(v1,t2,ceramic_width,between,beam_between,R,a,num,mo,group):
     B=ceramic_width+200-2*R
     distance_period=between*num
@@ -1106,13 +1114,20 @@ def self_define_calculate(v1,t2,ceramic_width,between,beam_between,R,a,num,mo,gr
     v2 = round(a * t_a, 2)
     delay_time=round((beam_between-2*between)/v1,2)
     self_delay_time=round(between/group/v1,2)
+    # 延时时间计算
+    delay_time_self_list = []
+    for i in range(0, round(num/2 * group)):
+        delay_time_self_list.append(round(i * delay_time, 2))
+        if i % (num/2) == 0:
+            delay_time_self_list[i] = delay_time_self_list[i] + self_delay_time
+    # 参数集
     params = {}
     params.update(
                 {'lineEdit_belt_speed': v1, 'lineEdit_beam_swing_speed': v2, 'lineEdit_beam_constant_time': t1, 'lineEdit_stay_time_output': t2
-                ,'lineEdit_num_input':num, 'lineEdit_num_output': num*group, 'lineEdit_delay_time': delay_time,'lineEdit_stay_time_input':t2
-                ,'lineEdit_swing': round(a*t_a**2+v2*t1,2), 'lineEdit_ceramic_width': ceramic_width,'lineEdit_group_count':group
-                , 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R, 'lineEdit_accelerate': a
-                ,'self_delay_time':self_delay_time,'lineEdit_grind_length':mo})
+                ,'lineEdit_num_input':num, 'lineEdit_num_output': num*group, 'lineEdit_delay_time': delay_time, 'lineEdit_delay_time_list': delay_time_self_list
+                ,'lineEdit_stay_time_input':t2,'lineEdit_swing': round(a*t_a**2+v2*t1,2), 'lineEdit_ceramic_width': ceramic_width
+                ,'lineEdit_group_count':group, 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R
+                , 'lineEdit_accelerate': a,'self_delay_time':self_delay_time,'lineEdit_grind_length':mo})
     '''
     result=np.zeros((1,8))
     result[0 , 0] = v1
@@ -1125,7 +1140,7 @@ def self_define_calculate(v1,t2,ceramic_width,between,beam_between,R,a,num,mo,gr
     result[0 , 7] = round(a*t_a**2+v2*t1,2)
     '''
     return params
-# -----------------动画分割-------------------
+# -------------------动画分割-------------------
 def split_gif(input_gif, split_frame, output_gif_1, output_gif_2):
     # 打开输入的 GIF 文件
     with Image.open(input_gif) as img:
