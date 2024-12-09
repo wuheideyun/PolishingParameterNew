@@ -743,10 +743,11 @@ def equal_num_calculate(v1,ceramic_width,between,R,a,mo,**kwargs):
     return params
 # -----------------自定义计算-----------------
 def equal_self_define_calculate(v1,t2,ceramic_width,between,R,a,num,mo):
+    # t2-边部停留时间大小
     B=ceramic_width+200-2*R
     distance_period=between*num
     t_all=round(distance_period/v1,2)
-    # 边部停留时间设定
+    # 摆动总时间大小
     t_a_in=(t_all-2*t2)/2
     # t_a 加速时间
     # t_e 匀速时间

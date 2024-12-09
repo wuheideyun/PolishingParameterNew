@@ -1118,7 +1118,7 @@ def self_define_calculate(v1,t2,ceramic_width,between,beam_between,R,a,num,mo,gr
     delay_time_self_list = []
     for i in range(0, round(num/2 * group)):
         delay_time_self_list.append(round(i * delay_time, 2))
-        if i % (num/2) == 0:
+        if i % (num/2) == 0 and i != 0:
             delay_time_self_list[i] = delay_time_self_list[i] + self_delay_time
     # 参数集
     params = {}

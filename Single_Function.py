@@ -954,7 +954,7 @@ def single_num_calculate(v1,ceramic_width,beam_between,R,a,mo,**kwargs):
     theta = math.atan(v2 / v1)
     between = (2 * R - overlap) / math.sin(theta)
     # 中间计算(边部停留时长为单倍磨头间距)
-    B = (ceramic_width + 120) - 2 * R  # 摆幅（要求两极限位置各伸出80mm）
+    B = (ceramic_width + 200) - 2 * R  # 摆幅（要求两极限位置各伸出80mm）
     t_a = v2 / a  # 加速时间
     t_e = (B - a * t_a ** 2) / v2  # 匀速时间
     t_between = between / v1 * 1  # 边部停留时长
@@ -1027,7 +1027,7 @@ def single_self_define_calculate(v1,ceramic_width,beam_between,R,a,num_input,gro
     group = round(group)
     # 计算单周期时间
     beam_speed_up = 850
-    B=ceramic_width+120-2*R
+    B=ceramic_width+200-2*R
     t_a=round(beam_speed_up/a,2)
     if a*t_a**2>=B:
         t_a=round((B/a)**0.5,2)
@@ -1044,7 +1044,7 @@ def single_self_define_calculate(v1,ceramic_width,beam_between,R,a,num_input,gro
     delay_time_self_list = []
     for i in range(0,num_input*group):
         delay_time_self_list.append(round(i * delay_time, 2))
-        if i % num_input == 0:
+        if i % num_input == 0 and i != 0:
             delay_time_self_list[i] = delay_time_self_list[i]+self_delay_time
     params = {}
     params.update(

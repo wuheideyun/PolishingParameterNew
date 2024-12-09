@@ -45,7 +45,6 @@ class MainWindow_impl(MainWindow):
         self.host_param_equal_frame.content_layout.sig_textChanged.connect(
             partial(line_eidt_textchange, list=self.equal_parameter_manual))
 
-
         # 主机参数-双头摆- self.host_param_double_frame
         host_param_double_line_edit_names = [
             "lineEdit_between", "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length", "lineEdit_work_time"
@@ -778,6 +777,7 @@ class MainWindow_impl(MainWindow):
             self.motion_out_param_frame.content_up_layout.set_line_edit_value(i,self.single_parameter_intelligent[i])
         for i in self.motion_out_param_line_edit_names_2:
             self.motion_out_param_frame.content_down_layout.set_line_edit_value(i,self.single_parameter_intelligent[i])
+        # print(self.single_parameter_intelligent)
 
     # 单头摆-人工寻优-子进程信号接收函数
     def single_manual_thread_signal(self, result):
@@ -801,7 +801,7 @@ class MainWindow_impl(MainWindow):
         self.movie.start()
         button_enable(self.button_list)
         # 参数集更新
-        self.single_parameter_intelligent['lineEdit_coefficient'] = result[0]
+        self.single_parameter_manual['lineEdit_coefficient'] = result[0]
         # 字符转换
         dict_value_to_str(self.single_parameter_manual)
         # 界面输出参数赋值
@@ -832,7 +832,7 @@ class MainWindow_impl(MainWindow):
         self.movie.start()
         button_enable(self.button_list)
         # 参数集更新
-        self.single_parameter_intelligent['lineEdit_coefficient'] = result[0]
+        self.double_parameter_intelligent['lineEdit_coefficient'] = result[0]
         # 字符转换
         dict_value_to_str(self.double_parameter_intelligent)
         # 界面输出参数赋值
@@ -840,7 +840,7 @@ class MainWindow_impl(MainWindow):
             self.motion_out_param_frame.content_up_layout.set_line_edit_value(i,self.double_parameter_intelligent[i])
         for i in self.motion_out_param_line_edit_names_2:
             self.motion_out_param_frame.content_down_layout.set_line_edit_value(i,self.double_parameter_intelligent[i])
-
+        # print(self.double_parameter_intelligent)
     # 双头摆-人工寻优-子进程信号接收函数
     def double_manual_thread_signal(self, result):
         self.timer.stop()
@@ -863,7 +863,7 @@ class MainWindow_impl(MainWindow):
         self.movie.start()
         button_enable(self.button_list)
         # 参数集更新
-        self.single_parameter_intelligent['lineEdit_coefficient'] = result[0]
+        self.double_parameter_manual['lineEdit_coefficient'] = result[0]
         # 字符转换
         dict_value_to_str(self.double_parameter_manual)
         # 界面输出参数赋值
@@ -925,7 +925,7 @@ class MainWindow_impl(MainWindow):
         self.movie.start()
         button_enable(self.button_list)
         # 参数集更新
-        self.equal_parameter_intelligent['lineEdit_coefficient'] = result[0]
+        self.equal_parameter_manual['lineEdit_coefficient'] = result[0]
         # 字符转换
         dict_value_to_str(self.equal_parameter_manual)
         # 界面输出参数赋值
