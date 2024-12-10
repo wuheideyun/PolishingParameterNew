@@ -1114,12 +1114,13 @@ def self_define_calculate(v1,t2,ceramic_width,between,beam_between,R,a,num,mo,gr
     v2 = round(a * t_a, 2)
     delay_time=round((beam_between-2*between)/v1,2)
     self_delay_time=round(between/group/v1,2)
-    # 延时时间计算
+    # 多组磨头叠加延时时间计算
     delay_time_self_list = []
     for i in range(0, round(num/2 * group)):
-        delay_time_self_list.append(round(i * delay_time, 2))
-        if i % (num/2) == 0 and i != 0:
-            delay_time_self_list[i] = delay_time_self_list[i] + self_delay_time
+        current_delay_time = round(i * delay_time, 2)
+        if (i*2 / num) >= 1:
+            current_delay_time += math.floor(i*2 / num) * self_delay_time
+        delay_time_self_list.append(round(current_delay_time, 2))
     # 参数集
     params = {}
     params.update(

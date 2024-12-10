@@ -952,7 +952,7 @@ def single_num_calculate(v1,ceramic_width,beam_between,R,a,mo,**kwargs):
     beam_speed_up = 750
     v2 = beam_speed_up
     theta = math.atan(v2 / v1)
-    between = (2 * R - overlap) / math.sin(theta)
+    between = round((2 * R - overlap) / math.sin(theta),2)
     # 中间计算(边部停留时长为单倍磨头间距)
     B = (ceramic_width + 200) - 2 * R  # 摆幅（要求两极限位置各伸出80mm）
     t_a = v2 / a  # 加速时间
@@ -1042,10 +1042,13 @@ def single_self_define_calculate(v1,ceramic_width,beam_between,R,a,num_input,gro
     self_delay_time=round(between/group/v1,2)
     # 延时时间计算
     delay_time_self_list = []
+    # 多组磨头叠加延时时间计算
     for i in range(0,num_input*group):
-        delay_time_self_list.append(round(i * delay_time, 2))
-        if i % num_input == 0 and i != 0:
-            delay_time_self_list[i] = delay_time_self_list[i]+self_delay_time
+        current_delay_time = round(i*delay_time, 2)
+        if (i / num_input) >=1:
+            current_delay_time += math.floor(i / num_input)*self_delay_time
+        delay_time_self_list.append(round(current_delay_time, 2))
+
     params = {}
     params.update(
             {'lineEdit_belt_speed': v1, 'lineEdit_beam_swing_speed': round(t_a*a,2), 'lineEdit_beam_constant_time': t_e
@@ -1053,20 +1056,10 @@ def single_self_define_calculate(v1,ceramic_width,beam_between,R,a,num_input,gro
                 ,'lineEdit_group_count':group,'lineEdit_delay_time': delay_time,'lineEdit_delay_time_list': delay_time_self_list
                 , 'lineEdit_swing': round(a*t_a**2+t_a*a*t_e,2)
                 , 'lineEdit_ceramic_width': ceramic_width, 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R
-                , 'lineEdit_accelerate': a,'lineEdit_grind_length': mo,'self_delay_time': self_delay_time,'lineEdit_stay_time_input': stay_time}
+                , 'lineEdit_accelerate': a,'lineEdit_grind_length': mo
+                #,'self_delay_time': self_delay_time
+                ,'lineEdit_stay_time_input': stay_time}
     )
-    '''
-    result=np.zeros((1,9))
-    result[0 , 0] = v1
-    result[0 , 1] = round(t_a*a,2)
-    result[0 , 2] = t_e
-    result[0 , 3] = stay_time
-    result[0 , 4] = num*group
-    result[0 , 5] = delay_time
-    result[0 , 6] = self_delay_time
-    result[0 , 7] = round(a*t_a**2+t_a*a*t_e,2)
-    result[0,  8] = between
-    '''
     return params
 # -----------------动画分割-------------------
 def split_gif(input_gif, split_frame, output_gif_1, output_gif_2):

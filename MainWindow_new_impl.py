@@ -432,14 +432,14 @@ class MainWindow_impl(MainWindow):
         a = kwargs.get('lineEdit_accelerate')
         beam_between = kwargs.get('lineEdit_beam_between')
         mo = kwargs.get('lineEdit_grind_length')
-        num = kwargs.get('lineEdit_num_input')
+        num = round(kwargs.get('lineEdit_num_input'))
         R = kwargs.get('lineEdit_diameter')/2
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
         delay_time = kwargs.get('lineEdit_delay_time')
         # 延时时间数组
         delay_time_list = []
         for i in range(0,num):
-            delay_time_list[i].append(i*delay_time)
+            delay_time_list.append(i*delay_time)
         self.single_parameter_manual['lineEdit_delay_time_list'] = delay_time_list
         self.single_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
         params = {
@@ -622,7 +622,7 @@ class MainWindow_impl(MainWindow):
         delay_time = kwargs.get('lineEdit_delay_time')
         # 延时时间数组
         delay_time_list = []
-        for i in range(0, num/2):
+        for i in range(0, round(num/2)):
             delay_time_list.append(i * delay_time)
         self.double_parameter_manual['lineEdit_delay_time_list'] = delay_time_list
         self.double_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
@@ -840,7 +840,7 @@ class MainWindow_impl(MainWindow):
             self.motion_out_param_frame.content_up_layout.set_line_edit_value(i,self.double_parameter_intelligent[i])
         for i in self.motion_out_param_line_edit_names_2:
             self.motion_out_param_frame.content_down_layout.set_line_edit_value(i,self.double_parameter_intelligent[i])
-        # print(self.double_parameter_intelligent)
+        print(self.double_parameter_intelligent)
     # 双头摆-人工寻优-子进程信号接收函数
     def double_manual_thread_signal(self, result):
         self.timer.stop()
