@@ -196,9 +196,12 @@ class MainWindow_impl(MainWindow):
 
     # 按钮点击槽函数(计算)
     def enerage_project_clicked(self):
+        self.solution_selection = 1
+        self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
+
         # 校验输入框
-        if not self.check_input_valid():
-            return
+        # if not self.check_input_valid():
+        #     return
         # 按钮不可用
         button_disable(self.button_list)
         # 字符类型转换
@@ -214,9 +217,12 @@ class MainWindow_impl(MainWindow):
             return
 
     def efficient_project_clicked(self):
+        self.solution_selection = 2
+        self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
+
         # 校验输入框
-        if not self.check_input_valid():
-            return
+        # if not self.check_input_valid():
+        #     return
         # 按钮不可用
         button_disable(self.button_list)
         # 字符类型转换
@@ -245,7 +251,10 @@ class MainWindow_impl(MainWindow):
                 return False
         return True
     def self_define_project_clicked(self):
+        self.solution_selection = 3
         button_disable(self.button_list)
+        self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
+
         # 字符类型转换
         single_parameter_intelligent = dict_value_to_float(self.single_parameter_intelligent)
         double_parameter_intelligent = dict_value_to_float(self.double_parameter_intelligent)
@@ -260,7 +269,10 @@ class MainWindow_impl(MainWindow):
 
     # 按钮点击槽函数(仿真)
     def syn_project(self):
+        self.solution_selection = 4
         button_disable(self.button_list)
+        self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
+
         # 字符类型转换
         single_parameter_manual = dict_value_to_float(self.single_parameter_manual)
         double_parameter_manual = dict_value_to_float(self.double_parameter_manual)
@@ -274,7 +286,10 @@ class MainWindow_impl(MainWindow):
             return
 
     def cross_project(self):
+        self.solution_selection = 5
         button_disable(self.button_list)
+        self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
+
         # 字符类型转换
         single_parameter_manual = dict_value_to_float(self.single_parameter_manual)
         double_parameter_manual = dict_value_to_float(self.double_parameter_manual)
@@ -285,6 +300,9 @@ class MainWindow_impl(MainWindow):
             return
 
     def order_project(self):
+        self.solution_selection = 6
+        self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
+
         button_disable(self.button_list)
         # 字符类型转换
         single_parameter_manual = dict_value_to_float(self.single_parameter_manual)
@@ -750,7 +768,7 @@ class MainWindow_impl(MainWindow):
     # 单头摆-智能计算-子进程信号接收函数
     def single_intelligent_thread_signal(self, result):
         self.timer.stop()
-        self.status_label.setText("计算完毕，请查看计算结果。")
+        self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容
@@ -782,7 +800,7 @@ class MainWindow_impl(MainWindow):
     # 单头摆-人工寻优-子进程信号接收函数
     def single_manual_thread_signal(self, result):
         self.timer.stop()
-        self.status_label.setText("计算完毕，请查看计算结果。")
+        self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容
@@ -813,7 +831,7 @@ class MainWindow_impl(MainWindow):
     # 双头摆-智能计算-子进程信号接收函数
     def double_intelligent_thread_signal(self, result):
         self.timer.stop()
-        self.status_label.setText("计算完毕，请查看计算结果。")
+        self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容
@@ -844,7 +862,7 @@ class MainWindow_impl(MainWindow):
     # 双头摆-人工寻优-子进程信号接收函数
     def double_manual_thread_signal(self, result):
         self.timer.stop()
-        self.status_label.setText("计算完毕，请查看计算结果。")
+        self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容
@@ -875,7 +893,7 @@ class MainWindow_impl(MainWindow):
     # 同步摆-智能计算-子进程信号接收函数
     def equal_intelligent_thread_signal(self, result):
         self.timer.stop()
-        self.status_label.setText("计算完毕，请查看计算结果。")
+        self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容
@@ -906,7 +924,7 @@ class MainWindow_impl(MainWindow):
     # 同步摆-人工寻优-子进程信号接收函数
     def equal_manual_thread_signal(self, result):
         self.timer.stop()
-        self.status_label.setText("计算完毕，请查看计算结果。")
+        self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容

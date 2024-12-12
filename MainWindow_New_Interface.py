@@ -15,6 +15,7 @@ from LoggerHelper import LoggerHelper
 from MotionInputOutputParamCombineWidget import MotionInputOutputParamCombineWidget
 from MotionInputParamWidget import MotionInputParamWidget
 from MotionOutputParamWidget import MotionOutputParamWidget
+from OutputReportQWidget import OutputReportWidget
 from TitleBar import TitleBar
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -36,7 +37,8 @@ class MainWindow(QWidget):
         self.flag = False
         self.logger = LoggerHelper('param_change')
         self.selectedFunction = 1
-
+        # 输出报告界面
+        self.output_report = OutputReportWidget()
         # 创建定时器
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_status)
@@ -53,8 +55,27 @@ class MainWindow(QWidget):
         self.setStyleSheet("color: white;")
         # 设备切换标签    1：单头摆  2：双头摆  3：同步摆
         self.current_device = 1
+        self.device_mapping = {
+            1: "单头摆",
+            2: "双头摆",
+            3: "同步摆"
+        }
         # 模式切换标签    1：智能寻优模式  2：人工寻优模式
         self.current_mode = 1
+        self.mode_mapping = {
+            1: "智能寻优模式",
+            2: "人工寻优模式"
+        }
+        # 方案选择 1：节能方案  2：高品质方案  3: 自定义修正方案  4：同步摆动模式  5：交叉摆动模式  6：顺序摆动模式
+        self.solution_selection = 1
+        self.selection_mapping = {
+            1: "节能方案",
+            2: "高品质方案",
+            3: "自定义修正方案",
+            4: "同步摆动模式",
+            5: "交叉摆动模式",
+            6: "顺序摆动模式"
+        }
         # self.setAttribute(Qt.WA_TranslucentBackground)# 设置窗口背景透明
         self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
 
@@ -163,26 +184,30 @@ class MainWindow(QWidget):
 
         # 区域6 - 轨迹分布
         self.chart_frame1 = QFrame()
-        chart1_layout = QVBoxLayout(self.chart_frame1)
-        self.chart_frame1.setContentsMargins(self.margin_value,5,self.margin_value,self.margin_value)
+        chart1_layout = QHBoxLayout(self.chart_frame1)
+        self.chart_frame1.setContentsMargins(0,0,0,0)
 
-        chart_label1 = QLabel("轨迹分布")
+        chart_label1 = QLabel("轨\n迹\n分\n布")
         chart1_font = QFont("Microsoft YaHei",18)
         chart_label1.setFont(chart1_font)
+        # chart_label1.setStyleSheet("QLabel { writing-mode: vertical-rl; }")
+        chart1_layout.addSpacing(15)
         chart1_layout.addWidget(chart_label1)
-        chart_label1.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
-        self.chart_frame1.setFixedSize(self.middle_frame_width,300)
+        chart_label1.setAlignment(Qt.AlignVCenter)
+        self.chart_frame1.setFixedSize(self.middle_frame_width,420)
         center_layout.addWidget(self.chart_frame1)
 
         # 创建一个QWidget作为图框--轨迹分布
         self.central_widget = QWidget()
         # 设置 QWidget 尺寸大小
-        self.central_widget.setFixedSize(950, 200)  # 最大尺寸为 500x400
+        self.central_widget.setFixedSize(950, 400)  # 最大尺寸为 500x400
         # 设置 QWidget 边框、样式
         self.central_widget.setStyleSheet("""
                                     QWidget {
-                                        border: 2px solid white;
+                                        border: 0px solid white;
                                         border-radius: 10px;
+                                        background-color: transparent;
+
                                     }
                                 """)
         # 设置 QWidget 布局
@@ -194,80 +219,88 @@ class MainWindow(QWidget):
         self.canvas.figure.set_facecolor(deep_blue)  # 设置画布背景颜色为底色
         # 创建拖动条
         scroll_area = QScrollArea(self)
-        # 设置拖动条大小
-        scroll_area.setFixedSize(900, 180)
-        scroll_area.setWidgetResizable(False)  # 强制显示拖动条
+        # 轨迹分布动画框尺寸调整***
+        scroll_area.setFixedSize(900, 380)
+
+        scroll_area.setWidgetResizable(True)  # 强制显示拖动条
         # 给画布设置拖动条
         scroll_area.setWidget(self.canvas)
-        # 自定义滚动条样式
-        scroll_area.verticalScrollBar().setStyleSheet("""
-                    QScrollBar:vertical {
-                        border: 1px solid #999999;
-                        border-radius: 10px;
-                        background: #f0f0f0;
-                        width: 16px;
-                        margin: 16px 0 16px 0;
-                    }
-                    QScrollBar::handle:vertical {
-                        background: #5d99c6;
-                        min-height: 20px;
-                        border-radius: 8px;
-                    }
-                    QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-                        background: none;
-                        height: 0px;
-                    }
-                    QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-                        background: #e0e0e0;
-                    }
-                """)
+        # # 自定义滚动条样式
+        # scroll_area.verticalScrollBar().setStyleSheet("""
+        #             QScrollBar:vertical {
+        #                 border: 1px solid #999999;
+        #                 border-radius: 20px;
+        #                 background: #f0f0f0;
+        #                 width: 16px;
+        #                 margin: 0px 0 0px 0;
+        #             }
+        #             QScrollBar::handle:vertical {
+        #                 background: #5d99c6;
+        #                 min-height: 20px;
+        #                 border-radius: 18px;
+        #             }
+        #             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+        #                 background: none;
+        #                 height: 0px;
+        #             }
+        #             QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+        #                 background: #e0e0e0;
+        #             }
+        #         """)
+        #
+        # scroll_area.horizontalScrollBar().setStyleSheet("""
+        #             QScrollBar:horizontal {
+        #                 border: 1px solid #999999;
+        #                 border-radius: 10px;
+        #                 background: #f0f0f0;
+        #                 height: 16px;
+        #                 margin: 0px 16px 0px 16px;
+        #             }
+        #             QScrollBar::handle:horizontal {
+        #                 background: #5d99c6;
+        #                 min-width: 20px;
+        #                 border-radius: 18px;
+        #             }
+        #             QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+        #                 background: none;
+        #                 width: 0px;
+        #             }
+        #             QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+        #                 background: #e0e0e0;
+        #             }
+        #         """)
+        scroll_area.setStyleSheet("QScrollArea { border-radius: 10px; background-color: white; }")
 
-        scroll_area.horizontalScrollBar().setStyleSheet("""
-                    QScrollBar:horizontal {
-                        border: 1px solid #999999;
-                        border-radius: 10px;
-                        background: #f0f0f0;
-                        height: 16px;
-                        margin: 0px 16px 0px 16px;
-                    }
-                    QScrollBar::handle:horizontal {
-                        background: #5d99c6;
-                        min-width: 20px;
-                        border-radius: 8px;
-                    }
-                    QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
-                        background: none;
-                        width: 0px;
-                    }
-                    QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
-                        background: #e0e0e0;
-                    }
-                """)
         # 将拖动条加入widget中,并设为居中
         layout_widget.addWidget(scroll_area,alignment=Qt.AlignmentFlag.AlignCenter)
         # 将widget加入QFrame中,并设为居中
         chart1_layout.addWidget(self.central_widget,alignment=Qt.AlignmentFlag.AlignCenter)
+        chart1_layout.addStretch()
 
         # 区域7 - 轨迹动画
         self.chart_frame2 = QFrame()
-        self.chart_frame2.setContentsMargins(self.margin_value,5,self.margin_value,self.margin_value)
-        chart_label2 = QLabel("轨迹动画")
+        # self.chart_frame2.setContentsMargins(self.margin_value,5,self.margin_value,self.margin_value)
+        chart_label2 = QLabel("轨\n迹\n动\n画")
         chart2_font = QFont("Microsoft YaHei",18)
         chart_label2.setFont(chart2_font)
-        chart_label2.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
-        chart2_layout = QVBoxLayout(self.chart_frame2)
+        chart_label2.setAlignment(Qt.AlignVCenter)
+        chart2_layout = QHBoxLayout(self.chart_frame2)
+        chart2_layout.addSpacing(15)
         chart2_layout.addWidget(chart_label2)
-        self.chart_frame2.setFixedSize(self.middle_frame_width,300)
+        self.chart_frame2.setFixedSize(self.middle_frame_width,260)
         center_layout.addWidget(self.chart_frame2)
 
         # 创建一个 QLabel ，用来播放轨迹动画
         self.animation_QLabel = QLabel()
-        self.animation_QLabel.setFixedSize(900,220)
+        # 轨迹动画尺寸调整***
+        self.animation_QLabel.setFixedSize(940,235)
         # 设置 QLabel 背景颜色
-        #self.animation_QLabel.setStyleSheet("background-color: white;")  # 设置背景色为 lightgray
+        self.animation_QLabel.setStyleSheet("background-color: white;")  # 设置背景色为 lightgray
+        # self.animation_QLabel.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
         chart2_layout.addWidget(self.animation_QLabel,alignment=Qt.AlignmentFlag.AlignCenter)
+        chart2_layout.addStretch()
 
-        self.animation_QLabel.setAlignment(Qt.AlignCenter)
+        # self.animation_QLabel.setAlignment(Qt.AlignCenter)
 
         # # 初始加载第一个 GIF
         # self.movie = QMovie('donghua.gif')  # 替换为实际 GIF 文件路径
@@ -275,66 +308,66 @@ class MainWindow(QWidget):
 
         # 区域8 - 计算模式按钮
         self.calc_button_frame = QFrame()
-        self.calc_button_frame.setContentsMargins(self.margin_value,self.margin_value,self.margin_value,self.margin_value)
+        self.calc_button_frame.setContentsMargins(5,5,5,5)
         calc_button_layout = QVBoxLayout(self.calc_button_frame)
-        self.calc_button_frame.setFixedSize(self.middle_frame_width,230)
+        self.calc_button_frame.setFixedSize(self.middle_frame_width,160)
 
         self.first_widget = QWidget()
         first_layout = QHBoxLayout(self.first_widget)
-        self.intelligent_search_mode = ImageChangeButton("智能寻优模式",":MiddleFrame",":MiddleFrameClicked",236,56)
+        self.intelligent_search_mode = ImageChangeButton("智能寻优模式",":MiddleFrame",":MiddleFrameClicked",220,50)
         self.intelligent_search_mode.clicked.connect(self.switch_search_motion_param_intelligence_clicked)
-        self.artificial_search_mode = ImageChangeButton("人工寻优模式",":MiddleFrame",":MiddleFrameClicked",236,56)
+        self.artificial_search_mode = ImageChangeButton("人工寻优模式",":MiddleFrame",":MiddleFrameClicked",220,50)
         self.artificial_search_mode.clicked.connect(self.switch_search_motion_param_manual_clicked)
         self.save_button = ImageChangeButton("参数保存",":SmallFrame",":SmallFrameClicked",114,37,True)
-        first_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        first_layout.addSpacerItem(QSpacerItem(115,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
         first_layout.addWidget(QLabel("模式\n选择", styleSheet="font-size: 20px;"))
-        first_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        first_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         first_layout.addWidget(self.intelligent_search_mode)
-        first_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        first_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         first_layout.addWidget(self.artificial_search_mode)
-        first_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
-        first_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        first_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        first_layout.addSpacerItem(QSpacerItem(50,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         first_layout.addWidget(self.save_button)
-        first_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
-        first_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        first_layout.addSpacerItem(QSpacerItem(61,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        first_layout.addSpacerItem(QSpacerItem(61,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
 
         self.second_widget = QWidget()
         second_layout = QHBoxLayout(self.second_widget)
-        self.button_energy_project = ImageChangeButton("节能方案", ":GreenFrame", ":GreenFrameClicked",    236,56,True)
-        self.button_efficient_project = ImageChangeButton("高品质方案", ":GreenFrame", ":GreenFrameClicked",236,56,True)
-        self.button_selfdefine_project = ImageChangeButton("自定义修正方案", ":GreenFrame", ":GreenFrameClicked",236,56,True)
-        second_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        self.button_energy_project = ImageChangeButton("节能方案", ":GreenFrame", ":GreenFrameClicked",    220,50,True)
+        self.button_efficient_project = ImageChangeButton("高品质方案", ":GreenFrame", ":GreenFrameClicked",220,50,True)
+        self.button_selfdefine_project = ImageChangeButton("自定义修正方案", ":GreenFrame", ":GreenFrameClicked",220,50,True)
+        second_layout.addSpacerItem(QSpacerItem(55,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
         second_layout.addWidget(QLabel("方案\n选择", styleSheet="font-size: 20px;"))
-        second_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        second_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         second_layout.addWidget(self.button_energy_project)
-        second_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        second_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         second_layout.addWidget(self.button_efficient_project)
-        second_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        second_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         second_layout.addWidget(self.button_selfdefine_project)
-        second_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        second_layout.addSpacerItem(QSpacerItem(55,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
 
         self.third_widget = QWidget()
         third_layout = QHBoxLayout(self.third_widget)
-        self.button_synchronization_mode = ImageChangeButton("同步摆动模式", ":GreenFrame", ":GreenFrameClicked", 236, 56,True)
-        self.button_cross_mode = ImageChangeButton("交叉摆动模式", ":GreenFrame", ":GreenFrameClicked", 236, 56,True)
+        self.button_synchronization_mode = ImageChangeButton("同步摆动模式", ":GreenFrame", ":GreenFrameClicked", 220,50,True)
+        self.button_cross_mode = ImageChangeButton("交叉摆动模式", ":GreenFrame", ":GreenFrameClicked", 220,50,True)
         self.placeholder1 = QWidget()
-        self.placeholder1.setFixedSize(236, 56)
-        self.button_order_mode = ImageChangeButton("顺序摆动模式", ":GreenFrame", ":GreenFrameClicked", 236, 56,True)
+        self.placeholder1.setFixedSize(236, 50)
+        self.button_order_mode = ImageChangeButton("顺序摆动模式", ":GreenFrame", ":GreenFrameClicked", 220,50,True)
         self.placeholder2 = QWidget()
-        self.placeholder2.setFixedSize(236, 56)
-        third_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        self.placeholder2.setFixedSize(236, 50)
+        third_layout.addSpacerItem(QSpacerItem(55,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
         third_layout.addWidget(QLabel("方案\n选择", styleSheet="font-size: 20px;"),alignment=Qt.AlignmentFlag.AlignLeft)
-        third_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        third_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_synchronization_mode,alignment=Qt.AlignmentFlag.AlignLeft)
-        third_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        third_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_cross_mode)
         third_layout.addWidget(self.placeholder1)
         self.placeholder1.setVisible(False)
-        third_layout.addSpacerItem(QSpacerItem(20,56,QSizePolicy.Fixed,QSizePolicy.Expanding))
+        third_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_order_mode)
         third_layout.addWidget(self.placeholder2)
         self.placeholder2.setVisible(False)
-        third_layout.addSpacerItem(QSpacerItem(61,56,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        third_layout.addSpacerItem(QSpacerItem(55,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
 
         calc_button_layout.addWidget(self.first_widget)
         calc_button_layout.addWidget(self.second_widget)
@@ -383,27 +416,31 @@ class MainWindow(QWidget):
 
         # 创建状态栏标签
         self.status_label = QLabel("")
-        self.status_label.setFixedSize(300, 30)
+        self.status_label.setFixedSize(699, 30)
+        self.status_label.setStyleSheet("QLabel { text - align: center; }")
         # self.status_label.setStyleSheet("background: transparent;")
         self.status_label.setAttribute(Qt.WA_TranslucentBackground)
-        self.status_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.status_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         status_font = QFont("Microsoft YaHei", 16)  # "Microsoft YaHei" 为字体类型，18 为字体大小
         self.status_label.setFont(status_font)
 
         # 在标签前添加拉伸
-        bottom_layout.addSpacerItem(QSpacerItem(830, 60, QSizePolicy.Fixed, QSizePolicy.Fixed))
+        bottom_layout.addSpacerItem(QSpacerItem(284, 60, QSizePolicy.Fixed, QSizePolicy.Fixed))
+        bottom_layout.addSpacerItem(QSpacerItem(1, 60, QSizePolicy.Expanding, QSizePolicy.Fixed))
 
         # 添加status_label，但不指定对齐方式
         bottom_layout.addWidget(self.status_label, alignment=Qt.AlignRight | Qt.AlignBottom)
 
         # 在标签后添加拉伸使其居中
-        bottom_layout.addStretch()
+        # bottom_layout.addStretch()
+        # 在标签前添加拉伸
+        bottom_layout.addSpacerItem(QSpacerItem(50, 60, QSizePolicy.Expanding, QSizePolicy.Fixed))
 
         # 底部 - 输出报告按钮
         report_button = ImageChangeButton("输出报告", ":SmallFrame", ":SmallFrameClicked", 114, 37, True)
         # 添加向右对齐的report_按钮
         bottom_layout.addWidget(report_button, alignment=Qt.AlignRight | Qt.AlignBottom)
-
+        report_button.clicked.connect(self.open_new_window)
         # 如果需要，在按钮后添加一个间隔符
         bottom_layout.addSpacerItem(QSpacerItem(170, 60, QSizePolicy.Fixed, QSizePolicy.Fixed))
 
@@ -416,7 +453,6 @@ class MainWindow(QWidget):
         # self.setInitValues()
 
         # 定义状态文本列表
-        self.status_texts = ["正在进行计算，请稍后", "正在进行计算，请稍后.", "正在进行计算，请稍后..", "正在进行计算，请稍后..."]
         self.current_text_index = 0
 
         self.button_energy_project.clicked.connect(self.start_calculation)
@@ -445,6 +481,8 @@ class MainWindow(QWidget):
         self.setLayout(main_layout)
         self.third_widget.setVisible(False)
         self.showMaximized()
+    def get_current_device_mode_solution(self):
+        return ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
 
     # 连接信号到槽函数
     def on_host_param_single_changed(self, text):
@@ -464,6 +502,8 @@ class MainWindow(QWidget):
         self.motion_input_intelligence_changed_flag = False
     def on_motion_param_manual_saved(self):
         self.motion_input_manual_changed_flag = False
+    def open_new_window(self):
+        self.output_report.show()
 
     def setInitValues(self):
         self.motion_in_param_frame.content_layout.set_line_edit_value('lineEdit_accelerate','650')
@@ -716,6 +756,8 @@ class MainWindow(QWidget):
         self.motion_in_param_frame.setVisible(visible)
 
     def update_status(self):
+        # self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
+
         self.status_label.setText(self.status_texts[self.current_text_index])
         self.current_text_index = (self.current_text_index + 1) % len(self.status_texts)
     def start_calculation(self):
