@@ -1,3 +1,9 @@
+import os
+import sqlite3
+
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QMessageBox
+
 from MainWindow_New_Interface import MainWindow
 from PySide6.QtGui import QMovie
 from decorator import append
@@ -20,6 +26,8 @@ from Equal_Function import EqualWorkerThread,equal_num_calculate,equal_self_defi
 class MainWindow_impl(MainWindow):
     def __init__(self):
         super().__init__()
+        # 获取当前目录下的database.db文件路径
+        self.db_path = os.path.join(os.getcwd(), "database.db")
         # 单头摆-参数汇总
         self.single_parameter_intelligent = {}  # 字典-用于储存输入参数
         self.single_parameter_manual = {}  # 字典-用于储存输出参数（包括输入参数）
@@ -182,20 +190,164 @@ class MainWindow_impl(MainWindow):
                 i['lineEdit_belt_speed'] = belt_speed_calculate(i)
 
         # -------------------------按钮逻辑部分---------------------
+        # 节能方案
         self.button_energy_project.clicked.connect(self.enerage_project_clicked)
+        # 高品质方案
         self.button_efficient_project.clicked.connect(self.efficient_project_clicked)
+        # 自定义修正方案
         self.button_selfdefine_project.clicked.connect(self.self_define_project_clicked)
 
+        # 同步摆动模式
         self.button_synchronization_mode.clicked.connect(self.syn_project)
+        # 交叉摆动模式
         self.button_cross_mode.clicked.connect(self.cross_project)
+        # 顺序摆动模式
         self.button_order_mode.clicked.connect(self.order_project)
+
+
+        self.save_button.clicked.connect(self.on_save_btn)
         # 界面所有编辑框收集
         # self.lineEdit_beam_between.setText(600)
         self.button_list=[self.button_energy_project,self.button_efficient_project,self.button_selfdefine_project
                      ,self.button_synchronization_mode,self.button_cross_mode,self.button_order_mode]
 
+    def concatenate_values(self,params):
+        result = []
+        for value in params.values():
+            if isinstance(value, list):
+                # 将列表中的元素转换为字符串并用逗号连接
+                list_str = ",".join(str(item) for item in value)
+                result.append(list_str)
+            else:
+                # 直接转换为字符串
+                result.append(str(value))
+        # 用逗号连接所有处理后的值
+        concatenated_string = ",".join(result)
+        return concatenated_string
+    def on_save_btn(self):
+        if not self.ifcalcflag:
+            nodata_box = QMessageBox()
+            nodata_box.setWindowTitle("警告")
+            nodata_box.setText("请先进行方案选择操作，计算出【运动输出参数】后再进行保存参数操作！")
+            nodata_box.setStandardButtons(QMessageBox.Ok)
+
+            # 设置背景颜色为蓝色，文字颜色为白色
+            nodata_box.setStyleSheet("""
+                                        QMessageBox {
+                                            background-color: rgb(31, 55, 96);
+                                        }
+                                        QMessageBox QLabel {
+                                            color: white;
+                                            font-family: "Microsoft YaHei"; /* 字体样式 */
+                                            font-size: 18px; /* 字体大小 */
+                                        }
+                                        QMessageBox QWidget#qt_msgbox_label {
+                                            font-family: "Microsoft YaHei"; /* 标题字体样式 */
+                                            font-size: 18px; /* 标题字体大小 */
+                                            color: white; /* 标题颜色 */
+                                        }
+                                        QMessageBox QPushButton {
+                                            background-color: #444;
+                                            color: white;
+                                            border: 1px solid #555;
+                                            padding: 5px 10px;
+                                        }
+                                        QMessageBox QPushButton:hover {
+                                            background-color: #555;
+                                        }
+                                    """)
+
+            # 将删除成功对话框显示在列表界面的水平和垂直居中位置
+            nodata_box.setWindowModality(Qt.ApplicationModal)
+            nodata_box.move(self.mapToGlobal(self.rect().center()))
+
+            nodata_box.exec()
+            # QMessageBox.warning(self, "警告", "请先选择要删除的行！")
+            return
+        params = {}
+        swing_mode = ''
+        # 判断当前设备
+        if self.current_device == 1:
+            params['device'] = 'single'
+            if self.current_mode == 1:
+                params = dict_value_to_float(self.single_parameter_intelligent)
+                swing_mode = '顺序摆'
+                params['mode'] = '6'
+            else:
+                params = dict_value_to_float(self.single_parameter_manual)
+                if self.solution_selection == 4:
+                    swing_mode = '同步摆'
+                    params['mode'] = '4'
+                elif self.solution_selection == 5:
+                    swing_mode = '交叉摆'
+                    params['mode'] = '5'
+                elif self.solution_selection == 6:
+                    swing_mode = '顺序摆'
+                    params['mode'] = '6'
+
+        elif self.current_device == 2:
+            params['device'] = 'double'
+            if self.current_mode == 1:
+                params = dict_value_to_float(self.double_parameter_intelligent)
+                swing_mode = '顺序摆'
+                params['mode'] = '6'
+            else:
+                params = dict_value_to_float(self.double_parameter_manual)
+                if self.solution_selection == 4:
+                    swing_mode = '同步摆'
+                    params['mode'] = '4'
+                elif self.solution_selection == 5:
+                    swing_mode = '交叉摆'
+                    params['mode'] = '5'
+                elif self.solution_selection == 6:
+                    swing_mode = '顺序摆'
+                    params['mode'] = '6'
+        elif self.current_device == 3:
+            params['device'] = 'equal'
+            if self.current_mode == 1:
+                params = dict_value_to_float(self.equal_parameter_intelligent)
+                swing_mode = '同步摆'
+                params['mode'] = '4'
+            else:
+                params = dict_value_to_float(self.equal_parameter_manual)
+                if self.solution_selection == 4:
+                    swing_mode = '同步摆'
+                    params['mode'] = '4'
+                elif self.solution_selection == 5:
+                    swing_mode = '交叉摆'
+                    params['mode'] = '5'
+                elif self.solution_selection == 6:
+                    swing_mode = '顺序摆'
+                    params['mode'] = '6'
+        # 判断摆动模式
+        if self.current_mode == 2:
+            current_mode = '人工寻优'
+        elif self.current_mode == 1:
+            current_mode = '智能寻优'
+
+        # params['mode'] = self.solution_selection
+
+        values = self.concatenate_values(params)
+        try:
+            # 连接到SQLite数据库
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                data = [
+                    (params['lineEdit_production_volume'], params['lineEdit_num_input'], current_mode,values, swing_mode)
+                ]
+                cursor.executemany(
+                    'INSERT INTO param (production, num, mode, motion_param, swing_mode) VALUES (?,?,?,?,?)',
+                    data)
+                print("Data inserted successfully.")
+                self.status_label.setText('                  参数已保存至数据库！')
+        except sqlite3.Error as e:
+            print(f"Error inserting data: {e}")
+
+
+
     # 按钮点击槽函数(计算)
     def enerage_project_clicked(self):
+        self.ifcalcflag = True
         self.solution_selection = 1
         self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
 
@@ -209,14 +361,25 @@ class MainWindow_impl(MainWindow):
         double_parameter_intelligent = dict_value_to_float(self.double_parameter_intelligent)
         equal_parameter_intelligent = dict_value_to_float(self.equal_parameter_intelligent)
         if self.current_device == 1:     # 单头摆
-            self.single_enerage_project(animation_name='animation',**single_parameter_intelligent)
+            self.single_enerage_project(animation_name=self.MatchAnimationName(single_parameter_intelligent,11,"SingleEnergyProject"),**single_parameter_intelligent)
         elif self.current_device == 2:   # 双头摆
-            self.double_enerage_project(animation_name='animation',**double_parameter_intelligent)
+            self.double_enerage_project(animation_name=self.MatchAnimationName(double_parameter_intelligent,12,"DoubleEnergyProject"),**double_parameter_intelligent)
         elif self.current_device == 3:   # 同步摆
-            self.equal_enerage_project(animation_name='animation',**equal_parameter_intelligent)
+            self.equal_enerage_project(animation_name=self.MatchAnimationName(equal_parameter_intelligent,11,"EqualEnergyProject"),**equal_parameter_intelligent)
             return
 
+    def MatchAnimationName(self,data, count, name):
+        # 获取前count个键值对的值
+        values = list(data.values())[:count]
+
+        # 将名字放在首位
+        result = [name] + values
+
+        # 用"_"拼接
+        return "_".join(map(str, result))
+
     def efficient_project_clicked(self):
+        self.ifcalcflag = True
         self.solution_selection = 2
         self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
 
@@ -230,11 +393,11 @@ class MainWindow_impl(MainWindow):
         double_parameter_intelligent = dict_value_to_float(self.double_parameter_intelligent)
         equal_parameter_intelligent = dict_value_to_float(self.equal_parameter_intelligent)
         if self.current_device == 1:
-            self.single_efficient_project(animation_name='animation',**single_parameter_intelligent)
+            self.single_efficient_project(animation_name=self.MatchAnimationName(single_parameter_intelligent,11,"SingleEfficientProject"),**single_parameter_intelligent)
         elif self.current_device == 2:
-            self.double_efficient_project(animation_name='animation',**double_parameter_intelligent)
+            self.double_efficient_project(animation_name=self.MatchAnimationName(double_parameter_intelligent,12,"DoubleEfficientProject"),**double_parameter_intelligent)
         elif self.current_device == 3:
-            self.equal_efficient_project(animation_name='animation',**equal_parameter_intelligent)
+            self.equal_efficient_project(animation_name=self.MatchAnimationName(equal_parameter_intelligent,11,"EqualEfficientProject"),**equal_parameter_intelligent)
             return
 
     def check_input_valid(self):
@@ -251,6 +414,7 @@ class MainWindow_impl(MainWindow):
                 return False
         return True
     def self_define_project_clicked(self):
+        self.ifcalcflag = True
         self.solution_selection = 3
         button_disable(self.button_list)
         self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
@@ -260,16 +424,17 @@ class MainWindow_impl(MainWindow):
         double_parameter_intelligent = dict_value_to_float(self.double_parameter_intelligent)
         equal_parameter_intelligent = dict_value_to_float(self.equal_parameter_intelligent)
         if self.current_device == 1:
-            self.single_self_project(animation_name='animation',**single_parameter_intelligent)
+            self.single_self_project(animation_name=self.MatchAnimationName(single_parameter_intelligent,11,"SingleSelfProject"),**single_parameter_intelligent)
         elif self.current_device == 2:
-            self.double_self_project(animation_name='animation',**double_parameter_intelligent)
+            self.double_self_project(animation_name=self.MatchAnimationName(double_parameter_intelligent,12,"DoubleSelfProject"),**double_parameter_intelligent)
         elif self.current_device == 3:
-            self.equal_self_project(animation_name='animation',**equal_parameter_intelligent)
+            self.equal_self_project(animation_name=self.MatchAnimationName(equal_parameter_intelligent,11,"EqualSelfProject"),**equal_parameter_intelligent)
             return
 
     # 按钮点击槽函数(仿真)
     def syn_project(self):
         self.solution_selection = 4
+        self.ifcalcflag = True
         button_disable(self.button_list)
         self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
 
@@ -278,14 +443,15 @@ class MainWindow_impl(MainWindow):
         double_parameter_manual = dict_value_to_float(self.double_parameter_manual)
         equal_parameter_manual = dict_value_to_float(self.equal_parameter_manual)
         if self.current_device == 1:
-            self.single_synchronization_project(animation_name='animation',**single_parameter_manual)
+            self.single_synchronization_project(animation_name=self.MatchAnimationName(single_parameter_manual,11,"SingleSynchronizationProject"),**single_parameter_manual)
         elif self.current_device == 2:
-            self.double_synchronization_project(animation_name='animation',**double_parameter_manual)
+            self.double_synchronization_project(animation_name=self.MatchAnimationName(double_parameter_manual,12,"DoubleSynchronizationProject"),**double_parameter_manual)
         elif self.current_device == 3:
-            self.equal_synchronization_project(animation_name='animation',**equal_parameter_manual)
+            self.equal_synchronization_project(animation_name=self.MatchAnimationName(equal_parameter_manual,11,"EqualSynchronizationProject"),**equal_parameter_manual)
             return
 
     def cross_project(self):
+        self.ifcalcflag = True
         self.solution_selection = 5
         button_disable(self.button_list)
         self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
@@ -294,12 +460,13 @@ class MainWindow_impl(MainWindow):
         single_parameter_manual = dict_value_to_float(self.single_parameter_manual)
         double_parameter_manual = dict_value_to_float(self.double_parameter_manual)
         if self.current_device == 1:
-            self.single_cross_project(animation_name='animation',**single_parameter_manual)
+            self.single_cross_project(animation_name=self.MatchAnimationName(single_parameter_manual,11,"SingleCrossProject"),**single_parameter_manual)
         elif self.current_device == 2:
-            self.double_cross_project(animation_name='animation',**double_parameter_manual)
+            self.double_cross_project(animation_name=self.MatchAnimationName(double_parameter_manual,11,"DoubleCrossProject"),**double_parameter_manual)
             return
 
     def order_project(self):
+        self.ifcalcflag = True
         self.solution_selection = 6
         self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
 
@@ -308,9 +475,9 @@ class MainWindow_impl(MainWindow):
         single_parameter_manual = dict_value_to_float(self.single_parameter_manual)
         double_parameter_manual = dict_value_to_float(self.double_parameter_manual)
         if self.current_device == 1:
-            self.single_order_project(animation_name='animation',**single_parameter_manual)
+            self.single_order_project(animation_name=self.MatchAnimationName(single_parameter_manual,11,"SingleOrderProject"),**single_parameter_manual)
         elif self.current_device == 2:
-            self.double_order_project(animation_name='animation',**double_parameter_manual)
+            self.double_order_project(animation_name=self.MatchAnimationName(double_parameter_manual,11,"SingleOrderProject"),**double_parameter_manual)
             return
 
     # -------------------------单头摆-智能计算逻辑函数---------------------------------

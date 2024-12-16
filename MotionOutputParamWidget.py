@@ -40,7 +40,7 @@ class MotionOutputParamWidget(QWidget):
         # 创建自定义的网格布局
         self.content_up_layout = JustifiedGridLayout(labels, line_edit_names,line_edit_names2 = line_edit_names)
         self.main_layout.addLayout(self.content_up_layout)
-
+        self.content_up_layout.set_line_edit_editable(line_edit_names,True)
         param_label = QLabel("产品质量参数")
         param_label.setFixedHeight(50)
         # 设置字体大小和字体类型
@@ -60,7 +60,7 @@ class MotionOutputParamWidget(QWidget):
         # 创建自定义的网格布局
         self.content_down_layout = JustifiedGridLayout(labels, line_edit_names)
         self.main_layout.addLayout(self.content_down_layout)
-
+        self.content_down_layout.set_line_edit_editable(line_edit_names,True)
         # # 添加保存按钮
         # self.save_button = ImageChangeButton("参数保存", ":SmallFrame", ":SmallFrameClicked", 114, 37,True)
         # self.save_button.clicked.connect(self.saveParameters)

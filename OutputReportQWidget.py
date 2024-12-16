@@ -6,7 +6,9 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QColor, QFont
 from PySide6.QtCore import Qt
+from matplotlib import pyplot as plt
 
+from Comparison_project import ComparisonWorkerThread, dict_value_to_float
 from ImageChangeButton import ImageChangeButton
 
 
@@ -82,7 +84,7 @@ class OutputReportWidget(QWidget):
         self.table_widget = QTableWidget(self)
         self.table_widget.setColumnCount(8)  # 增加一列用于显示序号
         self.table_widget.setHorizontalHeaderLabels(
-            ["序号", "产量", "同粒度磨头数", "模式", "运动参数", "摆动模式", "操作", "操作"]
+            ["序号", "产量", "同粒度磨头数", "模式", "运动参数", "方案选择", "操作", "操作"]
         )
         # 隐藏序号列
         self.table_widget.setColumnHidden(0, True)
@@ -93,8 +95,8 @@ class OutputReportWidget(QWidget):
         self.table_widget.setColumnWidth(1, 130)  # 固定第一列宽度为150
         self.table_widget.setColumnWidth(2, 150)  # 固定第一列宽度为150
         self.table_widget.setColumnWidth(3, 100)  # 固定第一列宽度为150
-        self.table_widget.setColumnWidth(4, 602)  # 固定第一列宽度为150
-        self.table_widget.setColumnWidth(7, 100)  # 固定第一列宽度为150
+        self.table_widget.setColumnWidth(4, 582)  # 固定第一列宽度为150
+        self.table_widget.setColumnWidth(7, 80)  # 固定第一列宽度为150
 
         # 设置表格单元格内容居中
         self.table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
@@ -138,16 +140,16 @@ class OutputReportWidget(QWidget):
         button2_layout = QHBoxLayout()
         # compare_button = QPushButton("方案对比", self)
         # compare_button = ImageChangeButton("方案对比", ":SmallFrame", ":SmallFrameClicked", 114, 37,True)
-        compare_button = ImageChangeButton("方案对比",":MiddleFrame",":MiddleFrameClicked",236,56,True)
-
-        compare_button.setStyleSheet("background-color: blue; color: white;")
+        self.compare_button = ImageChangeButton("方案对比",":MiddleFrame",":MiddleFrameClicked",236,56,True)
+        self.compare_button.clicked.connect(self.on_compare_btn)
+        self.compare_button.setStyleSheet("background-color: blue; color: white;")
         # transfer_button = QPushButton("数据传输", self)
         # transfer_button = ImageChangeButton("数据传输", ":SmallFrame", ":SmallFrameClicked", 114, 37,True)
         transfer_button = ImageChangeButton("数据传输",":MiddleFrame",":MiddleFrameClicked",236,56,True)
 
         transfer_button.setStyleSheet("background-color: green; color: white;")
         button2_layout.addStretch()
-        button2_layout.addWidget(compare_button)
+        button2_layout.addWidget(self.compare_button)
         button2_layout.addSpacing(30)
         button2_layout.addWidget(transfer_button)
         button2_layout.addSpacing(30)
@@ -155,7 +157,59 @@ class OutputReportWidget(QWidget):
 
         # 设置布局
         self.setLayout(layout)
-        self.setContentsMargins(20, 20, 20, 20)
+        self.setContentsMargins(40, 40, 40, 40)
+
+        # 输入量（字典类型）
+        a = {'lineEdit_beam_between': '650.0', 'lineEdit_diameter': '540.0', 'lineEdit_grind_length': '160.0',
+             'lineEdit_work_time': '22.0', 'lineEdit_production_volume': '30000.0', 'lineEdit_ceramic_width': '900.0',
+             'lineEdit_accelerate': '650.0', 'lineEdit_overlap': '10.0', 'lineEdit_num_input': '4.0',
+             'lineEdit_group_count': '1.0', 'lineEdit_stay_time_input': '0.8',              'lineEdit_belt_speed': '420.88',
+             'lineEdit_beam_swing_speed': '289.2', 'lineEdit_beam_constant_time': '1.21',
+             'lineEdit_stay_time_output': '1.4',
+             'lineEdit_swing': '478.6', 'lineEdit_num_output': '5', 'lineEdit_coefficient': '0.3864',
+             'lineEdit_delay_time': '0.14', 'lineEdit_delay_time_list': [0.0, 0.14, 0.28, 0.42, 0.56],
+             'lineEdit_between': '590.5492918897945', 'R': '270.0'}
+        b = {'lineEdit_beam_between': '600.0', 'lineEdit_diameter': '540.0', 'lineEdit_grind_length': '160.0',
+             'lineEdit_work_time': '22.0', 'lineEdit_production_volume': '25000.0', 'lineEdit_ceramic_width': '900.0',
+             'lineEdit_accelerate': '650.0', 'lineEdit_overlap': '10.0', 'lineEdit_num_input': '4',
+             'lineEdit_group_count': '1', 'lineEdit_stay_time_input': '0.8', 'lineEdit_belt_speed': '350.73',
+             'lineEdit_beam_swing_speed': '559.0', 'lineEdit_beam_constant_time': '0',
+             'lineEdit_stay_time_output': '0.8',
+             'lineEdit_swing': '480.74', 'lineEdit_num_output': '4', 'lineEdit_coefficient': '0.3874',
+             'lineEdit_delay_time': '0.45',
+             'lineEdit_delay_time_list': [1.26, 0.45, 0.9, 1.35], 'lineEdit_between': '441.92', 'R': '270.0',
+             'self_delay_time': '1.26'}
+        c = {'lineEdit_between': '600.0', 'lineEdit_beam_between': '1906.0', 'lineEdit_diameter': '540.0',
+             'lineEdit_grind_length': '150.0', 'lineEdit_work_time': '22.0', 'lineEdit_production_volume': '25000.0',
+             'lineEdit_ceramic_width': '900.0', 'lineEdit_accelerate': '650.0', 'lineEdit_overlap': '10.0',
+             'lineEdit_num_input': '4.0', 'lineEdit_group_count': '1.0', 'lineEdit_stay_time_input': '0.8',
+             'lineEdit_belt_speed': '350.73', 'lineEdit_beam_swing_speed': '250.62',
+             'lineEdit_beam_constant_time': '1.85',
+             'lineEdit_stay_time_output': '0.8', 'lineEdit_swing': '560.28', 'lineEdit_num_output': '4.0',
+             'lineEdit_coefficient': '', 'lineEdit_delay_time': '2.01', 'lineEdit_delay_time_list': [0.0, 2.01],
+             'R': '270.0', 'self_delay_time': '1.71'}
+        a = dict_value_to_float(a)
+        b = dict_value_to_float(b)
+        c = dict_value_to_float(c)
+        a['device'] = 'single'
+        a['mode'] = 'order'
+        b['device'] = 'single'
+        b['mode'] = 'self_order'
+        c['device'] = 'double'
+        c['mode'] = 'self_order'
+        fig = plt.figure(figsize=(16, 8), dpi=100)
+        fig.suptitle("方案对比")
+
+        self.worker_thread = ComparisonWorkerThread(fig, a, b, c)
+        self.worker_thread.result_signal.connect(self.update_progress)
+
+    def on_compare_btn(self):
+        self.compare_button.setEnabled(False)  # 禁用按钮，防止重复点击
+        self.worker_thread.start()
+    def update_progress(self, value):
+        self.compare_button.setEnabled(True)  # 禁用按钮，防止重复点击
+        print(value)
+        plt.show()
 
     def load_data_from_database(self):
         # 连接数据库

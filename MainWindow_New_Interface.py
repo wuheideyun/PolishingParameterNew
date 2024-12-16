@@ -23,7 +23,7 @@ from PySide6.QtGui import QColor
 
 class MplCanvas(FigureCanvas):
     def __init__(self, parent=None, width=8, height=4, dpi=100):
-        self.fig = Figure(figsize=(width, height), dpi=dpi)
+        self.fig = Figure(figsize=(width, height))
         deep_blue = (31 / 255, 55 / 255, 96 / 255)
         self.fig.patch.set_facecolor(deep_blue)
         super().__init__(self.fig)
@@ -32,6 +32,9 @@ class MplCanvas(FigureCanvas):
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+
+        # 是否计算标识
+        self.ifcalcflag = False
 
         self.margin_value = 15
         self.flag = False
@@ -75,6 +78,14 @@ class MainWindow(QWidget):
             4: "同步摆动模式",
             5: "交叉摆动模式",
             6: "顺序摆动模式"
+        }
+        self.swing_mode_mapping = {
+            1: "顺序摆",
+            2: "顺序摆",
+            3: "顺序摆",
+            4: "同步摆",
+            5: "交叉摆",
+            6: "顺序摆"
         }
         # self.setAttribute(Qt.WA_TranslucentBackground)# 设置窗口背景透明
         self.settings = QSettings("config.ini", QSettings.IniFormat)  # 使用配置文件
@@ -483,6 +494,8 @@ class MainWindow(QWidget):
         self.showMaximized()
     def get_current_device_mode_solution(self):
         return ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
+
+
 
     # 连接信号到槽函数
     def on_host_param_single_changed(self, text):

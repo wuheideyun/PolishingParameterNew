@@ -77,7 +77,7 @@ class MotionInputOutputParamCombineWidget(QWidget):
         # 创建自定义的网格布局
         self.content_middle_layout = JustifiedGridLayout(labels, line_edit_names,6,line_edit_names2)
         main_layout.addLayout(self.content_middle_layout)
-
+        self.content_middle_layout.set_line_edit_editable(line_edit_names,True)
         param_bottom_label = QLabel("产品质量参数")
         param_bottom_label.setFixedHeight(30)
         # 设置字体大小和字体类型
@@ -99,6 +99,7 @@ class MotionInputOutputParamCombineWidget(QWidget):
         # 创建自定义的网格布局
         self.content_bottom_layout = JustifiedGridLayout(labels, line_edit_names)
         main_layout.addLayout(self.content_bottom_layout)
+        self.content_bottom_layout.set_line_edit_editable(line_edit_names, True)
         main_layout.addSpacerItem(QSpacerItem(0, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
         self.loadParameter()  # 在初始化时加载设置
         # 设置主布局

@@ -79,6 +79,12 @@ class JustifiedGridLayout(QGridLayout):
             if line_edit.objectName() == name:
                 line_edit.setText(value)
 
+    # 设置编辑框是否可编辑
+    def set_line_edit_editable(self, names, flag):
+        for name in names:
+            for line_edit in self.line_edits:
+                if line_edit.objectName() == name:
+                    line_edit.setReadOnly(flag)
     def on_text_changed(self, name):
         """当监听的 QLineEdit 的值发生变化时，触发外部接口"""
         # self.textChanged.emit(name, text)
