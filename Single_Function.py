@@ -80,116 +80,116 @@ class SingleWorkerThread(QThread):
                                   ,delay_time=self.delay_time, a=self.a, between=self.between, beam_between=self.beam_between, num=self.num
                                   , R=self.R, group=self.group, animation_name=self.animation_name)
             animation = AP.emit()
-            plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
-            plt.rcParams['axes.unicode_minus'] = False             # 避免坐标轴不能正常地显示负号
-            # 设置
-            ax_1 = self.fig_1.add_subplot(211)
-            ax_2 = self.fig_1.add_subplot(212)
-            self.fig_1.subplots_adjust(hspace=0.5)
-            # 设置画布背景、刻度、字体颜色
-            deep_blue = (31 / 255, 55 / 255, 96 / 255)
-            list = [ax_1, ax_2]
-            for ax in list:
-                # 设置 子图背景颜色
-                ax.set_facecolor(deep_blue)
-                # 设置坐标轴线的颜色为白色
-                ax.spines['bottom'].set_color('white')
-                ax.spines['top'].set_color('white')
-                ax.spines['right'].set_color('white')
-                ax.spines['left'].set_color('white')
-                # 设置坐标轴的刻度颜色为白色
-                ax.tick_params(axis='x', colors='white')
-                ax.tick_params(axis='y', colors='white')
-                # 设置坐标轴标签的颜色为白色
-                ax.xaxis.label.set_color('white')
-                ax.yaxis.label.set_color('white')
-                # 设置坐标轴标题字体颜色为白色
-                ax.title.set_color('white')
-                # 设置 子图 标签
-                ax.set_xlabel('主皮带进给方向')
-                ax.set_ylabel('横梁摆动方向')
-            # ----------------------抛磨量分布绘图------------------
-            ax_1.set_aspect('equal', adjustable='box')
-            # 设置权重操作
-            max_set = np.max(object_matrix)
-            # 计算第90百分位的阈值（前15%）
-            percentile_85 = np.percentile(object_matrix, 85)
-            # 对矩阵中大于等于该阈值的元素乘以0.85
-            object_matrix[object_matrix >= percentile_85] *= 0.85
+        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
+        plt.rcParams['axes.unicode_minus'] = False             # 避免坐标轴不能正常地显示负号
+        # 设置
+        ax_1 = self.fig_1.add_subplot(211)
+        ax_2 = self.fig_1.add_subplot(212)
+        self.fig_1.subplots_adjust(hspace=0.5)
+        # 设置画布背景、刻度、字体颜色
+        deep_blue = (31 / 255, 55 / 255, 96 / 255)
+        list = [ax_1, ax_2]
+        for ax in list:
+            # 设置 子图背景颜色
+            ax.set_facecolor(deep_blue)
+            # 设置坐标轴线的颜色为白色
+            ax.spines['bottom'].set_color('white')
+            ax.spines['top'].set_color('white')
+            ax.spines['right'].set_color('white')
+            ax.spines['left'].set_color('white')
+            # 设置坐标轴的刻度颜色为白色
+            ax.tick_params(axis='x', colors='white')
+            ax.tick_params(axis='y', colors='white')
+            # 设置坐标轴标签的颜色为白色
+            ax.xaxis.label.set_color('white')
+            ax.yaxis.label.set_color('white')
+            # 设置坐标轴标题字体颜色为白色
+            ax.title.set_color('white')
+            # 设置 子图 标签
+            ax.set_xlabel('主皮带进给方向')
+            ax.set_ylabel('横梁摆动方向')
+        # ----------------------抛磨量分布绘图------------------
+        ax_1.set_aspect('equal', adjustable='box')
+        # 设置权重操作
+        max_set = np.max(object_matrix)
+        # 计算第90百分位的阈值（前15%）
+        percentile_85 = np.percentile(object_matrix, 85)
+        # 对矩阵中大于等于该阈值的元素乘以0.85
+        object_matrix[object_matrix >= percentile_85] *= 0.85
 
-            im = ax_1.contourf(object_matrix, levels=15, alpha=1, cmap='jet', vmin=0, vmax=max_set)
+        im = ax_1.contourf(object_matrix, levels=15, alpha=1, cmap='jet', vmin=0, vmax=max_set)
 
-            divider = make_axes_locatable(ax_1)
-            cax = divider.append_axes("right", size="5%", pad=0.1)
+        divider = make_axes_locatable(ax_1)
+        cax = divider.append_axes("right", size="5%", pad=0.1)
 
-            #colorbar = self.canvas.fig.colorbar(im, cax=cax)
-            colorbar = self.fig_1.colorbar(im, cax=cax)
+        #colorbar = self.canvas.fig.colorbar(im, cax=cax)
+        colorbar = self.fig_1.colorbar(im, cax=cax)
 
-            colorbar.ax.tick_params(labelcolor='white')  # 设置刻度标签颜色
-            colorbar.set_label('抛磨量大小', color='white')  # 设置 colorbar 标签的颜色
-            # 绘制矩形线框
-            ceramic_width_ = float(self.ceramic_width) * 0.1
-            width, length = np.shape(object_matrix)
-            x_begin = 0
-            y_begin = (width - ceramic_width_) / 2
-            rect = Rectangle((x_begin, y_begin), length - 1, ceramic_width_, edgecolor='red', linestyle='--', linewidth=2,
-                             fill=False)
-            ax_1.add_patch(rect)
+        colorbar.ax.tick_params(labelcolor='white')  # 设置刻度标签颜色
+        colorbar.set_label('抛磨量大小', color='white')  # 设置 colorbar 标签的颜色
+        # 绘制矩形线框
+        ceramic_width_ = float(self.ceramic_width) * 0.1
+        width, length = np.shape(object_matrix)
+        x_begin = 0
+        y_begin = (width - ceramic_width_) / 2
+        rect = Rectangle((x_begin, y_begin), length - 1, ceramic_width_, edgecolor='red', linestyle='--', linewidth=2,
+                         fill=False)
+        ax_1.add_patch(rect)
 
-            # ----------------------中心线绘图------------------
-            accelerate_t = self.v2 / self.a
-            period = 4 * accelerate_t + 2 * self.stay_time + 2 * self.constant_time
-            # 设置图层属性
-            ax_2.set_xlim((-200, period * 3 * self.v1 + self.between))
-            ax_2.set_ylim((-200, self.a * (self.v2 / self.a) ** 2 + self.v2 * self.constant_time + 600))
-            ax_2.set_aspect('equal', adjustable='box')
-            # 设置图片文本
-            ani_text = ax_2.text(0.7, 0.82, '', transform=ax_2.transAxes, fontsize=10, color='white')
-            ani_text.set_text('Same_grinding_num=%.0f' % float(self.num))
-            num_two = math.ceil(self.num / 2)
-            color_7 = ['red', 'orange', 'green', 'cyan', 'blue', 'purple', 'yellow', 'lightgreen',
-                       'slategrey', 'cornflowerblue', 'navy', 'indigo', 'violet', 'plum', 'oldlace', 'maroon',
-                       'lightcyan', 'lightseagreen', 'seagreen', 'springgreen']  # 红橙黄绿青蓝紫
-            all_time_n = math.floor(period / 0.01) * 3
-            cross_size = round((self.v2/self.a + self.constant_time + self.stay_time + self.v2/self.a) / 0.01)
+        # ----------------------中心线绘图------------------
+        accelerate_t = self.v2 / self.a
+        period = 4 * accelerate_t + 2 * self.stay_time + 2 * self.constant_time
+        # 设置图层属性
+        ax_2.set_xlim((-200, period * 3 * self.v1 + self.between))
+        ax_2.set_ylim((-200, self.a * (self.v2 / self.a) ** 2 + self.v2 * self.constant_time + 600))
+        ax_2.set_aspect('equal', adjustable='box')
+        # 设置图片文本
+        ani_text = ax_2.text(0.7, 0.82, '', transform=ax_2.transAxes, fontsize=10, color='white')
+        ani_text.set_text('Same_grinding_num=%.0f' % float(self.num))
+        num_two = math.ceil(self.num / 2)
+        color_7 = ['red', 'orange', 'green', 'cyan', 'blue', 'purple', 'yellow', 'lightgreen',
+                   'slategrey', 'cornflowerblue', 'navy', 'indigo', 'violet', 'plum', 'oldlace', 'maroon',
+                   'lightcyan', 'lightseagreen', 'seagreen', 'springgreen']  # 红橙黄绿青蓝紫
+        all_time_n = math.floor(period / 0.01) * 3
+        cross_size = round((self.v2/self.a + self.constant_time + self.stay_time + self.v2/self.a) / 0.01)
 
-            if self.mode == 'equal':
-                for i in range(0, self.num):
-                    ax_2.scatter(single_X_location + i * self.beam_between, single_Y_location,
-                                 color=color_7[i], s=1)
-                # self.canvas.draw()
-            elif self.mode == 'cross':
-                for i in range(0, self.num):
-                    if (i + 2) % 2 == 0:
-                        ax_2.scatter(single_X_location[0, 0:all_time_n - 1] + i * self.beam_between,
-                                     single_Y_location[0, 0:all_time_n - 1],
-                                     color=color_7[i], s=1)
-                    # 横梁数为偶数
-                    else:
-                        ax_2.scatter(single_X_location[0, 0:all_time_n - cross_size] + i * self.beam_between,
-                                     single_Y_location[0, cross_size - 1:all_time_n - 1],
-                                     color=color_7[i], s=1)
-                # self.canvas.draw()
-            elif self.mode == 'order':
-                for i in range(0, self.num):
-                    ax_2.scatter(single_X_location[0, 0:all_time_n - 1] + i * self.beam_between - i * self.delay_time * self.v1,
+        if self.mode == 'equal':
+            for i in range(0, self.num):
+                ax_2.scatter(single_X_location + i * self.beam_between, single_Y_location,
+                             color=color_7[i], s=1)
+            # self.canvas.draw()
+        elif self.mode == 'cross':
+            for i in range(0, self.num):
+                if (i + 2) % 2 == 0:
+                    ax_2.scatter(single_X_location[0, 0:all_time_n - 1] + i * self.beam_between,
                                  single_Y_location[0, 0:all_time_n - 1],
                                  color=color_7[i], s=1)
-                # self.canvas.draw()
-            elif self.mode == 'self_order':
-                self_delay_distance = self.between / self.group
-                index = 0
-                for i in range(0, self.group):
-                    for j in range(0, self.num):
-                        ax_2.scatter(single_X_location[0,
-                                     0:all_time_n - 1] + j * self.beam_between - j * self.delay_time * self.v1 + self_delay_distance * i,
-                                     single_Y_location[0, 0:all_time_n - 1],
-                                     color=color_7[index], s=1)
-                        index += 1
-                # self.canvas.draw()
-            else:
-                raise ValueError('mode must be equal or cross or order or self_order')
-            # print(animation+'~~~~~~~~~~~')
+                # 横梁数为偶数
+                else:
+                    ax_2.scatter(single_X_location[0, 0:all_time_n - cross_size] + i * self.beam_between,
+                                 single_Y_location[0, cross_size - 1:all_time_n - 1],
+                                 color=color_7[i], s=1)
+            # self.canvas.draw()
+        elif self.mode == 'order':
+            for i in range(0, self.num):
+                ax_2.scatter(single_X_location[0, 0:all_time_n - 1] + i * self.beam_between - i * self.delay_time * self.v1,
+                             single_Y_location[0, 0:all_time_n - 1],
+                             color=color_7[i], s=1)
+            # self.canvas.draw()
+        elif self.mode == 'self_order':
+            self_delay_distance = self.between / self.group
+            index = 0
+            for i in range(0, self.group):
+                for j in range(0, self.num):
+                    ax_2.scatter(single_X_location[0,
+                                 0:all_time_n - 1] + j * self.beam_between - j * self.delay_time * self.v1 + self_delay_distance * i,
+                                 single_Y_location[0, 0:all_time_n - 1],
+                                 color=color_7[index], s=1)
+                    index += 1
+            # self.canvas.draw()
+        else:
+            raise ValueError('mode must be equal or cross or order or self_order')
+        # print(animation+'~~~~~~~~~~~')
         data = [result,self.animation_name]
         self.result_signal.emit(data)  # 发射信号将结果传回主线程
 # ---------------抛磨量计算-------------
