@@ -997,7 +997,7 @@ class MainWindow(QMainWindow):
         self.worker_thread.result_signal.connect(self.update_progress)
 
     def start_thread(self):
-        self.start_button.setEnabled(False)  # 禁用按钮，防止重复点击
+        # self.start_button.setEnabled(False)  # 禁用按钮，防止重复点击
         self.worker_thread.start()
 
     def update_progress(self, value):

@@ -1,11 +1,12 @@
 import sys
 import sqlite3
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QHBoxLayout,
-    QCheckBox, QLabel, QMessageBox
+    QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem, QHeaderView,
+    QHBoxLayout,
+    QCheckBox, QLabel, QMessageBox, QSizePolicy
 )
 from PySide6.QtGui import QColor, QFont
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from matplotlib import pyplot as plt
 
 from Comparison_project import ComparisonWorkerThread, dict_value_to_float
@@ -19,6 +20,12 @@ class OutputReportWidget(QWidget):
         self.setGeometry(400, 100, 1280, 800)  # 设置窗口尺寸为 1280x800
         self.setFixedSize(1280, 800)
         self.data_model = data_model
+        self.filter_condition = None
+        # 创建定时器
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_status)
+        # 定义状态文本列表
+        self.current_text_index = 0
         # 设置背景颜色
         self.setStyleSheet("background-color: rgb(31, 55, 96);")
         # 绑定数据变化信号
@@ -76,16 +83,16 @@ class OutputReportWidget(QWidget):
 
                     """
         # 添加标题
-        title_label = QLabel("数据库--双头摆抛光参数", self)
-        title_label.setFont(QFont("Microsoft YaHei", 25))
-        title_label.setStyleSheet("color: white;")
-        layout.addWidget(title_label)
+        self.title_label = QLabel("数据库--双头摆抛光参数", self)
+        self.title_label.setFont(QFont("Microsoft YaHei", 25))
+        self.title_label.setStyleSheet("color: white;")
+        layout.addWidget(self.title_label)
 
         # 创建一个表格控件
         self.table_widget = QTableWidget(self)
-        self.table_widget.setColumnCount(8)  # 增加一列用于显示序号
+        self.table_widget.setColumnCount(10)  # 增加一列用于显示序号
         self.table_widget.setHorizontalHeaderLabels(
-            ["序号", "产量", "同粒度磨头数", "模式", "运动参数", "方案选择", "操作", "操作"]
+            ["序号", "模式","方案选择","主皮带速度", "进砖宽度", "摆动速度", "边部停留时间","边部停留时间", "设备",  "操作"]
         )
         # 隐藏序号列
         self.table_widget.setColumnHidden(0, True)
@@ -94,10 +101,12 @@ class OutputReportWidget(QWidget):
         # 设置表格为可滚动
         self.table_widget.setEditTriggers(QTableWidget.NoEditTriggers)  # 禁止编辑
         self.table_widget.setColumnWidth(1, 130)  # 固定第一列宽度为150
-        self.table_widget.setColumnWidth(2, 150)  # 固定第一列宽度为150
-        self.table_widget.setColumnWidth(3, 100)  # 固定第一列宽度为150
-        self.table_widget.setColumnWidth(4, 582)  # 固定第一列宽度为150
-        self.table_widget.setColumnWidth(7, 80)  # 固定第一列宽度为150
+        self.table_widget.setColumnWidth(2, 130)  # 固定第一列宽度为150
+        self.table_widget.setColumnWidth(3, 200)  # 固定第一列宽度为150
+        self.table_widget.setColumnWidth(4, 200)  # 固定第一列宽度为150
+        self.table_widget.setColumnWidth(5, 150)  # 固定第一列宽度为150
+        self.table_widget.setColumnWidth(6, 150)  # 固定第一列宽度为150
+        self.table_widget.setColumnWidth(7, 150)  # 固定第一列宽度为150
 
         # 设置表格单元格内容居中
         self.table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignCenter)
@@ -156,71 +165,97 @@ class OutputReportWidget(QWidget):
         button2_layout.addSpacing(30)
         layout.addLayout(button2_layout)
 
+        # 创建状态栏标签
+        self.status_label = QLabel("")
+        self.status_label.setFixedSize(699, 30)
+        self.status_label.setStyleSheet("QLabel { text - align: center; }")
+        # self.status_label.setStyleSheet("background: transparent;")
+        self.status_label.setAttribute(Qt.WA_TranslucentBackground)
+        self.status_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        status_font = QFont("Microsoft YaHei", 16)  # "Microsoft YaHei" 为字体类型，18 为字体大小
+        self.status_label.setFont(status_font)
+
+        self.status_label.setStyleSheet("background-color: blue; color: white;")
+        layout.addWidget(self.status_label)
         # 设置布局
         self.setLayout(layout)
-        self.setContentsMargins(40, 40, 40, 40)
+        self.setContentsMargins(40, 40, 40, 20)
 
-        # 输入量（字典类型）
-        a = {'lineEdit_beam_between': '650.0', 'lineEdit_diameter': '540.0', 'lineEdit_grind_length': '160.0',
-             'lineEdit_work_time': '22.0', 'lineEdit_production_volume': '30000.0', 'lineEdit_ceramic_width': '900.0',
-             'lineEdit_accelerate': '650.0', 'lineEdit_overlap': '10.0', 'lineEdit_num_input': '4.0',
-             'lineEdit_group_count': '1.0', 'lineEdit_stay_time_input': '0.8',              'lineEdit_belt_speed': '420.88',
-             'lineEdit_beam_swing_speed': '289.2', 'lineEdit_beam_constant_time': '1.21',
-             'lineEdit_stay_time_output': '1.4',
-             'lineEdit_swing': '478.6', 'lineEdit_num_output': '5', 'lineEdit_coefficient': '0.3864',
-             'lineEdit_delay_time': '0.14', 'lineEdit_delay_time_list': [0.0, 0.14, 0.28, 0.42, 0.56],
-             'lineEdit_between': '590.5492918897945', 'R': '270.0'}
-        b = {'lineEdit_beam_between': '600.0', 'lineEdit_diameter': '540.0', 'lineEdit_grind_length': '160.0',
-             'lineEdit_work_time': '22.0', 'lineEdit_production_volume': '25000.0', 'lineEdit_ceramic_width': '900.0',
-             'lineEdit_accelerate': '650.0', 'lineEdit_overlap': '10.0', 'lineEdit_num_input': '4',
-             'lineEdit_group_count': '1', 'lineEdit_stay_time_input': '0.8', 'lineEdit_belt_speed': '350.73',
-             'lineEdit_beam_swing_speed': '559.0', 'lineEdit_beam_constant_time': '0',
-             'lineEdit_stay_time_output': '0.8',
-             'lineEdit_swing': '480.74', 'lineEdit_num_output': '4', 'lineEdit_coefficient': '0.3874',
-             'lineEdit_delay_time': '0.45',
-             'lineEdit_delay_time_list': [1.26, 0.45, 0.9, 1.35], 'lineEdit_between': '441.92', 'R': '270.0',
-             'self_delay_time': '1.26'}
-        c = {'lineEdit_between': '600.0', 'lineEdit_beam_between': '1906.0', 'lineEdit_diameter': '540.0',
-             'lineEdit_grind_length': '150.0', 'lineEdit_work_time': '22.0', 'lineEdit_production_volume': '25000.0',
-             'lineEdit_ceramic_width': '900.0', 'lineEdit_accelerate': '650.0', 'lineEdit_overlap': '10.0',
-             'lineEdit_num_input': '4.0', 'lineEdit_group_count': '1.0', 'lineEdit_stay_time_input': '0.8',
-             'lineEdit_belt_speed': '350.73', 'lineEdit_beam_swing_speed': '250.62',
-             'lineEdit_beam_constant_time': '1.85',
-             'lineEdit_stay_time_output': '0.8', 'lineEdit_swing': '560.28', 'lineEdit_num_output': '4.0',
-             'lineEdit_coefficient': '', 'lineEdit_delay_time': '2.01', 'lineEdit_delay_time_list': [0.0, 2.01],
-             'R': '270.0', 'self_delay_time': '1.71'}
-        a = dict_value_to_float(a)
-        b = dict_value_to_float(b)
-        c = dict_value_to_float(c)
-        a['device'] = 'single'
-        a['mode'] = 'order'
-        b['device'] = 'single'
-        b['mode'] = 'self_order'
-        c['device'] = 'double'
-        c['mode'] = 'self_order'
+
         fig = plt.figure(figsize=(16, 8), dpi=100)
         fig.suptitle("方案对比")
 
         self.worker_thread = ComparisonWorkerThread(fig)
         self.worker_thread.result_signal.connect(self.update_progress)
 
+    def set_filter_condition(self, filter_condition):
+        """设置过滤条件并重新加载数据"""
+        self.filter_condition = filter_condition
+        self.title_label.setText('数据库：【'+filter_condition+"】抛光参数")
+        self.load_data_from_database()
     def on_compare_btn(self):
+
         # 获取所有行
         rows = self.table_widget.rowCount()
         selected_rowids = []
 
         # 遍历每一行，检查最后一列的 QCheckBox 是否被选中
         for row in range(rows):
-            checkbox = self.table_widget.cellWidget(row, 7).findChild(QCheckBox)
+            checkbox = self.table_widget.cellWidget(row, 9).findChild(QCheckBox)
             if checkbox and checkbox.isChecked():
                 selected_rowids.append(self.table_widget.item(row, 0).text())
         if selected_rowids:
+            if selected_rowids.__len__() > 3:
+                nodata_box = QMessageBox()
+                nodata_box.setWindowTitle("警告")
+                nodata_box.setText("请不要勾选超过【3】个以上的参数进行对比！")
+                nodata_box.setStandardButtons(QMessageBox.Ok)
+
+                # 设置背景颜色为蓝色，文字颜色为白色
+                nodata_box.setStyleSheet("""
+                                            QMessageBox {
+                                                background-color: rgb(31, 55, 96);
+                                            }
+                                            QMessageBox QLabel {
+                                                color: white;
+                                                font-family: "Microsoft YaHei"; /* 字体样式 */
+                                                font-size: 18px; /* 字体大小 */
+                                            }
+                                            QMessageBox QWidget#qt_msgbox_label {
+                                                font-family: "Microsoft YaHei"; /* 标题字体样式 */
+                                                font-size: 18px; /* 标题字体大小 */
+                                                color: white; /* 标题颜色 */
+                                            }
+                                            QMessageBox QPushButton {
+                                                background-color: #444;
+                                                color: white;
+                                                border: 1px solid #555;
+                                                padding: 5px 10px;
+                                            }
+                                            QMessageBox QPushButton:hover {
+                                                background-color: #555;
+                                            }
+                                        """)
+
+                # 将删除成功对话框显示在列表界面的水平和垂直居中位置
+                nodata_box.setWindowModality(Qt.ApplicationModal)
+                nodata_box.move(self.mapToGlobal(self.rect().center()))
+
+                nodata_box.exec()
+                # QMessageBox.warning(self, "警告", "请先选择要删除的行！")
+                return
             fullparams = self.data_model.query_full(selected_rowids)
             self.compare_button.setEnabled(False)  # 禁用按钮，防止重复点击
+            self.timer.start(500)  # 每秒触发一次
             self.worker_thread.args = fullparams
             self.worker_thread.start()
+
+
     def update_progress(self, value):
         self.compare_button.setEnabled(True)  # 禁用按钮，防止重复点击
+
+        self.timer.stop()
+        self.status_label.setText('方案对比图表生成完毕，请查看结果！')
         print(value)
         plt.show()
 
@@ -247,6 +282,9 @@ class OutputReportWidget(QWidget):
 
         """刷新表格数据"""
         rows = self.data_model.fetch_data()
+        if self.filter_condition:
+            rows = [row for row in rows if row[8] == self.filter_condition]  # 假设第6列是方案选择列
+
         # 设置表格行数
         self.table_widget.setRowCount(len(rows))
 
@@ -274,19 +312,26 @@ class OutputReportWidget(QWidget):
 
             # 设置布局的边距为 0，避免多余的空白
             layout.setContentsMargins(8, 0, 0, 0)
-            self.table_widget.setCellWidget(row_idx, 7, container)
+            self.table_widget.setCellWidget(row_idx, 9, container)
 
         # 调整操作列的列宽，使其刚好跟复选框差不多大
         self.table_widget.horizontalHeader().resizeSection(6, 50)  # 设置操作列宽度为50像素
 
+
+    def update_status(self):
+        # self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
+        self.status_texts = ["正在生成方案对比图表，请稍后", "正在生成方案对比图表，请稍后。", "正在生成方案对比图表，请稍后。。", "正在生成方案对比图表，请稍后。。。"]
+        self.status_label.setText(self.status_texts[self.current_text_index])
+        self.current_text_index = (self.current_text_index + 1) % len(self.status_texts)
     def delete_selected_rows(self):
+
         # 获取所有行
         rows = self.table_widget.rowCount()
         selected_rowids = []
 
         # 遍历每一行，检查最后一列的 QCheckBox 是否被选中
         for row in range(rows):
-            checkbox = self.table_widget.cellWidget(row, 7).findChild(QCheckBox)
+            checkbox = self.table_widget.cellWidget(row, 9).findChild(QCheckBox)
             if checkbox and checkbox.isChecked():
                 selected_rowids.append(self.table_widget.item(row, 0).text())
 

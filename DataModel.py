@@ -25,7 +25,7 @@ class DataModel(QObject):
 
     def fetch_data(self):
         """从数据库获取数据"""
-        self.cursor.execute("SELECT rowid, production, num, mode, motion_param, swing_mode FROM param")
+        self.cursor.execute("SELECT rowid,  mode, swing_mode,belt_speed,ceramic_width,beam_swing_speed,stay_time,stay_time,device_name FROM param")
         return self.cursor.fetchall()
 
     def add_data(self, params, current_mode, values, swing_mode,device_name):
@@ -36,10 +36,20 @@ class DataModel(QObject):
                 # 将 params 字典序列化为 JSON 字符串
                 full_motion_param_json = json.dumps(params)
                 data = [
-                    (params['lineEdit_production_volume'], params['lineEdit_num_input'], current_mode, values, swing_mode,device_name,full_motion_param_json)
+                    (params['lineEdit_production_volume'],
+                     params['lineEdit_num_input'],
+                     current_mode,
+                     values,
+                     swing_mode,
+                     device_name,
+                     full_motion_param_json,
+                     params['lineEdit_belt_speed'],
+                     params['lineEdit_ceramic_width'],
+                     params['lineEdit_beam_swing_speed'],
+                     params['lineEdit_stay_time_input'])
                 ]
                 cursor.executemany(
-                    'INSERT INTO param (production, num, mode, motion_param, swing_mode,device_name,full_motion_param) VALUES (?,?,?,?,?,?,?)',
+                    'INSERT INTO param (production, num, mode, motion_param, swing_mode,device_name,full_motion_param,belt_speed,ceramic_width,beam_swing_speed,stay_time) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
                     data
                 )
                 conn.commit()

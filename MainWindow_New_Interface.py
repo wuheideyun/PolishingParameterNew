@@ -517,6 +517,9 @@ class MainWindow(QWidget):
     def on_motion_param_manual_saved(self):
         self.motion_input_manual_changed_flag = False
     def open_new_window(self):
+        # 动态传入过滤条件
+        filter_condition = self.device_mapping.get(self.current_device)  # 这里可以根据需要动态获取过滤条件
+        self.output_report.set_filter_condition(filter_condition)
         self.output_report.show()
 
     def setInitValues(self):
