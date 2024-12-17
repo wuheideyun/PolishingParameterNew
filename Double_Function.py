@@ -1,4 +1,6 @@
 # 双头摆函数汇总
+import os
+
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -49,7 +51,12 @@ class DoubleWorkerThread(QThread):
         self.group = round(kwargs.get('lineEdit_group_count', 1))
 
         self.animation_name = kwargs.get('animation_name', 'ani')
+    def check_animation_gif(self, animation_name):
+        # 定义文件路径
+        file_path = os.path.join(os.getcwd(), 'animation', animation_name + '.gif')
 
+        # 判断文件是否存在
+        return os.path.isfile(file_path)
     def run(self):
         # 抛磨量分布矩阵
         PDT = PolishingDistributionThread(mode=self.mode, v1=self.v1, v2=self.v2, constant_time=self.constant_time, stay_time=self.stay_time
@@ -66,10 +73,14 @@ class DoubleWorkerThread(QThread):
             mode_an = 'order'
         else:
             mode_an = self.mode
-        AP = AnimationProduce(mode=mode_an, fig=self.fig_2, v1=self.v1, v2=self.v2, constant_time=self.constant_time, stay_time=self.stay_time
-                              ,delay_time=self.delay_time, a=self.a, between=self.between, beam_between=self.beam_between, num_input=self.num_input
-                              , R=self.R, group=self.group, animation_name=self.animation_name)
-        animation = AP.emit()
+        if not self.check_animation_gif(self.animation_name):
+            AP = AnimationProduce(mode=mode_an, fig=self.fig_2, v1=self.v1, v2=self.v2, constant_time=self.constant_time, stay_time=self.stay_time
+                                  ,delay_time=self.delay_time, a=self.a, between=self.between, beam_between=self.beam_between, num_input=self.num_input
+                                  , R=self.R, group=self.group, animation_name=self.animation_name)
+            animation = AP.emit()
+            print('双头动画不存在')
+        else:
+            print('双头动画已经存在')
         plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
         plt.rcParams['axes.unicode_minus'] = False             # 避免坐标轴不能正常地显示负号
         # 设置
@@ -191,7 +202,7 @@ class DoubleWorkerThread(QThread):
             # self.canvas.draw()
         else:
             raise ValueError('mode must be equal or cross or order or self_order')
-        data = [result,animation]
+        data = [result,self.animation_name]
         self.result_signal.emit(data)  # 发射信号将结果传回主线程
 # ---------------抛磨量计算-------------
 class PolishingDistributionThread():

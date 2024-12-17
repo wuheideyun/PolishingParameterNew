@@ -20,10 +20,14 @@ class ComparisonWorkerThread(QThread):
     result_signal = Signal(object)  # 创建一个信号用于传递结果
     def __init__(self,fig,*args):
         super().__init__()
-        self.dict_list = list(args)
+        self.args = args
+        self.dict_list = list(self.args)
         self.count_figure = len(self.dict_list)
         self.fig = fig
+
     def run(self):
+        self.dict_list = list(self.args)
+        self.count_figure = len(self.dict_list)
         # 储存抛磨量数值矩阵
         polishing_object_matrix_list = []
         # 储存抛磨变异系数
@@ -33,7 +37,7 @@ class ComparisonWorkerThread(QThread):
         # 遍历输入的所有字典
         for i in self.dict_list:
             # 当前字典
-            current_dict = i
+            current_dict = i['full_motion_param']
             # 抛磨量分布矩阵
             PDT = PolishingDistributionThread(**current_dict)
             object_matrix, result = PDT.emit()

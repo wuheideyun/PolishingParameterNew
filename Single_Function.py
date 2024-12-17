@@ -80,6 +80,9 @@ class SingleWorkerThread(QThread):
                                   ,delay_time=self.delay_time, a=self.a, between=self.between, beam_between=self.beam_between, num=self.num
                                   , R=self.R, group=self.group, animation_name=self.animation_name)
             animation = AP.emit()
+            print('单头动画不存在')
+        else:
+            print('单头动画已经存在')
         plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
         plt.rcParams['axes.unicode_minus'] = False             # 避免坐标轴不能正常地显示负号
         # 设置

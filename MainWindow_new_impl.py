@@ -268,11 +268,14 @@ class MainWindow_impl(MainWindow):
         swing_mode = ''
         # 判断当前设备
         if self.current_device == 1:
-            params['device'] = 'single'
             if self.current_mode == 1:
                 params = dict_value_to_float(self.single_parameter_intelligent)
-                swing_mode = '顺序摆'
-                params['mode'] = '6'
+                if self.solution_selection == 3:
+                    swing_mode = '自定义'
+                    params['mode'] = '3'
+                else:
+                    swing_mode = '顺序摆'
+                    params['mode'] = '6'
             else:
                 params = dict_value_to_float(self.single_parameter_manual)
                 if self.solution_selection == 4:
@@ -284,13 +287,16 @@ class MainWindow_impl(MainWindow):
                 elif self.solution_selection == 6:
                     swing_mode = '顺序摆'
                     params['mode'] = '6'
-
+            params['device'] = '1'
         elif self.current_device == 2:
-            params['device'] = 'double'
             if self.current_mode == 1:
                 params = dict_value_to_float(self.double_parameter_intelligent)
-                swing_mode = '顺序摆'
-                params['mode'] = '6'
+                if self.solution_selection == 3:
+                    swing_mode = '自定义'
+                    params['mode'] = '6'
+                else:
+                    swing_mode = '顺序摆'
+                    params['mode'] = '6'
             else:
                 params = dict_value_to_float(self.double_parameter_manual)
                 if self.solution_selection == 4:
@@ -302,23 +308,16 @@ class MainWindow_impl(MainWindow):
                 elif self.solution_selection == 6:
                     swing_mode = '顺序摆'
                     params['mode'] = '6'
+            params['device'] = '2'
         elif self.current_device == 3:
-            params['device'] = 'equal'
             if self.current_mode == 1:
                 params = dict_value_to_float(self.equal_parameter_intelligent)
-                swing_mode = '同步摆'
-                params['mode'] = '4'
             else:
                 params = dict_value_to_float(self.equal_parameter_manual)
-                if self.solution_selection == 4:
-                    swing_mode = '同步摆'
-                    params['mode'] = '4'
-                elif self.solution_selection == 5:
-                    swing_mode = '交叉摆'
-                    params['mode'] = '5'
-                elif self.solution_selection == 6:
-                    swing_mode = '顺序摆'
-                    params['mode'] = '6'
+
+            swing_mode = '同步摆'
+            params['mode'] = '4'
+            params['device'] = '3'
         # 判断摆动模式
         if self.current_mode == 2:
             current_mode = '人工寻优'
@@ -328,21 +327,25 @@ class MainWindow_impl(MainWindow):
         # params['mode'] = self.solution_selection
 
         values = self.concatenate_values(params)
-        try:
-            # 连接到SQLite数据库
-            with sqlite3.connect(self.db_path) as conn:
-                cursor = conn.cursor()
-                data = [
-                    (params['lineEdit_production_volume'], params['lineEdit_num_input'], current_mode,values, swing_mode)
-                ]
-                cursor.executemany(
-                    'INSERT INTO param (production, num, mode, motion_param, swing_mode) VALUES (?,?,?,?,?)',
-                    data)
-                print("Data inserted successfully.")
-                self.status_label.setText('                  参数已保存至数据库！')
-        except sqlite3.Error as e:
-            print(f"Error inserting data: {e}")
+        # try:
+        #     # 连接到SQLite数据库
+        #     with sqlite3.connect(self.db_path) as conn:
+        #         cursor = conn.cursor()
+        #         data = [
+        #             (params['lineEdit_production_volume'], params['lineEdit_num_input'], current_mode,values, swing_mode)
+        #         ]
+        #         cursor.executemany(
+        #             'INSERT INTO param (production, num, mode, motion_param, swing_mode) VALUES (?,?,?,?,?)',
+        #             data)
+        #         print("Data inserted successfully.")
+        #         self.status_label.setText('                  参数已保存至数据库！')
+        # except sqlite3.Error as e:
+        #     print(f"Error inserting data: {e}")
 
+        if self.data_model.add_data(params, current_mode, values, swing_mode,self.device_mapping.get(self.current_device)):
+            self.status_label.setText('                  参数已保存至数据库！')
+        else:
+            self.status_label.setText('                  参数保存失败，请重试！')
 
 
     # 按钮点击槽函数(计算)

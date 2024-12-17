@@ -13,15 +13,16 @@ from ImageChangeButton import ImageChangeButton
 
 
 class OutputReportWidget(QWidget):
-    def __init__(self):
+    def __init__(self, data_model):
         super().__init__()
         self.setWindowTitle("输出报告")
         self.setGeometry(400, 100, 1280, 800)  # 设置窗口尺寸为 1280x800
         self.setFixedSize(1280, 800)
-
+        self.data_model = data_model
         # 设置背景颜色
         self.setStyleSheet("background-color: rgb(31, 55, 96);")
-
+        # 绑定数据变化信号
+        self.data_model.dataChanged.connect(self.load_data_from_database)
         # 创建布局
         layout = QVBoxLayout()
         self.checkbox_style = """
@@ -200,29 +201,52 @@ class OutputReportWidget(QWidget):
         fig = plt.figure(figsize=(16, 8), dpi=100)
         fig.suptitle("方案对比")
 
-        self.worker_thread = ComparisonWorkerThread(fig, a, b, c)
+        self.worker_thread = ComparisonWorkerThread(fig)
         self.worker_thread.result_signal.connect(self.update_progress)
 
     def on_compare_btn(self):
-        self.compare_button.setEnabled(False)  # 禁用按钮，防止重复点击
-        self.worker_thread.start()
+        # 获取所有行
+        rows = self.table_widget.rowCount()
+        selected_rowids = []
+
+        # 遍历每一行，检查最后一列的 QCheckBox 是否被选中
+        for row in range(rows):
+            checkbox = self.table_widget.cellWidget(row, 7).findChild(QCheckBox)
+            if checkbox and checkbox.isChecked():
+                selected_rowids.append(self.table_widget.item(row, 0).text())
+        if selected_rowids:
+            fullparams = self.data_model.query_full(selected_rowids)
+            self.compare_button.setEnabled(False)  # 禁用按钮，防止重复点击
+            self.worker_thread.args = fullparams
+            self.worker_thread.start()
     def update_progress(self, value):
         self.compare_button.setEnabled(True)  # 禁用按钮，防止重复点击
         print(value)
         plt.show()
 
+    def refresh_table(self):
+        """刷新表格数据"""
+        data = self.data_model.fetch_data()
+        self.table_widget.setRowCount(len(data))
+
+        for row, item in enumerate(data):
+            for col, value in enumerate(item):
+                self.table_widget.setItem(row, col, QTableWidgetItem(str(value)))
     def load_data_from_database(self):
+        print('加载一次数据')
         # 连接数据库
-        conn = sqlite3.connect("database.db")
-        cursor = conn.cursor()
+        # conn = sqlite3.connect("database.db")
+        # cursor = conn.cursor()
+        #
+        # # 查询数据，包括rowid字段
+        # cursor.execute("SELECT rowid, production, num, mode, motion_param, swing_mode FROM param")
+        # rows = cursor.fetchall()
+        #
+        # # 关闭数据库连接
+        # conn.close()
 
-        # 查询数据，包括rowid字段
-        cursor.execute("SELECT rowid, production, num, mode, motion_param, swing_mode FROM param")
-        rows = cursor.fetchall()
-
-        # 关闭数据库连接
-        conn.close()
-
+        """刷新表格数据"""
+        rows = self.data_model.fetch_data()
         # 设置表格行数
         self.table_widget.setRowCount(len(rows))
 
@@ -258,15 +282,15 @@ class OutputReportWidget(QWidget):
     def delete_selected_rows(self):
         # 获取所有行
         rows = self.table_widget.rowCount()
-        selected_rows = []
+        selected_rowids = []
 
         # 遍历每一行，检查最后一列的 QCheckBox 是否被选中
         for row in range(rows):
             checkbox = self.table_widget.cellWidget(row, 7).findChild(QCheckBox)
             if checkbox and checkbox.isChecked():
-                selected_rows.append(row)
+                selected_rowids.append(self.table_widget.item(row, 0).text())
 
-        if not selected_rows:
+        if not selected_rowids:
             nodata_box = QMessageBox()
             nodata_box.setWindowTitle("警告")
             nodata_box.setText("请先选择要删除的行！")
@@ -309,7 +333,7 @@ class OutputReportWidget(QWidget):
         # 提示用户确认删除
         confirm_box = QMessageBox()
         confirm_box.setWindowTitle("确认删除")
-        confirm_box.setText(f"您确定要删除选中的 {len(selected_rows)} 行数据吗？")
+        confirm_box.setText(f"您确定要删除选中的 {len(selected_rowids)} 行数据吗？")
         confirm_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         confirm_box.setDefaultButton(QMessageBox.No)
 
@@ -348,25 +372,25 @@ class OutputReportWidget(QWidget):
 
         if confirm_result == QMessageBox.Yes:
             # 连接数据库
-            conn = sqlite3.connect("database.db")
-            cursor = conn.cursor()
-
-            # 删除数据库中的记录，根据rowid字段删除
-            for row in selected_rows:
-                # 获取选中行的rowid
-                row_id = self.table_widget.item(row, 0).text()
-
-                # 删除数据库中的记录
-                cursor.execute("DELETE FROM param WHERE rowid=?", (row_id,))
-
-            # 提交更改并关闭数据库连接
-            conn.commit()
-            conn.close()
-
-            # 删除表格中的行
-            for row in reversed(selected_rows):
-                self.table_widget.removeRow(row)
-
+            # conn = sqlite3.connect("database.db")
+            # cursor = conn.cursor()
+            #
+            # # 删除数据库中的记录，根据rowid字段删除
+            # for row in selected_rowids:
+            #     # 获取选中行的rowid
+            #     row_id = self.table_widget.item(row, 0).text()
+            #
+            #     # 删除数据库中的记录
+            #     cursor.execute("DELETE FROM param WHERE rowid=?", (row_id,))
+            #
+            # # 提交更改并关闭数据库连接
+            # conn.commit()
+            # conn.close()
+            #
+            # # 删除表格中的行
+            # for row in reversed(selected_rowids):
+            #     self.table_widget.removeRow(row)
+            self.data_model.delete_multiple_data(selected_rowids)
             # 删除成功提示
             success_box = QMessageBox()
             success_box.setWindowTitle("删除成功")

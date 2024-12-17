@@ -3,6 +3,7 @@ from PySide6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxL
     QLineEdit, QFrame, QSizePolicy, QSpacerItem, QStackedWidget, QScrollArea, QMessageBox, QStatusBar
 from PySide6.QtCore import Qt, QSize, QSettings, QTimer
 
+from DataModel import DataModel
 from HostParamEqualWidget import HostParamEqualWidget
 from JustifiedLabel import JustifiedLabel
 from PySide6.QtGui import QMovie
@@ -35,13 +36,13 @@ class MainWindow(QWidget):
 
         # 是否计算标识
         self.ifcalcflag = False
-
+        self.data_model = DataModel('database.db')
         self.margin_value = 15
         self.flag = False
         self.logger = LoggerHelper('param_change')
         self.selectedFunction = 1
         # 输出报告界面
-        self.output_report = OutputReportWidget()
+        self.output_report = OutputReportWidget(self.data_model)
         # 创建定时器
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_status)
@@ -317,7 +318,7 @@ class MainWindow(QWidget):
         # self.movie = QMovie('donghua.gif')  # 替换为实际 GIF 文件路径
         # self.animation_QLabel.setMovie(self.movie)
 
-        # 区域8 - 计算模式按钮
+        # 区域8 - 模式选择和方案选择
         self.calc_button_frame = QFrame()
         self.calc_button_frame.setContentsMargins(5,5,5,5)
         calc_button_layout = QVBoxLayout(self.calc_button_frame)
@@ -366,7 +367,7 @@ class MainWindow(QWidget):
         self.button_order_mode = ImageChangeButton("顺序摆动模式", ":GreenFrame", ":GreenFrameClicked", 220,50,True)
         self.placeholder2 = QWidget()
         self.placeholder2.setFixedSize(236, 50)
-        third_layout.addSpacerItem(QSpacerItem(55,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        third_layout.addSpacerItem(QSpacerItem(113,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(QLabel("方案\n选择", styleSheet="font-size: 20px;"),alignment=Qt.AlignmentFlag.AlignLeft)
         third_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_synchronization_mode,alignment=Qt.AlignmentFlag.AlignLeft)
