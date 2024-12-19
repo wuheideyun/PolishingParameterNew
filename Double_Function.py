@@ -79,8 +79,10 @@ class DoubleWorkerThread(QThread):
                                   , R=self.R, group=self.group, animation_name=self.animation_name)
             animation = AP.emit()
             print('双头动画不存在')
+            plt.close('运行轨迹动画')
         else:
             print('双头动画已经存在')
+            plt.close('运行轨迹动画')
         plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
         plt.rcParams['axes.unicode_minus'] = False             # 避免坐标轴不能正常地显示负号
         # 设置
@@ -1017,7 +1019,7 @@ class AnimationProduce():
         output_gif_1 = 'animation/' + self.animation_name + '_1' + '.gif'
         output_gif_2 = 'animation/' + self.animation_name + '_2' + '.gif'
         split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
-        plt.close(self.fig)
+        plt.close('运行轨迹动画')
         return (self.animation_name)
 # -------------------智能计算------------------
 def double_num_calculate(v1,ceramic_width,between,beam_between,R,a,mo,**kwargs):

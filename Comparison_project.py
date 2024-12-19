@@ -23,7 +23,6 @@ class ComparisonWorkerThread(QThread):
         self.args = args
         self.dict_list = list(self.args)
         self.count_figure = len(self.dict_list)
-        # self.fig = fig
 
     def run(self):
         self.dict_list = list(self.args)
