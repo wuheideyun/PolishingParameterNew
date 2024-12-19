@@ -138,9 +138,7 @@ class DataModel(QObject):
                     full_motion_param_dict = json.loads(result[2])  # 反序列化
                     full_motion_param_dict['device'] = self.device_mapping.get(full_motion_param_dict['device'])
                     full_motion_param_dict['mode'] = self.mode_mapping.get(full_motion_param_dict['mode'])
-                    data_list.append({
-                        "full_motion_param": full_motion_param_dict  # 反序列化后的字典
-                    })
+                    data_list.append(full_motion_param_dict)
 
                 return data_list  # 返回字典数组
         except sqlite3.Error as e:

@@ -37,7 +37,7 @@ class ComparisonWorkerThread(QThread):
         # 遍历输入的所有字典
         for i in self.dict_list:
             # 当前字典
-            current_dict = i['full_motion_param']
+            current_dict = i
             # 抛磨量分布矩阵
             PDT = PolishingDistributionThread(**current_dict)
             object_matrix, result = PDT.emit()
