@@ -552,6 +552,7 @@ class MainWindow_impl(MainWindow):
         R = kwargs.get('lineEdit_diameter')/2
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
         self.single_parameter_manual['lineEdit_swing'] = round(a*(v2/a)**2+v2*constant_time,2)
+        self.single_parameter_manual['lineEdit_num_output'] = num
         params = {
             'mode': 'equal',
             'fig': self.canvas.fig,
@@ -588,6 +589,7 @@ class MainWindow_impl(MainWindow):
         R = kwargs.get('lineEdit_diameter')/2
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
         self.single_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
+        self.single_parameter_manual['lineEdit_num_output'] = num
         params = {
             'mode': 'cross',
             'fig': self.canvas.fig,
@@ -630,6 +632,7 @@ class MainWindow_impl(MainWindow):
             delay_time_list.append(i*delay_time)
         self.single_parameter_manual['lineEdit_delay_time_list'] = delay_time_list
         self.single_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
+        self.single_parameter_manual['lineEdit_num_output'] = num
         params = {
             'mode': 'order',
             'fig': self.canvas.fig,
@@ -731,6 +734,7 @@ class MainWindow_impl(MainWindow):
         mo = kwargs.get('lineEdit_grind_length')
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
         self.double_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
+        self.double_parameter_manual['lineEdit_num_output'] = num
         params = {
             'mode': 'equal',
             'fig': self.canvas.fig,
@@ -769,6 +773,7 @@ class MainWindow_impl(MainWindow):
         num = kwargs.get('lineEdit_num_input')
         R = kwargs.get('lineEdit_diameter')/2
         self.double_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
+        self.double_parameter_manual['lineEdit_num_output'] = num
         params = {
             'mode': 'cross',
             'fig': self.canvas.fig,
@@ -814,6 +819,7 @@ class MainWindow_impl(MainWindow):
             delay_time_list.append(i * delay_time)
         self.double_parameter_manual['lineEdit_delay_time_list'] = delay_time_list
         self.double_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
+        self.double_parameter_manual['lineEdit_num_output'] = num
         params = {
             'mode': 'order',
             'fig': self.canvas.fig,
@@ -911,6 +917,7 @@ class MainWindow_impl(MainWindow):
         mo = kwargs.get('lineEdit_grind_length')
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
         self.equal_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
+        self.equal_parameter_manual['lineEdit_num_output'] = num
         params = {
             'mode': 'equal',
             'fig': self.canvas.fig,
