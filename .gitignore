@@ -5,3 +5,6 @@
 .idea/misc.xml
 .idea/MyTrans.iml
 .idea/vcs.xml
+*.gif
+test19.py
+/animation
