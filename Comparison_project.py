@@ -18,12 +18,12 @@ from PySide6.QtCore import QThread, Signal
 
 class ComparisonWorkerThread(QThread):
     result_signal = Signal(object)  # 创建一个信号用于传递结果
-    def __init__(self,fig,*args):
+    def __init__(self,*args):
         super().__init__()
         self.args = args
         self.dict_list = list(self.args)
         self.count_figure = len(self.dict_list)
-        self.fig = fig
+        # self.fig = fig
 
     def run(self):
         self.dict_list = list(self.args)

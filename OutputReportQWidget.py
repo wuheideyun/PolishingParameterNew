@@ -181,11 +181,7 @@ class OutputReportWidget(QWidget):
         self.setLayout(layout)
         self.setContentsMargins(40, 40, 40, 20)
 
-
-        fig = plt.figure(figsize=(16, 8), dpi=100)
-        fig.suptitle("方案对比")
-
-        self.worker_thread = ComparisonWorkerThread(fig)
+        self.worker_thread = ComparisonWorkerThread()
         self.worker_thread.result_signal.connect(self.update_progress)
 
     def set_filter_condition(self, filter_condition):
@@ -194,7 +190,6 @@ class OutputReportWidget(QWidget):
         self.title_label.setText('数据库：【'+filter_condition+"】抛光参数")
         self.load_data_from_database()
     def on_compare_btn(self):
-
         # 获取所有行
         rows = self.table_widget.rowCount()
         selected_rowids = []
@@ -247,6 +242,12 @@ class OutputReportWidget(QWidget):
             fullparams = self.data_model.query_full(selected_rowids)
             self.compare_button.setEnabled(False)  # 禁用按钮，防止重复点击
             self.timer.start(500)  # 每秒触发一次
+
+            # 重置绘图窗口
+            plt.close('comparision_fig')
+            self.comparision_fig = plt.figure('comparision_fig',figsize=(16, 8), dpi=100)
+            self.comparision_fig.suptitle("方案对比")
+            self.worker_thread.fig = self.comparision_fig
             self.worker_thread.args = fullparams
             self.worker_thread.start()
 
