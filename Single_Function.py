@@ -83,6 +83,7 @@ class SingleWorkerThread(QThread):
             print('单头动画不存在')
         else:
             print('单头动画已经存在')
+            plt.close('运行轨迹动画')
         plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
         plt.rcParams['axes.unicode_minus'] = False             # 避免坐标轴不能正常地显示负号
         # 设置
