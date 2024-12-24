@@ -11,6 +11,8 @@ class DataModel(QObject):
         self.db_path = db_path
         self.connection = sqlite3.connect(db_path)
         self.cursor = self.connection.cursor()
+        # 初始化时检查并创建表结构
+        self.initialize_tables()
         self.device_mapping = {
             "1": "single",
             "2": "double",
@@ -23,6 +25,54 @@ class DataModel(QObject):
             "6": "order"
         }
 
+    def initialize_tables(self):
+        # 检查并创建 keys 表
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS keys (
+                key_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                content TEXT NOT NULL,
+                key TEXT NOT NULL,
+                fingerprint TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                status TEXT DEFAULT 'active'
+            );
+        """)
+
+        # 检查并创建 param 表
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS param (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT, 
+                production TEXT, 
+                num INTEGER, 
+                mode TEXT, 
+                motion_param TEXT(256), 
+                swing_mode TEXT, 
+                device_name TEXT, 
+                full_motion_param TEXT(512), 
+                belt_speed INTEGER, 
+                ceramic_width INTEGER, 
+                beam_swing_speed INTEGER, 
+                stay_time INTEGER
+            );
+        """)
+
+        # 检查并创建 users 表
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL,
+                email TEXT,
+                phone TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_login TIMESTAMP,
+                status TEXT DEFAULT 'active',
+                role TEXT DEFAULT 'user'
+            );
+        """)
+
+        # 提交事务
+        self.connection.commit()
     def fetch_data(self):
         """从数据库获取数据"""
         self.cursor.execute("SELECT rowid,  mode, swing_mode,belt_speed,ceramic_width,beam_swing_speed,stay_time,stay_time,device_name FROM param")
@@ -55,7 +105,7 @@ class DataModel(QObject):
                 conn.commit()
                 print("Data inserted successfully.")
                 self.dataChanged.emit()  # 发出数据变化信号
-                print('发出数据变化信号：新增数据')
+                print('Signal data change: New data is added')
                 return True
         except sqlite3.Error as e:
             print(f"Error inserting data: {e}")
@@ -69,7 +119,7 @@ class DataModel(QObject):
                 cursor.execute("DELETE FROM param WHERE rowid=?", (row_id,))
                 print("Data deleted successfully.")
                 self.dataChanged.emit()  # 发出数据变化信号
-                print('发出数据变化信号：删除数据')
+                print('Signal data change: Delete data')
         except sqlite3.Error as e:
             print(f"Error deleting data: {e}")
 

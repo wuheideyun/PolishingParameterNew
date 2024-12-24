@@ -1,3 +1,9 @@
+import ctypes
+import os
+import stat
+import sys
+import time
+
 from PySide6.QtGui import QPainter, QPixmap, QColor, QPalette, QBrush, QFont
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, \
     QLineEdit, QFrame, QSizePolicy, QSpacerItem, QStackedWidget, QScrollArea, QMessageBox, QStatusBar
@@ -33,7 +39,23 @@ class MplCanvas(FigureCanvas):
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+        # 检查是否在 PyCharm 中运行
+        if self.is_running_in_pycharm():
+            print("程序在 PyCharm 中运行，跳过管理员权限检查。")
+        else:
+            # 检查是否以管理员权限运行
+            if not self.is_admin():
+                print("程序需要以管理员权限运行，正在重新启动...")
+                self.run_as_admin()
+                time.sleep(3)
+                sys.exit(0)  # 退出当前进程
+            else:
+                print("程序已以管理员权限运行。")
 
+        # 继续执行程序的逻辑
+        print("程序正在运行...")
+        # 检查动画文件夹是否存在
+        self.check_and_create_folder()
         # 是否计算标识
         self.ifcalcflag = False
         self.data_model = DataModel('database.db')
@@ -203,7 +225,7 @@ class MainWindow(QWidget):
         chart1_font = QFont("Microsoft YaHei",18)
         chart_label1.setFont(chart1_font)
         # chart_label1.setStyleSheet("QLabel { writing-mode: vertical-rl; }")
-        chart1_layout.addSpacing(15)
+        chart1_layout.addSpacing(30)
         chart1_layout.addWidget(chart_label1)
         chart_label1.setAlignment(Qt.AlignVCenter)
         self.chart_frame1.setFixedSize(self.middle_frame_width,420)
@@ -226,13 +248,22 @@ class MainWindow(QWidget):
         layout_widget = QVBoxLayout(self.central_widget)
         # 创建画布
         self.canvas = MplCanvas(self, width=10, height=4, dpi=100)
+        self.canvas.setStyleSheet("""
+                border - radius: 10px;
+                background - color: white;
+            """)
         # 设置画布颜色
         deep_blue = (31/255, 55/255, 96/255)
-        self.canvas.figure.set_facecolor(deep_blue)  # 设置画布背景颜色为底色
+        # self.canvas.figure.set_facecolor(deep_blue)  # 设置画布背景颜色为底色
+
+        # self.canvas.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
+
+        chart1_layout.addStretch()
         # 创建拖动条
         scroll_area = QScrollArea(self)
         # 轨迹分布动画框尺寸调整***
-        scroll_area.setFixedSize(900, 380)
+        scroll_area.setFixedSize(910, 380)
+        scroll_area.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
 
         scroll_area.setWidgetResizable(True)  # 强制显示拖动条
         # 给画布设置拖动条
@@ -281,7 +312,7 @@ class MainWindow(QWidget):
         #                 background: #e0e0e0;
         #             }
         #         """)
-        scroll_area.setStyleSheet("QScrollArea { border-radius: 10px; background-color: white; }")
+        # scroll_area.setStyleSheet("QScrollArea { border-radius: 10px; background-color: white; }")
 
         # 将拖动条加入widget中,并设为居中
         layout_widget.addWidget(scroll_area,alignment=Qt.AlignmentFlag.AlignCenter)
@@ -297,7 +328,7 @@ class MainWindow(QWidget):
         chart_label2.setFont(chart2_font)
         chart_label2.setAlignment(Qt.AlignVCenter)
         chart2_layout = QHBoxLayout(self.chart_frame2)
-        chart2_layout.addSpacing(15)
+        chart2_layout.addSpacing(30)
         chart2_layout.addWidget(chart_label2)
         self.chart_frame2.setFixedSize(self.middle_frame_width,260)
         center_layout.addWidget(self.chart_frame2)
@@ -308,7 +339,7 @@ class MainWindow(QWidget):
         self.animation_QLabel.setFixedSize(940,235)
         # 设置 QLabel 背景颜色
         self.animation_QLabel.setStyleSheet("background-color: white;")  # 设置背景色为 lightgray
-        # self.animation_QLabel.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
+        self.animation_QLabel.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
         chart2_layout.addWidget(self.animation_QLabel,alignment=Qt.AlignmentFlag.AlignCenter)
         chart2_layout.addStretch()
 
@@ -394,7 +425,7 @@ class MainWindow(QWidget):
         self.right_intelligent_search_mode_layout = QVBoxLayout()
         # 区域4 - 运动输入参数
         self.motion_in_param_frame = MotionInputParamWidget()
-        motion_in_param_layout = QVBoxLayout(self.motion_in_param_frame)
+        # motion_in_param_layout = QVBoxLayout(self.motion_in_param_frame)
         self.motion_in_param_frame.setFixedWidth(self.right_frame_width-5)
         self.motion_in_param_frame.setContentsMargins(30,5,30,self.margin_value)
 
@@ -493,6 +524,7 @@ class MainWindow(QWidget):
         self.setLayout(main_layout)
         self.third_widget.setVisible(False)
         self.showMaximized()
+        print('Software loading succeeded!')
     def get_current_device_mode_solution(self):
         return ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
 
@@ -790,7 +822,65 @@ class MainWindow(QWidget):
         # 显示消息框
         msg_box.exec()
 
+    def check_and_create_folder(self):
+        # 获取程序所在的根目录路径
+        # base_path = os.path.dirname(os.path.abspath(__file__))
+        base_path = os.path.dirname(sys.executable)
+        print(base_path)
+        exe_dir = self.get_exe_directory()
+        print(f"当前程序所在的目录是: {exe_dir}")
+        base_path = exe_dir
+        # 定义文件夹路径
+        folder_path = os.path.join(base_path, "animation")
+
+        # 判断文件夹是否存在
+        if not os.path.exists(folder_path):
+            try:
+                # 创建文件夹
+                os.makedirs(folder_path)
+                print(f"文件夹 '{folder_path}' 已创建。")
+            except Exception as e:
+                print(f"无法创建文件夹 '{folder_path}'，错误信息：{e}")
+        # else:
+
+            # print(f"文件夹'{folder_path}' 已存在。")
+
+    def get_exe_directory(self):
+        if 'PYCHARM_HOSTED' in os.environ:
+            # 如果是 PyCharm 中运行
+            return os.path.dirname(os.path.abspath(__file__))
+        else:
+            # 其他情况（如命令行运行）
+            return os.path.dirname(sys.executable)
+    def is_admin(self):
+        """
+        检查当前程序是否以管理员权限运行
+        """
+        try:
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        except:
+            return False
+
+    def is_running_in_pycharm(self):
+        """
+        检查当前程序是否在 PyCharm 中运行
+        """
+        # 检查是否存在 PyCharm 相关的环境变量或命令行参数
+        if "PYCHARM_HOSTED" in os.environ:  # PyCharm 的环境变量
+            return True
+        if "pycharm" in sys.executable.lower():  # 检查 Python 解释器路径
+            return True
+        return False
+
+    def run_as_admin(self):
+        """
+        以管理员权限重新运行程序
+        """
+        script = sys.argv[0]
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, script, None, 1)
+
 if __name__ == "__main__":
+
     app = QApplication([])
     window = MainWindow()
     window.show()

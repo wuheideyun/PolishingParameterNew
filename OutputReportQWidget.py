@@ -45,14 +45,12 @@ class OutputReportWidget(QWidget):
                 border: 0px solid #555; /* 复选框边框 */
                 border-radius: 5px; /* 复选框圆角 */
                 background-color: #a0a0a0; /* 复选框背景颜色 */
-                transition: all 0.2s ease; /* 添加过渡效果 */
             }
             
             QCheckBox::indicator:checked {
                 background-color: #0078d7; /* 选中时的背景颜色 */
                 border: 1px solid #0078d7; /* 选中时的边框颜色 */
                 image: url(:/icons/checkmark.png); /* 选中时的图标 */
-                transition: all 0.2s ease; /* 添加过渡效果 */
             }
             
             QCheckBox::indicator:checked:hover {
@@ -269,7 +267,7 @@ class OutputReportWidget(QWidget):
             for col, value in enumerate(item):
                 self.table_widget.setItem(row, col, QTableWidgetItem(str(value)))
     def load_data_from_database(self):
-        print('加载一次数据')
+        # print('加载一次数据')
         # 连接数据库
         # conn = sqlite3.connect("database.db")
         # cursor = conn.cursor()

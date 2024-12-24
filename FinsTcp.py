@@ -78,13 +78,43 @@ class FinsTcp:
         temp = self.get_data_change_msg_byte_read(OperatorMode.Read, area, int(str_parts[1]), 0, length)
         self.client_socket.send(temp)
         buffer = self.get_receive_byte(30 + (length * 2))
-        if not buffer.is_success:
+        if buffer == None:
             return content
-        result = self.analyze_receive_msg(buffer.result_value, OperatorMode.Read, length)
+        result = self.analyze_receive_msg(buffer, OperatorMode.Read, length)
         if not result.is_success:
             return content
+        print(result.result_value)
+
+        values = []
         for i in range(0, len(result.result_value), 2):
-            content.result_value[i // 2] = (result.result_value[i] * 256) + result.result_value[i + 1]
+            value = struct.unpack('>h', result.result_value[i:i + 2])[0]
+            values.append(value)
+            # content.result_value[i // 2] = (result.result_value[i] * 256) + result.result_value[i + 1]
+        content.result_value = values
+        return content
+
+    def read_int(self, address, length):
+        str_parts = address.split('.')
+        area = OperatorArea.DMWord if str_parts[0].upper() == "DM" else OperatorArea.CIOWord
+        content = TResult()
+        content.result_value = [0] * length
+        temp = self.get_data_change_msg_byte_read(OperatorMode.Read, area, int(str_parts[1]), 0, length)
+        self.client_socket.send(temp)
+        buffer = self.get_receive_byte(30 + (length * 4))  # 注意：32 位整数需要 4 个字节
+        if buffer == None:
+            return content
+        result = self.analyze_receive_msg(buffer, OperatorMode.Read, length)
+        if not result.is_success:
+            return content
+        print(result.result_value)
+
+        values = []
+        for i in range(0, len(result.result_value), 4):  # 解析 32 位整数
+            # value = struct.unpack('<i', result.result_value[i:i + 4])[0]  # 使用小端序解析
+            # value = struct.unpack('l', result.result_value[0:4])[0]
+            value = struct.unpack('>i', result.result_value[0:4])[0]
+            values.append(value)
+        content.result_value = values
         return content
 
     def read_bool(self, address, length):

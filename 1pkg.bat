@@ -1,8 +1,8 @@
 @echo off
 REM Disable the command output to prevent the command from being displayed on the console
 chcp 936
-call d:\ProgramData\anaconda3\Scripts\activate C:\Users\pp\.conda\envs\pyside6
-start cmd.exe \K "d:\ProgramData\anaconda3\Scripts\activate.bat" "C:\Users\pp\.conda\envs\pyside6" >C:\Users\pp\AppData\Roaming\.anaconda\navigator\scripts\pyside6\console_shortcut-out-2.txt 2>C:\Users\pp\AppData\Roaming\.anaconda\navigator\scripts\pyside6\console_shortcut-err-2.txt
+call d:\ProgramData\anaconda3\Scripts\activate C:\Users\pengwei\.conda\envs\pyside6
+start cmd.exe \K "d:\ProgramData\anaconda3\Scripts\activate.bat" "C:\Users\pengwei\.conda\envs\pyside6" >C:\Users\pengwei\AppData\Roaming\.anaconda\navigator\scripts\pyside6\console_shortcut-out-2.txt 2>C:\Users\pengwei\AppData\Roaming\.anaconda\navigator\scripts\pyside6\console_shortcut-err-2.txt
 
 
 
@@ -14,7 +14,7 @@ set file_to_move2=database.db
 set target_folder=dist\main
 
 REM Define the folder to copy and the destination path
-set folder_to_copy=animation
+set folder_to_copy=\animation
 set folder_copy_target_path=dist\main
 
 
@@ -32,7 +32,7 @@ if exist "%cd%\%folder_to_delete2%" (
     echo folder %folder_to_delete2% dose not exist.
 )
 
-"C:\Users\pp\.conda\envs\pyside6\Scripts\pyinstaller.exe"   -w main.py
+"C:\Users\pengwei\.conda\envs\pyside6\Scripts\pyinstaller.exe"    main.py
 
 REM Check whether the destination folder exists. If it does not exist, create it
 if not exist "%cd%\%target_folder%" (
@@ -55,9 +55,9 @@ if exist "%cd%\%file_to_move2%" (
 )
 
 REM Check and copy the entire folder and its contents to the destination path
-if exist "%cd%\%folder_to_copy%" (
+if exist %folder_to_copy%" (
     echo Moving file: %folder_to_copy% to %folder_copy_target_path%
-    xcopy /e /i "%cd%\%folder_to_copy%" "%folder_copy_target_path%\%folder_to_copy%"
+    xcopy /e /i "%folder_to_copy%" "%folder_copy_target_path%\%folder_to_copy%"
 ) else (
     echo folder: %folder_to_copy% dose not exist.
 )
