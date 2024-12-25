@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt
 
 from Comparison_project import ComparisonWorkerThread, dict_value_to_float
 from ImageChangeButton import ImageChangeButton
+from TransferDataDialog import TransferDataDialog
 
 
 class OutputReportWidget(QWidget):
@@ -154,7 +155,7 @@ class OutputReportWidget(QWidget):
         # transfer_button = QPushButton("数据传输", self)
         # transfer_button = ImageChangeButton("数据传输", ":SmallFrame", ":SmallFrameClicked", 114, 37,True)
         transfer_button = ImageChangeButton("数据传输",":MiddleFrame",":MiddleFrameClicked",236,56,True)
-
+        transfer_button.clicked.connect(self.transfer_parameter)
         transfer_button.setStyleSheet("background-color: green; color: white;")
         button2_layout.addStretch()
         button2_layout.addWidget(self.compare_button)
@@ -187,6 +188,9 @@ class OutputReportWidget(QWidget):
         self.filter_condition = filter_condition
         self.title_label.setText('数据库：【'+filter_condition+"】抛光参数")
         self.load_data_from_database()
+    def transfer_parameter(self):
+        pass
+
     def on_compare_btn(self):
         # 获取所有行
         rows = self.table_widget.rowCount()
@@ -204,31 +208,31 @@ class OutputReportWidget(QWidget):
                 nodata_box.setText("请不要勾选超过【3】个以上的参数进行对比！")
                 nodata_box.setStandardButtons(QMessageBox.Ok)
 
-                # 设置背景颜色为蓝色，文字颜色为白色
-                nodata_box.setStyleSheet("""
-                                            QMessageBox {
-                                                background-color: rgb(31, 55, 96);
-                                            }
-                                            QMessageBox QLabel {
-                                                color: white;
-                                                font-family: "Microsoft YaHei"; /* 字体样式 */
-                                                font-size: 18px; /* 字体大小 */
-                                            }
-                                            QMessageBox QWidget#qt_msgbox_label {
-                                                font-family: "Microsoft YaHei"; /* 标题字体样式 */
-                                                font-size: 18px; /* 标题字体大小 */
-                                                color: white; /* 标题颜色 */
-                                            }
-                                            QMessageBox QPushButton {
-                                                background-color: #444;
-                                                color: white;
-                                                border: 1px solid #555;
-                                                padding: 5px 10px;
-                                            }
-                                            QMessageBox QPushButton:hover {
-                                                background-color: #555;
-                                            }
-                                        """)
+                # # 设置背景颜色为蓝色，文字颜色为白色
+                # nodata_box.setStyleSheet("""
+                #                             QMessageBox {
+                #                                 background-color: rgb(31, 55, 96);
+                #                             }
+                #                             QMessageBox QLabel {
+                #                                 color: white;
+                #                                 font-family: "Microsoft YaHei"; /* 字体样式 */
+                #                                 font-size: 18px; /* 字体大小 */
+                #                             }
+                #                             QMessageBox QWidget#qt_msgbox_label {
+                #                                 font-family: "Microsoft YaHei"; /* 标题字体样式 */
+                #                                 font-size: 18px; /* 标题字体大小 */
+                #                                 color: white; /* 标题颜色 */
+                #                             }
+                #                             QMessageBox QPushButton {
+                #                                 background-color: #444;
+                #                                 color: white;
+                #                                 border: 1px solid #555;
+                #                                 padding: 5px 10px;
+                #                             }
+                #                             QMessageBox QPushButton:hover {
+                #                                 background-color: #555;
+                #                             }
+                #                         """)
 
                 # 将删除成功对话框显示在列表界面的水平和垂直居中位置
                 nodata_box.setWindowModality(Qt.ApplicationModal)
@@ -316,6 +320,33 @@ class OutputReportWidget(QWidget):
         # 调整操作列的列宽，使其刚好跟复选框差不多大
         self.table_widget.horizontalHeader().resizeSection(6, 50)  # 设置操作列宽度为50像素
 
+    def transfer_parameter(self):
+        # 获取所有行
+        rows = self.table_widget.rowCount()
+        selected_rowids = []
+
+        # 遍历每一行，检查最后一列的 QCheckBox 是否被选中
+        for row in range(rows):
+            checkbox = self.table_widget.cellWidget(row, 9).findChild(QCheckBox)
+            if checkbox and checkbox.isChecked():
+                selected_rowids.append(row)
+
+        # 检查是否只勾选了一条记录
+        if len(selected_rowids) != 1:
+            QMessageBox.warning(self, "警告", "只能勾选一条记录进行数据传输！")
+            return
+
+        # 获取勾选的那条记录的数据
+        selected_row = selected_rowids[0]
+        selected_data = []
+        for col in range(1, 8):  # 从第1列到第7列
+            item = self.table_widget.item(selected_row, col)
+            if item:
+                selected_data.append(item.text())
+
+        # 弹出数据传输对话框
+        dialog = TransferDataDialog(selected_data)
+        dialog.exec()
 
     def update_status(self):
         # self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]

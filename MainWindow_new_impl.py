@@ -231,31 +231,6 @@ class MainWindow_impl(MainWindow):
             nodata_box.setText("请先进行方案选择操作，计算出【运动输出参数】后再进行保存参数操作！")
             nodata_box.setStandardButtons(QMessageBox.Ok)
 
-            # 设置背景颜色为蓝色，文字颜色为白色
-            nodata_box.setStyleSheet("""
-                                        QMessageBox {
-                                            background-color: rgb(31, 55, 96);
-                                        }
-                                        QMessageBox QLabel {
-                                            color: white;
-                                            font-family: "Microsoft YaHei"; /* 字体样式 */
-                                            font-size: 18px; /* 字体大小 */
-                                        }
-                                        QMessageBox QWidget#qt_msgbox_label {
-                                            font-family: "Microsoft YaHei"; /* 标题字体样式 */
-                                            font-size: 18px; /* 标题字体大小 */
-                                            color: white; /* 标题颜色 */
-                                        }
-                                        QMessageBox QPushButton {
-                                            background-color: #444;
-                                            color: white;
-                                            border: 1px solid #555;
-                                            padding: 5px 10px;
-                                        }
-                                        QMessageBox QPushButton:hover {
-                                            background-color: #555;
-                                        }
-                                    """)
 
             # 将删除成功对话框显示在列表界面的水平和垂直居中位置
             nodata_box.setWindowModality(Qt.ApplicationModal)
@@ -321,26 +296,14 @@ class MainWindow_impl(MainWindow):
         # 判断摆动模式
         if self.current_mode == 2:
             current_mode = '人工寻优'
+            params['lineEdit_stay_time'] = params['lineEdit_stay_time_input']#人工寻优的【边部停留时间】取input
         elif self.current_mode == 1:
+            params['lineEdit_stay_time'] = params['lineEdit_stay_time_output']#智能寻优的【边部停留时间】取output
             current_mode = '智能寻优'
 
         # params['mode'] = self.solution_selection
 
         values = self.concatenate_values(params)
-        # try:
-        #     # 连接到SQLite数据库
-        #     with sqlite3.connect(self.db_path) as conn:
-        #         cursor = conn.cursor()
-        #         data = [
-        #             (params['lineEdit_production_volume'], params['lineEdit_num_input'], current_mode,values, swing_mode)
-        #         ]
-        #         cursor.executemany(
-        #             'INSERT INTO param (production, num, mode, motion_param, swing_mode) VALUES (?,?,?,?,?)',
-        #             data)
-        #         print("Data inserted successfully.")
-        #         self.status_label.setText('                  参数已保存至数据库！')
-        # except sqlite3.Error as e:
-        #     print(f"Error inserting data: {e}")
 
         if self.data_model.add_data(params, current_mode, values, swing_mode,self.device_mapping.get(self.current_device)):
             self.status_label.setText('                  参数已保存至数据库！')
