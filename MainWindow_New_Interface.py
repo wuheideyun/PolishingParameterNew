@@ -28,6 +28,17 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from PySide6.QtGui import QColor
 
+
+frameStyleSheet = """
+            QStackedWidget, QFrame {
+                border: 5px solid #1a4a93;
+                border-radius: 20px;
+                margin: 8px;
+            }
+            QLabel {
+                border : none;
+            }
+        """
 class MplCanvas(FigureCanvas):
     def __init__(self, parent=None, width=8, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height))
@@ -59,7 +70,7 @@ class MainWindow(QWidget):
         # 是否计算标识
         self.ifcalcflag = False
         self.data_model = DataModel('database.db')
-        self.margin_value = 15
+        self.margin_value = 5
         self.flag = False
         self.logger = LoggerHelper('param_change')
         self.selectedFunction = 1
@@ -115,7 +126,9 @@ class MainWindow(QWidget):
 
         # 创建 QStackedWidget
         self.host_param_stacked_widget = QStackedWidget()
-        self.host_param_stacked_widget.setFixedSize(self.left_frame_width,310)
+        self.host_param_stacked_widget.setFixedSize(self.left_frame_width,320)
+
+        self.host_param_stacked_widget.setStyleSheet(frameStyleSheet)
 
         # 创建 QStackedWidget
         self.motion_param_stacked_widget = QStackedWidget()
@@ -156,7 +169,9 @@ class MainWindow(QWidget):
         # 机型选择按钮区域
         self.button_frame = QFrame()
         self.button_frame.setFixedWidth(self.left_frame_width)
-        self.button_frame.setContentsMargins(self.margin_value,self.margin_value,self.margin_value,self.margin_value)
+        self.button_frame.setContentsMargins(self.margin_value,0,self.margin_value,0)
+        self.button_frame.setStyleSheet(frameStyleSheet)
+
         button_layout = QVBoxLayout(self.button_frame)
         self.single_button = ImageChangeButton("",":Single",":SingleClicked",315,74)
         # 单头摆模式切换
@@ -180,30 +195,36 @@ class MainWindow(QWidget):
         # 区域2 - 图片位置
         self.image_frame = QFrame()
         self.image_frame.setFixedWidth(self.left_frame_width)
-        self.image_frame.setContentsMargins(self.margin_value,5,self.margin_value,self.margin_value)
+        # self.image_frame.setContentsMargins(self.margin_value,0,self.margin_value,0)
         image_layout = QVBoxLayout(self.image_frame)
         image_label = QLabel("机型图")
+        image_label.setStyleSheet("border : none;")
+        # image_label.setFixedHeight(40)
         # 设置字体大小和字体类型
         image_font = QFont("Microsoft YaHei", 18)  # "Microsoft YaHei" 为字体类型，18 为字体大小
         image_label.setFont(image_font)
-        image_layout.addWidget(image_label)
         image_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        image_layout.addWidget(image_label)
+        self.image_frame.setStyleSheet(frameStyleSheet)
         left_layout.addWidget(self.image_frame)
+        image_layout.addStretch()
+        # 区域3 - 主机参数(单头摆)
+        self.host_param_single_frame = HostParamSingleWidget()
+        self.host_param_single_frame.setFixedSize(self.left_frame_width, 280)
+        self.host_param_single_frame.setContentsMargins(50, 0, 50, self.margin_value)
+        self.host_param_single_frame.setStyleSheet("border : none")
 
         # 区域3 - 主机参数(双头摆)
         self.host_param_double_frame = HostParamDoubleWidget()
-        self.host_param_double_frame.setFixedSize(self.left_frame_width,310)
-        self.host_param_double_frame.setContentsMargins(50, 5, 50, self.margin_value)
-
-        # 区域3 - 主机参数(单头摆)
-        self.host_param_single_frame = HostParamSingleWidget()
-        self.host_param_single_frame.setFixedSize(self.left_frame_width,310)
-        self.host_param_single_frame.setContentsMargins(50, 5, 50, self.margin_value)
+        self.host_param_double_frame.setFixedSize(self.left_frame_width,300)
+        self.host_param_double_frame.setContentsMargins(50, 0, 50, self.margin_value)
+        self.host_param_double_frame.setStyleSheet("border : none")
 
         # 区域3 - 主机参数(同步摆)
         self.host_param_equal_frame = HostParamEqualWidget()
-        self.host_param_equal_frame.setFixedSize(self.left_frame_width, 310)
-        self.host_param_equal_frame.setContentsMargins(50, 5, 50, self.margin_value)
+        self.host_param_equal_frame.setFixedSize(self.left_frame_width, 300)
+        self.host_param_equal_frame.setContentsMargins(50, 0, 50, self.margin_value)
+        self.host_param_equal_frame.setStyleSheet("border : none")
 
         self.host_param_stacked_widget.addWidget(self.host_param_single_frame)
         self.host_param_stacked_widget.addWidget(self.host_param_double_frame)
@@ -225,10 +246,11 @@ class MainWindow(QWidget):
         chart1_font = QFont("Microsoft YaHei",18)
         chart_label1.setFont(chart1_font)
         # chart_label1.setStyleSheet("QLabel { writing-mode: vertical-rl; }")
-        chart1_layout.addSpacing(30)
+        chart1_layout.addSpacing(10)
         chart1_layout.addWidget(chart_label1)
         chart_label1.setAlignment(Qt.AlignVCenter)
         self.chart_frame1.setFixedSize(self.middle_frame_width,420)
+        self.chart_frame1.setStyleSheet(frameStyleSheet)
         center_layout.addWidget(self.chart_frame1)
 
         # 创建一个QWidget作为图框--轨迹分布
@@ -262,7 +284,7 @@ class MainWindow(QWidget):
         # 创建拖动条
         scroll_area = QScrollArea(self)
         # 轨迹分布动画框尺寸调整***
-        scroll_area.setFixedSize(910, 380)
+        scroll_area.setFixedSize(900, 380)
         scroll_area.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
 
         scroll_area.setWidgetResizable(True)  # 强制显示拖动条
@@ -328,15 +350,17 @@ class MainWindow(QWidget):
         chart_label2.setFont(chart2_font)
         chart_label2.setAlignment(Qt.AlignVCenter)
         chart2_layout = QHBoxLayout(self.chart_frame2)
-        chart2_layout.addSpacing(30)
+        chart2_layout.addSpacing(10)
         chart2_layout.addWidget(chart_label2)
         self.chart_frame2.setFixedSize(self.middle_frame_width,260)
+
+        self.chart_frame2.setStyleSheet(frameStyleSheet)
         center_layout.addWidget(self.chart_frame2)
 
         # 创建一个 QLabel ，用来播放轨迹动画
         self.animation_QLabel = QLabel()
         # 轨迹动画尺寸调整***
-        self.animation_QLabel.setFixedSize(940,235)
+        self.animation_QLabel.setFixedSize(920,228)
         # 设置 QLabel 背景颜色
         self.animation_QLabel.setStyleSheet("background-color: white;")  # 设置背景色为 lightgray
         self.animation_QLabel.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
@@ -351,19 +375,20 @@ class MainWindow(QWidget):
 
         # 区域8 - 模式选择和方案选择
         self.calc_button_frame = QFrame()
-        self.calc_button_frame.setContentsMargins(5,5,5,5)
+        self.calc_button_frame.setContentsMargins(0,0,0,0)
         calc_button_layout = QVBoxLayout(self.calc_button_frame)
         self.calc_button_frame.setFixedSize(self.middle_frame_width,160)
 
         self.first_widget = QWidget()
         first_layout = QHBoxLayout(self.first_widget)
-        self.intelligent_search_mode = ImageChangeButton("智能寻优模式",":MiddleFrame",":MiddleFrameClicked",220,50)
+        self.first_widget.setFixedHeight(75)
+        self.intelligent_search_mode = ImageChangeButton("智能寻优模式",":MiddleFrame",":MiddleFrameClicked",200,45)
         self.intelligent_search_mode.clicked.connect(self.switch_search_motion_param_intelligence_clicked)
-        self.artificial_search_mode = ImageChangeButton("人工寻优模式",":MiddleFrame",":MiddleFrameClicked",220,50)
+        self.artificial_search_mode = ImageChangeButton("人工寻优模式",":MiddleFrame",":MiddleFrameClicked",200,45)
         self.artificial_search_mode.clicked.connect(self.switch_search_motion_param_manual_clicked)
         self.save_button = ImageChangeButton("参数保存",":SmallFrame",":SmallFrameClicked",114,37,True)
-        first_layout.addSpacerItem(QSpacerItem(115,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
-        first_layout.addWidget(QLabel("模式\n选择", styleSheet="font-size: 20px;"))
+        first_layout.addSpacerItem(QSpacerItem(136,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        first_layout.addWidget(QLabel("模式\n选择", styleSheet="font-size: 17px;"))
         first_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         first_layout.addWidget(self.intelligent_search_mode)
         first_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
@@ -375,12 +400,13 @@ class MainWindow(QWidget):
         first_layout.addSpacerItem(QSpacerItem(61,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
 
         self.second_widget = QWidget()
+        self.second_widget.setFixedHeight(75)
         second_layout = QHBoxLayout(self.second_widget)
-        self.button_energy_project = ImageChangeButton("节能方案", ":GreenFrame", ":GreenFrameClicked",    220,50,True)
-        self.button_efficient_project = ImageChangeButton("高品质方案", ":GreenFrame", ":GreenFrameClicked",220,50,True)
-        self.button_selfdefine_project = ImageChangeButton("自定义修正方案", ":GreenFrame", ":GreenFrameClicked",220,50,True)
-        second_layout.addSpacerItem(QSpacerItem(55,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
-        second_layout.addWidget(QLabel("方案\n选择", styleSheet="font-size: 20px;"))
+        self.button_energy_project = ImageChangeButton("节能方案", ":GreenFrame", ":GreenFrameClicked",    200,45,True)
+        self.button_efficient_project = ImageChangeButton("高品质方案", ":GreenFrame", ":GreenFrameClicked",200,45,True)
+        self.button_selfdefine_project = ImageChangeButton("自定义修正方案", ":GreenFrame", ":GreenFrameClicked",200,45,True)
+        second_layout.addSpacerItem(QSpacerItem(136,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        second_layout.addWidget(QLabel("方案\n选择", styleSheet="font-size: 17px;"))
         second_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         second_layout.addWidget(self.button_energy_project)
         second_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
@@ -390,16 +416,17 @@ class MainWindow(QWidget):
         second_layout.addSpacerItem(QSpacerItem(55,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
 
         self.third_widget = QWidget()
+        self.third_widget.setFixedHeight(75)
         third_layout = QHBoxLayout(self.third_widget)
-        self.button_synchronization_mode = ImageChangeButton("同步摆动模式", ":GreenFrame", ":GreenFrameClicked", 220,50,True)
-        self.button_cross_mode = ImageChangeButton("交叉摆动模式", ":GreenFrame", ":GreenFrameClicked", 220,50,True)
+        self.button_synchronization_mode = ImageChangeButton("同步摆动模式", ":GreenFrame", ":GreenFrameClicked", 200,45,True)
+        self.button_cross_mode = ImageChangeButton("交叉摆动模式", ":GreenFrame", ":GreenFrameClicked", 200,45,True)
         self.placeholder1 = QWidget()
-        self.placeholder1.setFixedSize(236, 50)
-        self.button_order_mode = ImageChangeButton("顺序摆动模式", ":GreenFrame", ":GreenFrameClicked", 220,50,True)
+        self.placeholder1.setFixedSize(206, 50)
+        self.button_order_mode = ImageChangeButton("顺序摆动模式", ":GreenFrame", ":GreenFrameClicked", 200,45,True)
         self.placeholder2 = QWidget()
-        self.placeholder2.setFixedSize(236, 50)
-        third_layout.addSpacerItem(QSpacerItem(113,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
-        third_layout.addWidget(QLabel("方案\n选择", styleSheet="font-size: 20px;"),alignment=Qt.AlignmentFlag.AlignLeft)
+        self.placeholder2.setFixedSize(206, 50)
+        third_layout.addSpacerItem(QSpacerItem(136,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
+        third_layout.addWidget(QLabel("方案\n选择", styleSheet="font-size: 17px;"),alignment=Qt.AlignmentFlag.AlignLeft)
         third_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
         third_layout.addWidget(self.button_synchronization_mode,alignment=Qt.AlignmentFlag.AlignLeft)
         third_layout.addSpacerItem(QSpacerItem(20,50,QSizePolicy.Fixed,QSizePolicy.Expanding))
@@ -415,6 +442,8 @@ class MainWindow(QWidget):
         calc_button_layout.addWidget(self.first_widget)
         calc_button_layout.addWidget(self.second_widget)
         calc_button_layout.addWidget(self.third_widget)
+        calc_button_layout.setContentsMargins(0,0,0,0)
+        self.calc_button_frame.setStyleSheet(frameStyleSheet)
         center_layout.addWidget(self.calc_button_frame)
         content_layout.addLayout(center_layout)
 
@@ -577,8 +606,8 @@ class MainWindow(QWidget):
         # 设置为窗口背景
         palette = QPalette()
         palette.setBrush(QPalette.Window, QBrush(scaled_image))
-        self.chart_frame2.setPalette(palette)
-        self.chart_frame2.setAutoFillBackground(True)
+        # self.chart_frame2.setPalette(palette)
+        # self.chart_frame2.setAutoFillBackground(True)
 
 
     def set_background_image(self):
@@ -600,90 +629,91 @@ class MainWindow(QWidget):
 
         # 单头摆/双头摆/同步摆设备选择
         # 设置背景图片路径
-        self.button_frame_image_path = ":SwingAndHostParameter"
-        self.button_frame_image = QPixmap(self.button_frame_image_path)
-        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
-        button_frame_size = self.button_frame.size()
-        scaled_image = self.button_frame_image.scaled(button_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-        # 设置为窗口背景
-        palette1 = QPalette()
-        palette1.setBrush(QPalette.Window, QBrush(scaled_image))
-        self.button_frame.setPalette(palette1)
-        self.button_frame.setAutoFillBackground(True)
+        # self.button_frame_image_path = ":SwingAndHostParameter"
+        # self.button_frame_image = QPixmap(self.button_frame_image_path)
+        # # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        # button_frame_size = self.button_frame.size()
+        # scaled_image = self.button_frame_image.scaled(button_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # # 设置为窗口背景
+        # palette1 = QPalette()
+        # palette1.setBrush(QPalette.Window, QBrush(scaled_image))
+        # self.button_frame.setPalette(palette1)
+        # self.button_frame.setAutoFillBackground(True)
 
         # 机型图
         # 设置背景图片路径
-        self.image_frame_image_path = ":Machine"
-        self.image_frame_image = QPixmap(self.image_frame_image_path)
-        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
-        image_frame_size = self.image_frame.size()
-        scaled_image = self.image_frame_image.scaled(image_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-        # 设置为窗口背景
-        palette2 = QPalette()
-        palette2.setBrush(QPalette.Window, QBrush(scaled_image))
-        self.image_frame.setPalette(palette2)
-        self.image_frame.setAutoFillBackground(True)
+        # self.image_frame_image_path = ":Machine"
+        # self.image_frame_image = QPixmap(self.image_frame_image_path)
+        # # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        # image_frame_size = self.image_frame.size()
+        # scaled_image = self.image_frame_image.scaled(image_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # # 设置为窗口背景
+        # palette2 = QPalette()
+        # palette2.setBrush(QPalette.Window, QBrush(scaled_image))
+        # self.image_frame.setPalette(palette2)
+        # self.image_frame.setAutoFillBackground(True)
+
 
         # 主机参数-双头摆
         # 设置背景图片路径
-        self.host_param_frame_image = QPixmap(":SwingAndHostParameter")
+        # self.host_param_frame_image = QPixmap(":SwingAndHostParameter")
         # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
-        scaled_image = self.host_param_frame_image.scaled(self.host_param_double_frame.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-        # 设置为窗口背景
-        host_palette = QPalette()
-        host_palette.setBrush(QPalette.Window, QBrush(scaled_image))
+        # scaled_image = self.host_param_frame_image.scaled(self.host_param_double_frame.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # # 设置为窗口背景
+        # host_palette = QPalette()
+        # host_palette.setBrush(QPalette.Window, QBrush(scaled_image))
 
-        self.host_param_double_frame.setPalette(host_palette)
-        self.host_param_double_frame.setAutoFillBackground(True)
+        # self.host_param_double_frame.setPalette(host_palette)
+        # self.host_param_double_frame.setAutoFillBackground(True)
 
         # 主机参数-单头摆
         # 设置为窗口背景
-        self.host_param_single_frame.setPalette(host_palette)
-        self.host_param_single_frame.setAutoFillBackground(True)
+        # self.host_param_single_frame.setPalette(host_palette)
+        # self.host_param_single_frame.setAutoFillBackground(True)
 
         # 主机参数-同步摆
         # 设置为窗口背景
-        self.host_param_equal_frame.setPalette(host_palette)
-        self.host_param_equal_frame.setAutoFillBackground(True)
+        # self.host_param_equal_frame.setPalette(host_palette)
+        # self.host_param_equal_frame.setAutoFillBackground(True)
 
         # 轨迹分布
         # 设置背景图片路径
-        self.sim_image_path = ":Line"
-        self.sim_image = QPixmap(self.sim_image_path)
+        # self.sim_image_path = ":Line"
+        # self.sim_image = QPixmap(self.sim_image_path)
         # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
-        sim_frame_size = self.chart_frame1.size()
-        scaled_image = self.sim_image.scaled(sim_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # sim_frame_size = self.chart_frame1.size()
+        # scaled_image = self.sim_image.scaled(sim_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
         # 设置为窗口背景
-        palette4 = QPalette()
-        palette4.setBrush(QPalette.Window, QBrush(scaled_image))
-        self.chart_frame1.setPalette(palette4)
-        self.chart_frame1.setAutoFillBackground(True)
-
+        # palette4 = QPalette()
+        # palette4.setBrush(QPalette.Window, QBrush(scaled_image))
+        # self.chart_frame1.setPalette(palette4)
+        # self.chart_frame1.setAutoFillBackground(True)
+        # self.chart_frame1.setStyleSheet(frameStyleSheet)
         # 轨迹动画
         # 设置背景图片路径
-        self.animation_image_path = ":Line"
-        self.animation_image = QPixmap(self.animation_image_path)
+        # self.animation_image_path = ":Line"
+        # self.animation_image = QPixmap(self.animation_image_path)
         # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
-        animation_frame_size = self.chart_frame2.size()
-        scaled_image = self.animation_image.scaled(animation_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # animation_frame_size = self.chart_frame2.size()
+        # scaled_image = self.animation_image.scaled(animation_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
         # 设置为窗口背景
-        palette5 = QPalette()
-        palette5.setBrush(QPalette.Window, QBrush(scaled_image))
-        self.chart_frame2.setPalette(palette5)
-        self.chart_frame2.setAutoFillBackground(True)
+        # palette5 = QPalette()
+        # palette5.setBrush(QPalette.Window, QBrush(scaled_image))
+        # self.chart_frame2.setPalette(palette5)
+        # self.chart_frame2.setAutoFillBackground(True)
 
         # 模式选择
         # 设置背景图片路径
-        self.animation_image_path = ":Select"
-        self.animation_image = QPixmap(self.animation_image_path)
-        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
-        animation_frame_size = self.calc_button_frame.size()
-        scaled_image = self.animation_image.scaled(animation_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-        # 设置为窗口背景
-        palette6 = QPalette()
-        palette6.setBrush(QPalette.Window, QBrush(scaled_image))
-        self.calc_button_frame.setPalette(palette6)
-        self.calc_button_frame.setAutoFillBackground(True)
+        # self.animation_image_path = ":Select"
+        # self.animation_image = QPixmap(self.animation_image_path)
+        # # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
+        # animation_frame_size = self.calc_button_frame.size()
+        # scaled_image = self.animation_image.scaled(animation_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        # # 设置为窗口背景
+        # palette6 = QPalette()
+        # palette6.setBrush(QPalette.Window, QBrush(scaled_image))
+        # self.calc_button_frame.setPalette(palette6)
+        # self.calc_button_frame.setAutoFillBackground(True)
 
         # 运动输入参数
         # 设置背景图片路径

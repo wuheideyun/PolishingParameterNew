@@ -75,7 +75,7 @@ class DataModel(QObject):
         self.connection.commit()
     def fetch_data(self):
         """从数据库获取数据"""
-        self.cursor.execute("SELECT rowid,  mode, swing_mode,belt_speed,ceramic_width,beam_swing_speed,stay_time,stay_time,device_name FROM param")
+        self.cursor.execute("SELECT rowid,  mode, swing_mode,belt_speed,ceramic_width,beam_swing_speed,stay_time,stay_time,device_name,full_motion_param FROM param")
         return self.cursor.fetchall()
 
     def add_data(self, params, current_mode, values, swing_mode,device_name):

@@ -13,8 +13,6 @@ class HostParamSingleWidget(QWidget):
     sig_Saved = Signal()
     def __init__(self):
         super().__init__()
-
-
         # 设置窗口标题和大小
         self.setWindowTitle("主机参数(单头摆)设置")
         # self.setGeometry(100, 100, 300, 200)
@@ -31,7 +29,6 @@ class HostParamSingleWidget(QWidget):
         param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
         layout.addWidget(param_label)
 
-
         # 定义标签和编辑框的文本
         labels = [
             "横梁间距：", "磨头直径：", "磨块长度：", "工作时长："
@@ -42,7 +39,7 @@ class HostParamSingleWidget(QWidget):
             "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length", "lineEdit_work_time"
         ]
         # 创建自定义的网格布局（增加监听）
-        self.content_layout = JustifiedGridLayout(labels, line_edit_names,line_edit_names2=line_edit_names)
+        self.content_layout = JustifiedGridLayout(labels, line_edit_names,6,line_edit_names,-1,'','')
 
         # 添加保存按钮
         self.save_button = ImageChangeButton("参数保存",":SmallFrame",":SmallFrameClicked",114,37,True)
@@ -51,9 +48,8 @@ class HostParamSingleWidget(QWidget):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         button_layout.addWidget(self.save_button)
-        layout.addStretch()
+        # layout.addStretch()
         layout.addLayout(button_layout)
-
         self.loadParameter()
         # 设置主布局
         self.setLayout(layout)

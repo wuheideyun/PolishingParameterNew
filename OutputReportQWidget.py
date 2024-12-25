@@ -91,11 +91,12 @@ class OutputReportWidget(QWidget):
         self.table_widget = QTableWidget(self)
         self.table_widget.setColumnCount(10)  # 增加一列用于显示序号
         self.table_widget.setHorizontalHeaderLabels(
-            ["序号", "模式","方案选择","主皮带速度", "进砖宽度", "摆动速度", "边部停留时间","边部停留时间", "设备",  "操作"]
+            ["序号", "模式","方案选择","主皮带速度", "进砖宽度", "摆动速度", "边部停留时间","边部停留时间", "设备","操作",  "操作"]
         )
         # 隐藏序号列
         self.table_widget.setColumnHidden(0, True)
         self.table_widget.setColumnHidden(6, True)
+        # self.table_widget.setColumnHidden(9, True)
 
         # 设置表格为可滚动
         self.table_widget.setEditTriggers(QTableWidget.NoEditTriggers)  # 禁止编辑
@@ -188,8 +189,6 @@ class OutputReportWidget(QWidget):
         self.filter_condition = filter_condition
         self.title_label.setText('数据库：【'+filter_condition+"】抛光参数")
         self.load_data_from_database()
-    def transfer_parameter(self):
-        pass
 
     def on_compare_btn(self):
         # 获取所有行
@@ -339,7 +338,7 @@ class OutputReportWidget(QWidget):
         # 获取勾选的那条记录的数据
         selected_row = selected_rowids[0]
         selected_data = []
-        for col in range(1, 8):  # 从第1列到第7列
+        for col in range(1, 10):  # 从第1列到第7列
             item = self.table_widget.item(selected_row, col)
             if item:
                 selected_data.append(item.text())

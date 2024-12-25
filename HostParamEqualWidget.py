@@ -28,7 +28,6 @@ class HostParamEqualWidget(QWidget):
         param_font = QFont("Microsoft YaHei", 18)  # "Microsoft YaHei" 为字体类型，18 为字体大小
         param_label.setFont(param_font)
         param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
-
         layout.addWidget(param_label)
 
         # 定义标签和编辑框的文本
@@ -40,7 +39,7 @@ class HostParamEqualWidget(QWidget):
             "lineEdit_between", "lineEdit_diameter", "lineEdit_grind_length", "lineEdit_work_time"
         ]
         # 创建自定义的网格布局(对所有参数增加监听)
-        self.content_layout = JustifiedGridLayout(labels, line_edit_names,6,line_edit_names,-1,'','')
+        self.content_layout = JustifiedGridLayout(labels, line_edit_names,1,line_edit_names,-1,'','')
 
         # 添加保存按钮
         self.save_button = ImageChangeButton("参数保存", ":SmallFrame", ":SmallFrameClicked", 114, 37,True)
@@ -62,7 +61,6 @@ class HostParamEqualWidget(QWidget):
         self.settings.setValue("host_param_equal_lineEdit_diameter", self.content_layout.get_line_edit_value("lineEdit_diameter"))
         self.settings.setValue("host_param_equal_lineEdit_grind_length", self.content_layout.get_line_edit_value("lineEdit_grind_length"))
         self.settings.setValue("host_param_equal_lineEdit_work_time", self.content_layout.get_line_edit_value("lineEdit_work_time"))
-
         self.sig_Saved.emit()
     def loadParameter(self):
         """加载配置文件中的数据到各个LineEdit控件"""
