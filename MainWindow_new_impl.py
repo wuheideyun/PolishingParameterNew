@@ -287,8 +287,10 @@ class MainWindow_impl(MainWindow):
         elif self.current_device == 3:
             if self.current_mode == 1:
                 params = dict_value_to_float(self.equal_parameter_intelligent)
+                params['lineEdit_delay_time'] = 0.0
             else:
                 params = dict_value_to_float(self.equal_parameter_manual)
+                params['lineEdit_delay_time'] = 0.0
 
             swing_mode = '同步摆'
             params['mode'] = '4'

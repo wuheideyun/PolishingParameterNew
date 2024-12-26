@@ -61,8 +61,8 @@ class MainWindow(QWidget):
 
         # 定义标签和编辑框的文本
         labels = [
-            "主皮带速度：", "摆动速度：", "匀速摆动时间：", "边部停留时间：",
-            "摆幅：", "同粒度磨头数：", "均匀系数："
+            "主皮带速度(mm/s)：", "摆动速度(mm/s)：", "匀速摆动时间(s)：", "边部停留时间(s)：",
+            "摆     幅(mm)：", "同粒度磨头数(个)：", "均匀系数："
         ]
 
         # 定义编辑框的名称
@@ -78,7 +78,7 @@ class MainWindow(QWidget):
         for row, (label_text, line_edit_name) in enumerate(zip(labels, line_edit_names)):
             label = JustifiedLabel(label_text)
             line_edit = QLineEdit()
-            line_edit.setFixedWidth(10)
+            line_edit.setFixedWidth(7)
             line_edit.setObjectName(line_edit_name)  # 设置编辑框的名称
             self.line_edits.append(line_edit)  # 将编辑框添加到集合中
             layout.addWidget(label, row, 0)  # 标签放在第0列

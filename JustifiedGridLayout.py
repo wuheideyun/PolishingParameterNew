@@ -37,7 +37,8 @@ class JustifiedGridLayout(QGridLayout):
             line_edit.setFont(param_font)
             # line_edit.setStyleSheet("color: white")
             line_edit.setStyleSheet("background-color: #444;color: white; border: 1px solid #666; border-radius: 3px; padding: 5px;")
-            line_edit.setMinimumSize(15, 30)  # 设置编辑框的最小大小
+            # line_edit.setMinimumSize(10, 30)  # 设置编辑框的最小大小
+            line_edit.setFixedWidth(100)
             self.line_edits.append(line_edit)  # 将编辑框添加到集合中
             self.addWidget(label, self.current_row, 0)  # 标签放在第0列
             self.addWidget(line_edit, self.current_row, 1)  # 编辑框放在第1列

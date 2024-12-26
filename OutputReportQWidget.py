@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QCheckBox, QLabel, QMessageBox, QSizePolicy
 )
-from PySide6.QtGui import QColor, QFont
+from PySide6.QtGui import QColor, QFont, QPalette
 from PySide6.QtCore import Qt, QTimer
 from matplotlib import pyplot as plt
 
@@ -116,10 +116,14 @@ class OutputReportWidget(QWidget):
         font = QFont("Microsoft YaHei", 13)
         self.table_widget.setFont(font)
         # 设置表头字体加粗
-        header_font = QFont("Microsoft YaHei", 18, QFont.Bold)
+        header_font = QFont("Microsoft YaHei", 18, QFont.Bold )
         self.table_widget.horizontalHeader().setFont(header_font)
+        # 设置表头字体颜色为黑色
+        palette = self.table_widget.horizontalHeader().palette()  # 获取水平表头的调色板
+        palette.setColor(QPalette.Text, QColor(Qt.black))  # 设置字体颜色为黑色
         self.table_widget.setStyleSheet("color: white; gridline-color: rgb(221, 221, 221);border: 1px solid rgb(221, 221, 221);")
 
+        self.table_widget.horizontalHeader().setPalette(palette)  # 应用调色板到水平表头
         # 从数据库加载数据
         self.load_data_from_database()
         header = self.table_widget.horizontalHeader()

@@ -32,7 +32,7 @@ class HostParamEqualWidget(QWidget):
 
         # 定义标签和编辑框的文本
         labels = [
-            "磨头间距：",  "磨头直径：", "磨块长度：", "工作时长："
+            "磨头间距(mm)：",  "磨头直径(mm)：", "磨块长度(mm)：", "工作时长(h)："
         ]
         # 定义编辑框的名称
         line_edit_names = [

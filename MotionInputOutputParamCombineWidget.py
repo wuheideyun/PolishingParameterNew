@@ -33,7 +33,7 @@ class MotionInputOutputParamCombineWidget(QWidget):
 
         # 定义标签和编辑框的文本
         labels = [
-            "产量大小：", "摆动速度：", "匀速摆动时间：", "边部停留时间：", "同粒度磨头数：", "加速度大小：", "进砖宽度：", "延时时间："
+            "产量大小(m²)：", "摆动速度(mm/s)：", "匀速摆动时间(s)：", "边部停留时间(s)：", "同粒度磨头数(个)：", "加速度大小(mm/s²)：", "进砖宽度(mm)：", "延时时间(s)："
         ]
 
         # 定义编辑框的名称
@@ -66,7 +66,7 @@ class MotionInputOutputParamCombineWidget(QWidget):
 
         # 定义标签和编辑框的文本
         labels = [
-            "主皮带速度：", "摆幅："
+            "主皮带速度(mm/s)：", "摆     幅(mm)："
         ]
 
         # 定义编辑框的名称
