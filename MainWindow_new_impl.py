@@ -268,7 +268,7 @@ class MainWindow_impl(MainWindow):
                 params = dict_value_to_float(self.double_parameter_intelligent)
                 if self.solution_selection == 3:
                     swing_mode = '自定义'
-                    params['mode'] = '6'
+                    params['mode'] = '3'
                 else:
                     swing_mode = '顺序摆'
                     params['mode'] = '6'
@@ -1146,6 +1146,7 @@ def belt_speed_value_empty(my_dict):
 def belt_speed_calculate(my_dict):
     line_edit_names = ["lineEdit_work_time", "lineEdit_production_volume", "lineEdit_ceramic_width"]
     work_time = float(my_dict["lineEdit_work_time"])
+    # print(my_dict["lineEdit_production_volume"])
     volume = float(my_dict["lineEdit_production_volume"])
     ceramic_width = float(my_dict["lineEdit_ceramic_width"])
     # 产量 = 主皮带速度 * 进砖宽度 * 工作时长
