@@ -23,10 +23,17 @@ class DoubleWorkerThread(QThread):
         # 抛磨量 + 轨迹中心线 画布
         self.fig_1 = kwargs.get('fig', None)
         self.fig_1.clf()
-        # 轨迹动画 画布
-        self.fig_2 = plt.figure('运行轨迹动画', figsize=(10, 7))
+        # # 轨迹动画 画布(暂时屏蔽)
+        # self.fig_2 = plt.figure('运行轨迹动画', figsize=(10, 7))
+        # deep_blue = (31 / 255, 55 / 255, 96 / 255)
+        # self.fig_2.patch.set_facecolor(deep_blue)
+
+        # 轨迹动画 画布(静态图)
+        self.fig_2 = kwargs.get('fig_2', None)
+        self.fig_2.clf()
         deep_blue = (31 / 255, 55 / 255, 96 / 255)
         self.fig_2.patch.set_facecolor(deep_blue)
+
         # 输入参数
         self.v1 = kwargs.get('lineEdit_belt_speed', 0)
         self.v2 = kwargs.get('lineEdit_beam_swing_speed', 0)
@@ -68,21 +75,29 @@ class DoubleWorkerThread(QThread):
                              , a=self.a, between=self.between, beam_between=self.beam_between, delay_time=self.delay_time
                              , num_input=self.num_input, group=self.group)
         single_X_location, single_Y_location = MLP.inner_calculate()
-        # 轨迹动画生成
+        # 轨迹动画生成（暂时屏蔽）
         if self.mode == 'self_order':
             mode_an = 'order'
         else:
             mode_an = self.mode
-        if not self.check_animation_gif(self.animation_name):
-            AP = AnimationProduce(mode=mode_an, fig=self.fig_2, v1=self.v1, v2=self.v2, constant_time=self.constant_time, stay_time=self.stay_time
-                                  ,delay_time=self.delay_time, a=self.a, between=self.between, beam_between=self.beam_between, num_input=self.num_input
-                                  , R=self.R, group=self.group, animation_name=self.animation_name)
-            animation = AP.emit()
-            print('双头动画不存在')
-            plt.close('运行轨迹动画')
-        else:
-            print('双头动画已经存在')
-            plt.close('运行轨迹动画')
+        # 暂时屏蔽判断
+        # if not self.check_animation_gif(self.animation_name):
+        #     AP = AnimationProduce(mode=mode_an, fig=self.fig_2, v1=self.v1, v2=self.v2, constant_time=self.constant_time, stay_time=self.stay_time
+        #                           ,delay_time=self.delay_time, a=self.a, between=self.between, beam_between=self.beam_between, num_input=self.num_input
+        #                           , R=self.R, group=self.group, animation_name=self.animation_name)
+        #     animation = AP.emit()
+        #     print('双头动画不存在')
+        #     plt.close('运行轨迹动画')
+        # else:
+        #     print('双头动画已经存在')
+        #     plt.close('运行轨迹动画')
+        # 新增
+        AP = AnimationProduce(mode=mode_an, fig=self.fig_2, v1=self.v1, v2=self.v2, constant_time=self.constant_time,
+                              stay_time=self.stay_time
+                                   ,delay_time=self.delay_time, a=self.a, between=self.between, beam_between=self.beam_between, num_input=self.num_input
+                                   , R=self.R, group=self.group, animation_name=self.animation_name)
+        animation = AP.emit()
+
         plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
         plt.rcParams['axes.unicode_minus'] = False             # 避免坐标轴不能正常地显示负号
         # 设置
@@ -153,12 +168,12 @@ class DoubleWorkerThread(QThread):
                    'slategrey', 'cornflowerblue', 'navy', 'indigo', 'violet', 'plum', 'oldlace', 'maroon',
                    'lightcyan', 'lightseagreen', 'seagreen', 'springgreen']  # 红橙黄绿青蓝紫
         all_time_n = math.floor(period / 0.01) * 3
+        all_time_n_two = math.floor(period / 0.01) * 2
         cross_size = round((self.v2/self.a + self.constant_time + self.stay_time + self.v2/self.a) / 0.01)
         if self.mode == 'equal':
             for i in range(0, num_two):
                 ax_2.scatter(single_X_location + i * self.beam_between, single_Y_location, color=color_7[i], s=1)
                 ax_2.scatter(single_X_location + i * self.beam_between + self.between, single_Y_location, color=color_7[i], s=1)
-            # self.canvas.draw()
         elif self.mode == 'cross':
             for i in range(0, num_two):
                 if (i + 2) % 2 == 0:
@@ -1184,8 +1199,10 @@ class AnimationProduce():
         #self.fig = figure
         self.ax = self.fig.add_subplot(111)  # 默认111代表1*1的图的第一个子图
         # 设置坐标轴范围
-        self.x_range = [-(self.num_two*self.between+(self.num_two-1)*(self.beam_between-self.between)+200),period * (self.n-4) * self.v1]
-        self.ax.set_xlim(self.x_range)
+        # self.x_range = [-(self.num_two*self.between+(self.num_two-1)*(self.beam_between-self.between)+200),period * (self.n-4) * self.v1]
+        # self.ax.set_xlim(self.x_range)
+
+        self.ax.set_xlim([-540,self.v1*period*3])
         self.ax.set_ylim((-0.5 * 1.3 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2*self.R),
                           0.5 * 2.5 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2*self.R)))
         self.ax.set_aspect('equal', adjustable='box')
@@ -1194,7 +1211,7 @@ class AnimationProduce():
         self.ax.set_ylabel('Beam swing direction')
         # 单独隐藏刻度和标签
         # self.ax.set_xticks([])         # 隐藏刻度
-        self.ax.set_xticklabels([])  # 隐藏刻度标签
+        # self.ax.set_xticklabels([])  # 隐藏刻度标签
         #self.x_range_numtext = 0
         self.one_size=self.msize * self.v1
         # 标识符位置设定
@@ -1284,12 +1301,15 @@ class AnimationProduce():
             X_location[0,k] = x_0
             Y_location[0,k] = y_0
         all_time_n=T_size*n
-        single_X_location=np.zeros((1,all_time_n))
-        single_Y_location=np.zeros((1,all_time_n))
+        self.single_X_location=np.zeros((1,all_time_n))
+        self.single_Y_location=np.zeros((1,all_time_n))
         for i in range(0,n):
-            single_X_location[0,i*T_size:(i+1)*T_size] = X_location+period*v1*i
-            single_Y_location[0,i*T_size:(i+1)*T_size] = Y_location
-        return single_X_location, single_Y_location
+            self.single_X_location[0,i*T_size:(i+1)*T_size] = X_location+period*v1*i
+            self.single_Y_location[0,i*T_size:(i+1)*T_size] = Y_location
+        return self.single_X_location, self.single_Y_location
+
+    # ---------动画绘制过程屏蔽-----------
+    '''
     # 同步摆动动画更新函数
     def equal_update(self,j):
         # 设置坐标轴移动
@@ -1398,7 +1418,6 @@ class AnimationProduce():
         # return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches_1 + patches_2
         return [self.grinding_num, self.ytext_ani] + patches_1 + patches_2
 
-
     def emit(self):
         if self.mode == 'equal':
             An_fun = self.equal_update
@@ -1419,6 +1438,83 @@ class AnimationProduce():
         split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
         plt.close('运行轨迹动画')
         return (self.animation_name)
+    '''
+    # -----------新增绘制静态图片内容-------------
+    def emit(self):
+        period_num = math.floor(self.one_size * 3)
+        cross_size = round((2 * round(self.v2/self.a,2) + self.t1 + self.t2)/self.msize)
+        self.grinding_num.set_text('Same_grinding_num=%.0f' % self.num)
+        if self.mode == 'equal':
+            for i in range(0, self.num_two):
+                for j in range(0, period_num):
+                    circle_1 = Circle((self.single_X_location[0, j] + i * self.beam_between, self.single_Y_location[0, j]), 270,
+                                      color=self.color_7[i], alpha=0.2)
+                    circle_2 = Circle(
+                        (self.single_X_location[0, j] + i * self.beam_between + self.between, self.single_Y_location[0, j]), 270,
+                        color=self.color_7[i], alpha=0.2)
+                    self.ax.add_patch(circle_1)
+                    self.ax.add_patch(circle_2)
+
+        elif self.mode == 'cross':
+            for i in range(0, self.num_two):
+                if (i + 2) % 2 == 0:
+                    for j in range(0, period_num):
+                        circle_1 = Circle((self.single_X_location[0, j] + i * self.beam_between,
+                                           self.single_Y_location[0, j]), 270,
+                                          color=self.color_7[i], alpha=0.2)
+                        circle_2 = Circle(
+                            (self.single_X_location[0, j] + i * self.beam_between + self.between,
+                             self.single_Y_location[0, j]), 270,
+                            color=self.color_7[i], alpha=0.2)
+                        self.ax.add_patch(circle_1)
+                        self.ax.add_patch(circle_2)
+                # 横梁数为偶数
+                else:
+                    for j in range(0, period_num-cross_size):
+                        circle_1 = Circle((self.single_X_location[0, j] + i * self.beam_between,
+                                           self.single_Y_location[0, j+cross_size-1]), 270,
+                                          color=self.color_7[i], alpha=0.2)
+                        circle_2 = Circle(
+                            (self.single_X_location[0, j] + i * self.beam_between + self.between,
+                             self.single_Y_location[0, j+cross_size-1]), 270,
+                            color=self.color_7[i], alpha=0.2)
+                        self.ax.add_patch(circle_1)
+                        self.ax.add_patch(circle_2)
+
+        elif self.mode == 'order':
+            for i in range(0, self.num_two):
+                for j in range(0, period_num):
+                    circle_1 = Circle((self.single_X_location[0, j] + i * self.beam_between - i * self.delay_time * self.v1,
+                                       self.single_Y_location[0, j]), 270, color=self.color_7[i], alpha=0.2)
+                    circle_2 = Circle(
+                        (self.single_X_location[0, j] + i * self.beam_between + self.between - i * self.delay_time * self.v1,
+                         self.single_Y_location[0, j]), 270, color=self.color_7[i], alpha=0.2)
+                    self.ax.add_patch(circle_1)
+                    self.ax.add_patch(circle_2)
+
+        elif self.mode == 'self_order':
+            self_delay_distance = self.between / self.group
+            idex = 0
+            for i in range(0, self.group):
+                for j in range(0, num_two):
+                    for k in range(0, period_num):
+                        circle_1 = Circle((single_X_location[
+                                               0, k] + j * self.beam_between - j * self.delay_time * self.v1 + self_delay_distance * i,
+                                           single_Y_location[0, k]), 270, color=color_7[idex], alpha=0.2)
+                        circle_2 = Circle(
+                            (single_X_location[
+                                 0, k] + j * self.beam_between + self.between - j * self.delay_time * self.v1 + self_delay_distance * i,
+                             single_Y_location[0, k]), 270, color=color_7[idex], alpha=0.2)
+                        self.ax.add_patch(circle_1)
+                        self.ax.add_patch(circle_2)
+                    idex = idex + 1
+            # self.canvas.draw()
+        else:
+            raise ValueError('mode must be equal or cross or order or self_order')
+
+        return (self.animation_name)
+
+
 # -------------------智能计算------------------
 def double_num_calculate(v1,ceramic_width,between,beam_between,R,a,mo,**kwargs):
     # mode = enerage or efficient
