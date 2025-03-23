@@ -460,7 +460,7 @@ class MainWindow_impl(MainWindow):
         params = single_num_calculate(v1,ceramic_width,beam_between,R,a,mo,mode='enerage')
         # 计算结果-数据集更新
         self.single_parameter_intelligent.update(params)
-        params.update({'mode': 'order', 'fig': self.canvas.fig,'animation_name':animation_name})
+        params.update({'mode': 'order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -478,7 +478,7 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.single_parameter_intelligent.update(params)
 
-        params.update({'mode': 'order', 'fig': self.canvas.fig,'animation_name':animation_name})
+        params.update({'mode': 'order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -499,7 +499,7 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.single_parameter_intelligent.update(params)
 
-        params.update({'mode': 'self_order', 'fig': self.canvas.fig,'animation_name':animation_name})
+        params.update({'mode': 'self_order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -521,6 +521,7 @@ class MainWindow_impl(MainWindow):
         params = {
             'mode': 'equal',
             'fig': self.canvas.fig,
+            'fig_2': self.canvas_animation.fig,
             'lineEdit_belt_speed': v1,
             'lineEdit_beam_swing_speed': v2,
             'lineEdit_beam_constant_time': constant_time,
@@ -558,6 +559,7 @@ class MainWindow_impl(MainWindow):
         params = {
             'mode': 'cross',
             'fig': self.canvas.fig,
+            'fig_2': self.canvas_animation.fig,
             'lineEdit_belt_speed': v1,
             'lineEdit_beam_swing_speed': v2,
             'lineEdit_beam_constant_time': constant_time,
@@ -601,6 +603,7 @@ class MainWindow_impl(MainWindow):
         params = {
             'mode': 'order',
             'fig': self.canvas.fig,
+            'fig_2': self.canvas_animation.fig,
             'lineEdit_belt_speed': v1,
             'lineEdit_beam_swing_speed': v2,
             'lineEdit_beam_constant_time': constant_time,
@@ -828,7 +831,7 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.equal_parameter_intelligent.update(params)
 
-        params.update({'mode': 'equal', 'fig': self.canvas.fig, 'animation_name': animation_name})
+        params.update({'mode': 'equal', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig, 'animation_name': animation_name})
         self.worker_thread_plot = EqualWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.equal_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -846,7 +849,7 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.equal_parameter_intelligent.update(params)
 
-        params.update({'mode': 'equal', 'fig': self.canvas.fig, 'animation_name': animation_name})
+        params.update({'mode': 'equal', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig, 'animation_name': animation_name})
         self.worker_thread_plot = EqualWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.equal_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -866,7 +869,7 @@ class MainWindow_impl(MainWindow):
         params = equal_self_define_calculate(v1, t2, ceramic_width, between,R, a, num_input, mo)
         # 计算结果-数据集更新
         self.equal_parameter_intelligent.update(params)
-        params.update({'mode': 'self_order', 'fig': self.canvas.fig, 'animation_name': animation_name})
+        params.update({'mode': 'self_order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig, 'animation_name': animation_name})
         self.worker_thread_plot = EqualWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.equal_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -889,6 +892,7 @@ class MainWindow_impl(MainWindow):
         params = {
             'mode': 'equal',
             'fig': self.canvas.fig,
+            'fig_2': self.canvas_animation.fig,
             'lineEdit_belt_speed': v1,
             'lineEdit_beam_swing_speed': v2,
             'lineEdit_beam_constant_time': constant_time,
@@ -914,6 +918,8 @@ class MainWindow_impl(MainWindow):
     def single_intelligent_thread_signal(self, result):
         self.timer.stop()
         self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
+        # 动画屏蔽
+        '''
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容
@@ -930,6 +936,11 @@ class MainWindow_impl(MainWindow):
         self.animation_QLabel.setMovie(self.movie)
         # 启动新的动画
         self.movie.start()
+        button_enable(self.button_list)
+        '''
+        # 图片显示
+        self.canvas.draw()
+        self.canvas_animation.draw()  # 新增（静态轨迹动画）
         button_enable(self.button_list)
         # 参数集更新
         self.single_parameter_intelligent['lineEdit_coefficient'] = result[0]
@@ -946,6 +957,12 @@ class MainWindow_impl(MainWindow):
     def single_manual_thread_signal(self, result):
         self.timer.stop()
         self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
+
+        # 图片显示(静态图片)
+        self.canvas.draw()
+        self.canvas_animation.draw()  # 新增（静态轨迹动画）
+        button_enable(self.button_list)
+        '''
         # 刷新画布
         self.canvas.draw()
         # 清空 QLabel 中的内容
@@ -963,6 +980,8 @@ class MainWindow_impl(MainWindow):
         # 启动新的动画
         self.movie.start()
         button_enable(self.button_list)
+        '''
+
         # 参数集更新
         self.single_parameter_manual['lineEdit_coefficient'] = result[0]
         # 字符转换
@@ -1050,7 +1069,6 @@ class MainWindow_impl(MainWindow):
         # 刷新画布
         self.canvas.draw()
         self.canvas_animation.draw()  # 新增（静态轨迹动画）
-
         # 新增注释（屏蔽动画）
         # # 清空 QLabel 中的内容
         # self.animation_QLabel.clear()

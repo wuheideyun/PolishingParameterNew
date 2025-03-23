@@ -1202,9 +1202,13 @@ class AnimationProduce():
         # self.x_range = [-(self.num_two*self.between+(self.num_two-1)*(self.beam_between-self.between)+200),period * (self.n-4) * self.v1]
         # self.ax.set_xlim(self.x_range)
 
-        self.ax.set_xlim([-540,self.v1*period*3])
-        self.ax.set_ylim((-0.5 * 1.3 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2*self.R),
-                          0.5 * 2.5 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2*self.R)))
+        self.ax.set_xlim([-540,self.v1*period*3.5])
+        # 动画（屏蔽）
+        # self.ax.set_ylim((-0.5 * 1.3 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2*self.R),
+        #                   0.5 * 2.5 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2*self.R)))
+        # 图片（新增）
+        self.ax.set_ylim((-2* self.R,
+                           1.3 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) +  self.R)))
         self.ax.set_aspect('equal', adjustable='box')
         # 设置坐标轴名称
         self.ax.set_xlabel('Tile feed direction')
@@ -1441,7 +1445,9 @@ class AnimationProduce():
     '''
     # -----------新增绘制静态图片内容-------------
     def emit(self):
-        period_num = math.floor(self.one_size * 3)
+        # period_num = math.floor(self.one_size * 3)
+        # self.all_time_n
+        period_num = math.floor(self.all_time_n / self.n * 3)
         cross_size = round((2 * round(self.v2/self.a,2) + self.t1 + self.t2)/self.msize)
         self.grinding_num.set_text('Same_grinding_num=%.0f' % self.num)
         if self.mode == 'equal':
@@ -1513,7 +1519,6 @@ class AnimationProduce():
             raise ValueError('mode must be equal or cross or order or self_order')
 
         return (self.animation_name)
-
 
 # -------------------智能计算------------------
 def double_num_calculate(v1,ceramic_width,between,beam_between,R,a,mo,**kwargs):
