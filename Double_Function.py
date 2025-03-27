@@ -14,6 +14,8 @@ from matplotlib import animation
 from numpy.ma.core import shape
 from PIL import Image, ImageSequence
 # 四种模式合并
+# 静态动画（暂时屏蔽）
+'''
 class DoubleWorkerThread(QThread):
     result_signal = Signal(object)  # 创建一个信号用于传递结果
     def __init__(self,**kwargs):
@@ -221,6 +223,207 @@ class DoubleWorkerThread(QThread):
             raise ValueError('mode must be equal or cross or order or self_order')
         data = [result,self.animation_name]
         self.result_signal.emit(data)  # 发射信号将结果传回主线程
+'''
+# 动态动画
+class DoubleWorkerThread(QThread):
+    result_signal = Signal(object)  # 创建一个信号用于传递结果
+
+    def __init__(self, **kwargs):
+        super().__init__()
+        # 选择绘图模式
+        self.mode = kwargs.get('mode', None)
+        # 抛磨量 + 轨迹中心线 画布
+        self.fig_1 = kwargs.get('fig', None)
+        self.fig_1.clf()
+
+        # # 轨迹动画 画布
+        self.fig_2 = plt.figure('运行轨迹动画', figsize=(10, 7))
+        deep_blue = (31 / 255, 55 / 255, 96 / 255)
+        self.fig_2.patch.set_facecolor(deep_blue)
+
+        # 输入参数
+        self.v1 = kwargs.get('lineEdit_belt_speed', 0)
+        self.v2 = kwargs.get('lineEdit_beam_swing_speed', 0)
+        self.constant_time = kwargs.get('lineEdit_beam_constant_time', 0)
+
+        self.a = kwargs.get('lineEdit_accelerate', 650)
+        self.between = kwargs.get('lineEdit_between', 0)
+        self.beam_between = kwargs.get('lineEdit_beam_between', 0)
+
+        if self.mode == 'self_order':
+            self.num_input = round(kwargs.get('lineEdit_num_input', 0))
+            self.stay_time = kwargs.get('lineEdit_stay_time_input', 0)
+        else:
+            self.num_input = round(kwargs.get('lineEdit_num_output', 0))
+            self.stay_time = kwargs.get('lineEdit_stay_time_output', 0)
+        self.R = kwargs.get('R', 270)
+        self.mo = kwargs.get('lineEdit_grind_length', 150)
+        self.ceramic_width = kwargs.get('lineEdit_ceramic_width', 800)
+        # 顺序摆参数
+        self.delay_time = kwargs.get('lineEdit_delay_time', 0)
+        # 自定义计算参数
+        self.group = round(kwargs.get('lineEdit_group_count', 1))
+
+        self.animation_name = kwargs.get('animation_name', 'ani')
+
+    def check_animation_gif(self, animation_name):
+        # 定义文件路径
+        file_path = os.path.join(os.getcwd(), 'animation', animation_name + '.gif')
+
+        # 判断文件是否存在
+        return os.path.isfile(file_path)
+
+    def run(self):
+        # 抛磨量分布矩阵
+        PDT = PolishingDistributionThread(mode=self.mode, v1=self.v1, v2=self.v2, constant_time=self.constant_time, stay_time=self.stay_time
+                                          , a=self.a, between=self.between, beam_between=self.beam_between, mo=self.mo,delay_time=self.delay_time
+                                          , num_input=self.num_input, R=self.R, group=self.group)
+        object_matrix, result = PDT.emit()
+        # 轨迹中心线坐标信息
+        MLP = MiddleLinePlot(v1=self.v1, v2=self.v2, constant_time=self.constant_time, stay_time=self.stay_time
+                             , a=self.a, between=self.between, beam_between=self.beam_between, delay_time=self.delay_time
+                             , num_input=self.num_input, group=self.group)
+        single_X_location, single_Y_location = MLP.inner_calculate()
+        # 轨迹动画生成
+        if self.mode == 'self_order':
+            mode_an = 'order'
+        else:
+            mode_an = self.mode
+        if not self.check_animation_gif(self.animation_name):
+            AP = AnimationProduce(mode=mode_an, fig=self.fig_2, v1=self.v1, v2=self.v2, constant_time=self.constant_time, stay_time=self.stay_time
+                                  ,delay_time=self.delay_time, a=self.a, between=self.between, beam_between=self.beam_between, num_input=self.num_input
+                                  , R=self.R, group=self.group, animation_name=self.animation_name)
+            animation = AP.emit()
+            print('双头动画不存在')
+            plt.close('运行轨迹动画')
+        else:
+            print('双头动画已经存在')
+            plt.close('运行轨迹动画')
+
+        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 设置微软雅黑字体
+        plt.rcParams['axes.unicode_minus'] = False             # 避免坐标轴不能正常地显示负号
+        # 设置
+        ax_1 = self.fig_1.add_subplot(211)
+        ax_2 = self.fig_1.add_subplot(212)
+        self.fig_1.subplots_adjust(hspace=0.5)
+        # 设置画布背景、刻度、字体颜色
+        deep_blue = (31 / 255, 55 / 255, 96 / 255)
+        list = [ax_1, ax_2]
+        for ax in list:
+            # 设置 子图背景颜色
+            ax.set_facecolor(deep_blue)
+            # 设置坐标轴线的颜色为白色
+            ax.spines['bottom'].set_color('white')
+            ax.spines['top'].set_color('white')
+            ax.spines['right'].set_color('white')
+            ax.spines['left'].set_color('white')
+            # 设置坐标轴的刻度颜色为白色
+            ax.tick_params(axis='x', colors='white')
+            ax.tick_params(axis='y', colors='white')
+            # 设置坐标轴标签的颜色为白色
+            ax.xaxis.label.set_color('white')
+            ax.yaxis.label.set_color('white')
+            # 设置坐标轴标题字体颜色为白色
+            ax.title.set_color('white')
+            # 设置 子图 标签
+            ax.set_xlabel('主皮带进给方向')
+            ax.set_ylabel('横梁摆动方向')
+        # ----------------------抛磨量分布绘图------------------
+        ax_1.set_aspect('equal', adjustable='box')
+        # 设置权重操作
+        max_set = np.max(object_matrix)
+        # 计算第90百分位的阈值（前15%）
+        percentile_85 = np.percentile(object_matrix, 85)
+        # 对矩阵中大于等于该阈值的元素乘以0.85
+        object_matrix[object_matrix >= percentile_85] *= 0.85
+
+        im = ax_1.contourf(object_matrix, levels=15, alpha=1, cmap='jet', vmin=0, vmax=max_set)
+
+        divider = make_axes_locatable(ax_1)
+        cax = divider.append_axes("right", size="5%", pad=0.1)
+
+        #colorbar = self.canvas.fig.colorbar(im, cax=cax)
+        colorbar = self.fig_1.colorbar(im, cax=cax)
+
+        colorbar.ax.tick_params(labelcolor='white')  # 设置刻度标签颜色
+        colorbar.set_label('抛磨量大小', color='white')  # 设置 colorbar 标签的颜色
+        # 绘制矩形线框
+        ceramic_width_ = float(self.ceramic_width) * 0.1
+        width, length = np.shape(object_matrix)
+        x_begin = 0
+        y_begin = (width - ceramic_width_) / 2
+        rect = Rectangle((x_begin, y_begin), length - 1, ceramic_width_, edgecolor='red', linestyle='--', linewidth=2,
+                         fill=False)
+        ax_1.add_patch(rect)
+        # ----------------------中心线绘图------------------
+        accelerate_t = self.v2 / self.a
+        period = 4 * accelerate_t + 2 * self.stay_time + 2 * self.constant_time
+        # 设置图层属性
+        ax_2.set_xlim((-200, period * 3 * self.v1 + self.between))
+        ax_2.set_ylim((-200, self.a * (self.v2 / self.a) ** 2 + self.v2 * self.constant_time + 600))
+        ax_2.set_aspect('equal', adjustable='box')
+        # 设置图片文本
+        ani_text = ax_2.text(0.7, 0.82, '', transform=ax_2.transAxes, fontsize=10, color='white')
+        ani_text.set_text('Same_grinding_num=%.0f' % (self.num_input * self.group))
+        num_two = math.ceil(self.num_input / 2)
+        color_7 = ['red', 'orange', 'green', 'cyan', 'blue', 'purple', 'yellow', 'lightgreen',
+                   'slategrey', 'cornflowerblue', 'navy', 'indigo', 'violet', 'plum', 'oldlace', 'maroon',
+                   'lightcyan', 'lightseagreen', 'seagreen', 'springgreen']  # 红橙黄绿青蓝紫
+        all_time_n = math.floor(period / 0.01) * 3
+        cross_size = round((self.v2/self.a + self.constant_time + self.stay_time + self.v2/self.a) / 0.01)
+        if self.mode == 'equal':
+            for i in range(0, num_two):
+                ax_2.scatter(single_X_location + i * self.beam_between, single_Y_location, color=color_7[i], s=1)
+                ax_2.scatter(single_X_location + i * self.beam_between + self.between, single_Y_location, color=color_7[i], s=1)
+        elif self.mode == 'cross':
+            for i in range(0, num_two):
+                if (i + 2) % 2 == 0:
+                    ax_2.scatter(single_X_location[0, 0:all_time_n - 1] + i * self.beam_between,
+                                 single_Y_location[0, 0:all_time_n - 1],
+                                 color=color_7[i], s=1)
+                    ax_2.scatter(single_X_location[0, 0:all_time_n - 1] + i * self.beam_between + self.between,
+                                 single_Y_location[0, 0:all_time_n - 1],
+                                 color=color_7[i], s=1)
+                # 横梁数为偶数
+                else:
+                    ax_2.scatter(single_X_location[0, 0:all_time_n - cross_size] + i * self.beam_between,
+                                 single_Y_location[0, cross_size - 1:all_time_n - 1],
+                                 color=color_7[i], s=1)
+                    ax_2.scatter(single_X_location[0, 0:all_time_n - cross_size] + i * self.beam_between + self.between,
+                                 single_Y_location[0, cross_size - 1:all_time_n - 1],
+                                 color=color_7[i], s=1)
+            # self.canvas.draw()
+        elif self.mode == 'order':
+            for i in range(0, num_two):
+                ax_2.scatter(single_X_location[0, 0:all_time_n - 1] + i * self.beam_between - i * self.delay_time * self.v1,
+                             single_Y_location[0, 0:all_time_n - 1],
+                             color=color_7[i], s=1)
+                ax_2.scatter(single_X_location[0,
+                             0:all_time_n - 1] + i * self.beam_between + self.between - i * self.delay_time * self.v1,
+                             single_Y_location[0, 0:all_time_n - 1],
+                             color=color_7[i], s=1)
+            # self.canvas.draw()
+        elif self.mode == 'self_order':
+            self_delay_distance = self.between / self.group
+            idex = 0
+            for i in range(0, self.group):
+                for j in range(0, num_two):
+                    ax_2.scatter(single_X_location[0,
+                                 0:all_time_n - 1] + j * self.beam_between - j * self.delay_time * self.v1 + self_delay_distance * i,
+                                 single_Y_location[0, 0:all_time_n - 1],
+                                 color=color_7[idex], s=1)
+                    ax_2.scatter(single_X_location[0,
+                                 0:all_time_n - 1] + j * self.beam_between + self.between - j * self.delay_time * self.v1 + self_delay_distance * i,
+                                 single_Y_location[0, 0:all_time_n - 1],
+                                 color=color_7[idex], s=1)
+                    idex = idex + 1
+            # self.canvas.draw()
+        else:
+            raise ValueError('mode must be equal or cross or order or self_order')
+        data = [result,self.animation_name]
+        self.result_signal.emit(data)  # 发射信号将结果传回主线程
+
+# 多进程模式计算
 # ---------------抛磨量计算(多进程)-------------
 # class PolishingDistributionThread():
 #     def __init__(self,**kwargs):
@@ -636,19 +839,21 @@ class DoubleWorkerThread(QThread):
 #                     m_y = math.ceil(y / c_width_cell)
 #                     H[m_y, m_x] = H[m_y, m_x] + v_common  # 统计各个磨削区域速度和
 #     return H
+
+
 # ---------------抛磨量计算(单进程)-------------
 class PolishingDistributionThread():
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         # 当前模式
         self.mode = kwargs.get('mode', None)
         # 基本运动参数
-        self.v1 = round(kwargs.get('v1', 0),2)
-        self.v2 = round(kwargs.get('v2', 0),2)
-        self.constant_time = round(kwargs.get('constant_time', 0),2)
-        self.stay_time = round(kwargs.get('stay_time', 0),2)
-        self.a = round(kwargs.get('a', 650),2)
-        self.between = round(kwargs.get('between', 0),2)
-        self.beam_between = round(kwargs.get('beam_between', 0),2)
+        self.v1 = round(kwargs.get('v1', 0), 2)
+        self.v2 = round(kwargs.get('v2', 0), 2)
+        self.constant_time = round(kwargs.get('constant_time', 0), 2)
+        self.stay_time = round(kwargs.get('stay_time', 0), 2)
+        self.a = round(kwargs.get('a', 650), 2)
+        self.between = round(kwargs.get('between', 0), 2)
+        self.beam_between = round(kwargs.get('beam_between', 0), 2)
         self.num = kwargs.get('num_input', 0)
         self.R = kwargs.get('R', 270)
         self.mo = kwargs.get('mo', 150)
@@ -657,7 +862,7 @@ class PolishingDistributionThread():
         # 自定义计算参数
         self.group = kwargs.get('group', 0)
 
-        self.n = 6    # 周期数目
+        self.n = 6  # 周期数目
         self.w = 600  # 转速
 
         accelerate_t = round(self.v2 / self.a, 2)
@@ -735,6 +940,7 @@ class PolishingDistributionThread():
                 if mod_theta[i, j] < 0:
                     mod_theta[i, j] = math.pi + mod_theta[i, j]
         return mod_rho, mod_theta
+
     # 同步摆模式计算
     def equal_matrix_cal(self, H_all):
         sin_period = math.floor((2 * self.R + self.period * self.v1) / self.c_length_cell)  # 单个周期累加区域
@@ -791,23 +997,23 @@ class PolishingDistributionThread():
         num_two = math.floor(self.num / 2)
         all_H = np.zeros((self.c_width_mulcell, self.c_length_mulcell))
         beam_between_cell = math.floor(self.beam_between / self.c_length_cell)
-        cross_size=round((self.t1+self.t2+self.t3+self.t4)*self.v1/self.c_length_cell)
+        cross_size = round((self.t1 + self.t2 + self.t3 + self.t4) * self.v1 / self.c_length_cell)
         # 末尾减去50 防止切片溢出
         for i in range(0, num_two):
-            if (i+2) % 2 == 0: # 第 奇数 个横梁
-                all_H[:, beam_between_cell * i:self.c_length_mulcell - 1-50] = (
-                        all_H[:,beam_between_cell * i:self.c_length_mulcell - 1-50] +
-                        mul_H[:,0:self.c_length_mulcell - beam_between_cell * i - 1-50])
+            if (i + 2) % 2 == 0:  # 第 奇数 个横梁
+                all_H[:, beam_between_cell * i:self.c_length_mulcell - 1 - 50] = (
+                        all_H[:, beam_between_cell * i:self.c_length_mulcell - 1 - 50] +
+                        mul_H[:, 0:self.c_length_mulcell - beam_between_cell * i - 1 - 50])
             else:
-                all_H[:, beam_between_cell * i:self.c_length_mulcell - 1-50] = (
-                        all_H[:, beam_between_cell * i : self.c_length_mulcell-1 -50] +
-                        mul_H[:, cross_size : self.c_length_mulcell-1-beam_between_cell*i + cross_size -50])
+                all_H[:, beam_between_cell * i:self.c_length_mulcell - 1 - 50] = (
+                        all_H[:, beam_between_cell * i: self.c_length_mulcell - 1 - 50] +
+                        mul_H[:, cross_size: self.c_length_mulcell - 1 - beam_between_cell * i + cross_size - 50])
         # 计算 抛磨变异系数
         # 如果要计算此模块，周期数必须大于等于3
         cover_width = math.ceil(math.ceil(self.v2 * self.t2 + self.a * self.t1 ** 2 + 2 * self.R) / 10)
         begin_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2)
         terminate_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2) + cover_width
-        begin_length = math.ceil((50 + self.v1 * (self.n-5) * self.period) / 10)
+        begin_length = math.ceil((50 + self.v1 * (self.n - 5) * self.period) / 10)
         terminate_length = begin_length + math.ceil((2 * self.v1 * self.period + 2 * self.R) / 10)
         object_matrix = all_H[begin_width + 1:terminate_width, begin_length + 1:terminate_length]
         equal_subsample = np.mean(object_matrix)  # 子样平均数
@@ -828,7 +1034,7 @@ class PolishingDistributionThread():
         # 多磨头叠加
         mul_H = np.zeros((self.c_width_mulcell, self.c_length_mulcell))
         between_cell = math.floor(self.between / self.c_length_cell)
-        delay_cell=math.floor(self.delay_time*self.v1/ self.c_length_cell)
+        delay_cell = math.floor(self.delay_time * self.v1 / self.c_length_cell)
         for i in range(0, 2):
             mul_H[:, between_cell * i:self.c_length_mulcell - 1] = (
                     mul_H[:, between_cell * i:self.c_length_mulcell - 1] +
@@ -837,9 +1043,9 @@ class PolishingDistributionThread():
         all_H = np.zeros((self.c_width_mulcell, self.c_length_mulcell))
         beam_between_cell = math.floor(self.beam_between / self.c_length_cell)
         for i in range(0, num_two):
-            all_H[:, (beam_between_cell-delay_cell) * i:self.c_length_mulcell - 1] = (
-                    all_H[:,(beam_between_cell-delay_cell) * i:self.c_length_mulcell-1] +
-                    mul_H[:,0:self.c_length_mulcell-(beam_between_cell-delay_cell)*i-1])
+            all_H[:, (beam_between_cell - delay_cell) * i:self.c_length_mulcell - 1] = (
+                    all_H[:, (beam_between_cell - delay_cell) * i:self.c_length_mulcell - 1] +
+                    mul_H[:, 0:self.c_length_mulcell - (beam_between_cell - delay_cell) * i - 1])
         # 计算 抛磨变异系数
         # 如果要计算此模块，周期数必须大于等于3
         cover_width = math.ceil(math.ceil(self.v2 * self.t2 + self.a * self.t1 ** 2 + 2 * self.R) / 10)
@@ -867,7 +1073,7 @@ class PolishingDistributionThread():
         # 多磨头叠加
         mul_H = np.zeros((self.c_width_mulcell, self.c_length_mulcell))
         between_cell = math.floor(self.between / self.c_length_cell)
-        delay_cell=math.floor(self.delay_time*self.v1/ self.c_length_cell)
+        delay_cell = math.floor(self.delay_time * self.v1 / self.c_length_cell)
         for i in range(0, 2):
             mul_H[:, between_cell * i:self.c_length_mulcell - 1] = (
                     mul_H[:, between_cell * i:self.c_length_mulcell - 1] +
@@ -876,33 +1082,33 @@ class PolishingDistributionThread():
         all_H = np.zeros((self.c_width_mulcell, self.c_length_mulcell))
         beam_between_cell = math.floor(self.beam_between / self.c_length_cell)
         for i in range(0, num_two):
-            all_H[:, (beam_between_cell-delay_cell) * i:self.c_length_mulcell - 1] = (
-                    all_H[:,(beam_between_cell-delay_cell) * i:self.c_length_mulcell-1] +
-                    mul_H[:,0:self.c_length_mulcell-(beam_between_cell-delay_cell)*i-1])
+            all_H[:, (beam_between_cell - delay_cell) * i:self.c_length_mulcell - 1] = (
+                    all_H[:, (beam_between_cell - delay_cell) * i:self.c_length_mulcell - 1] +
+                    mul_H[:, 0:self.c_length_mulcell - (beam_between_cell - delay_cell) * i - 1])
         # 组数叠加
-        group=round(self.group)
-        group_size=math.floor(self.between/self.group/self.c_length_cell)
+        group = round(self.group)
+        group_size = math.floor(self.between / self.group / self.c_length_cell)
         all_group_H = np.zeros((self.c_width_mulcell, self.c_length_mulcell))
         for i in range(0, group):
-            all_group_H[:,  group_size*i:self.c_length_mulcell-1] = (
-                    all_group_H[:,group_size*i:self.c_length_mulcell-1] +
-                    all_H[:,0:self.c_length_mulcell-group_size*i-1])
+            all_group_H[:, group_size * i:self.c_length_mulcell - 1] = (
+                    all_group_H[:, group_size * i:self.c_length_mulcell - 1] +
+                    all_H[:, 0:self.c_length_mulcell - group_size * i - 1])
         # 计算 抛磨变异系数
         # 如果要计算此模块，周期数必须大于等于3
-        #cover_length = math.ceil(math.ceil(v1 * period + 2 * R) / 10)
+        # cover_length = math.ceil(math.ceil(v1 * period + 2 * R) / 10)
         cover_width = math.ceil(math.ceil(self.v2 * self.t2 + self.a * self.t1 ** 2 + 2 * self.R) / 10)
         begin_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2)
         terminate_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2) + cover_width
         begin_length = math.ceil((50 + self.v1 * 3 * self.period) / 10)
         terminate_length = begin_length + math.ceil((2 * self.v1 * self.period + 2 * self.R) / 10)
-        #object_matrix = np.zeros((terminate_width - begin_width, terminate_length - begin_length))
+        # object_matrix = np.zeros((terminate_width - begin_width, terminate_length - begin_length))
         object_matrix = all_group_H[begin_width + 1:terminate_width, begin_length + 1:terminate_length]
         equal_subsample = np.mean(object_matrix)  # 子样平均数
         middle_matrix = np.power(object_matrix, 2) - np.power(equal_subsample, 2)
         variance_matrix = np.mean(middle_matrix)  # 子样方差
         result = format(variance_matrix ** 0.5 / equal_subsample, '.4f')  # 抛磨变异系数
         return object_matrix, result
-    
+
     def polishing_cal(self):
         # 赋值操作
         v1 = self.v1
@@ -915,7 +1121,7 @@ class PolishingDistributionThread():
         mod_theta = self.mod_theta
         mo = self.mo
         # 计算
-        accelerate_t= round(v2 / a, 2)
+        accelerate_t = round(v2 / a, 2)
         t1 = accelerate_t
         t2 = constant_t
         t3 = accelerate_t
@@ -928,7 +1134,7 @@ class PolishingDistributionThread():
         # 计算
         w = 600  # 转速
         size = 0.01  # 时间步长
-        n=6
+        n = 6
         mod_width_cell = 5  # 磨块单元（宽度）
         mod_length_cell = 4  # 磨块单元（长度）
 
@@ -957,7 +1163,7 @@ class PolishingDistributionThread():
                 x_0 = v1 * t + R + 50
                 y_0 = 0.5 * a * t ** 2 + R + 50
             elif t >= t1 and t < t1 + t2:
-            # 第二段
+                # 第二段
                 x_0 = v1 * t + R + 50
                 y_0 = 0.5 * a * t1 ** 2 + v2 * (t - t1) + R + 50
             # 第三段
@@ -972,17 +1178,17 @@ class PolishingDistributionThread():
             elif t >= (t1 + t2 + t3 + t4) and t < (t1 + t2 + t3 + t4 + t5):
                 x_0 = v1 * t + R + 50
                 y_0 = 0.5 * a * t1 ** 2 + v2 * t2 + v2 * t3 - 0.5 * a * t3 ** 2 - 0.5 * a * (
-                            t - t1 - t2 - t3 - t4) ** 2 + R + 50
+                        t - t1 - t2 - t3 - t4) ** 2 + R + 50
             # 第六段
             elif t >= (t1 + t2 + t3 + t4 + t5) and t < (t1 + t2 + t3 + t4 + t5 + t6):
                 x_0 = v1 * t + R + 50
                 y_0 = 0.5 * a * t1 ** 2 + v2 * t2 + v2 * t3 - 0.5 * a * t3 ** 2 - 0.5 * a * t5 ** 2 - v2 * (
-                            t - t1 - t2 - t3 - t4 - t5) + R + 50
+                        t - t1 - t2 - t3 - t4 - t5) + R + 50
             # 第七段
             elif t >= (t1 + t2 + t3 + t4 + t5 + t6) and t < (t1 + t2 + t3 + t4 + t5 + t6 + t7):
                 x_0 = v1 * t + R + 50
                 y_0 = 0.5 * a * t1 ** 2 + v2 * t2 + v2 * t3 - 0.5 * a * t3 ** 2 - 0.5 * a * t5 ** 2 - v2 * t6 - v2 * (
-                            t - t1 - t2 - t3 - t4 - t5 - t6) + 0.5 * a * (t - t1 - t2 - t3 - t4 - t5 - t6) ** 2 + R + 50
+                        t - t1 - t2 - t3 - t4 - t5 - t6) + 0.5 * a * (t - t1 - t2 - t3 - t4 - t5 - t6) ** 2 + R + 50
             # 第八段
             elif t >= (t1 + t2 + t3 + t4 + t5 + t6 + t7) and t <= (t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8):
                 x_0 = v1 * t + R + 50
@@ -1032,8 +1238,6 @@ class PolishingDistributionThread():
                         m_y = math.ceil(y / c_width_cell)
                         H[m_y, m_x] = H[m_y, m_x] + v_common  # 统计各个磨削区域速度和
         return H
-
-
 # -----------------轨迹中心线计算----------------------
 class MiddleLinePlot():
     def __init__(self,**kwargs):
@@ -1160,6 +1364,285 @@ class MiddleLinePlot():
         plt.show()  # 显示函数图像
     '''
 # ------------------轨迹动画计算----------------------
+# 动画绘制
+class AnimationProduce():
+    def __init__(self,**kwargs):
+        # 动画名字
+        self.animation_name = kwargs.get('animation_name','donghua')
+        # 子线程不支持绘图，将绘图的figure创建在主线程
+        self.fig = kwargs.get('fig',None)
+        # 摆动模式
+        self.mode = kwargs.get('mode', None)
+        # 基本运动参数
+        self.v1=kwargs.get('v1', 0)
+        self.v2=kwargs.get('v2', 0)
+        self.t1=kwargs.get('constant_time', 0)
+        self.t2=kwargs.get('stay_time', 0)
+        self.a=kwargs.get('a', 650)
+        self.R=kwargs.get('R', 270)
+        self.between=kwargs.get('between', 650)
+        self.num=kwargs.get('num_input', 0)
+        self.beam_between=kwargs.get('beam_between', 0)
+        # 顺序摆参数
+        self.delay_time = kwargs.get('delay_time', 0)
+
+        self.n=6
+        self.msize=0.15
+        self.delay_time_size = round(self.delay_time / self.msize)
+        self.beam_between_cell = math.floor(self.beam_between / self.v1 / self.msize)  # 横梁步长
+        self.cross_size=round((2 * round(self.v2/self.a,2) + self.t1 + self.t2)/self.msize)
+        self.num_two = math.floor(self.num / 2)
+        period = round(4 * (self.v2 / self.a) + 2 * self.t1 + 2 * self.t2, 2)
+        self.all_time_n = math.floor(period / self.msize) * self.n
+        self.all_time_n_1 = math.floor(period / self.msize) * (self.n-1)
+        self.color_7 = ['red','orange','green','cyan','blue','purple','yellow',
+                        'lightgreen','slategrey','cornflowerblue','navy','indigo','violet',
+                        'plum','oldlace','maroon','lightcyan','lightseagreen','seagreen','springgreen']  # 红橙黄绿青蓝紫
+        # 计算矩阵
+        self.single_X_location,self.single_Y_location=self.inner_cal_matrix()
+        # 创建坐标绘图区
+        #self.fig = figure
+        self.ax = self.fig.add_subplot(111)  # 默认111代表1*1的图的第一个子图
+        # 设置坐标轴范围
+        self.x_range = [-(self.num_two*self.between+(self.num_two-1)*(self.beam_between-self.between)+200),period * (self.n-4) * self.v1]
+        self.ax.set_xlim(self.x_range)
+        # 动画
+        self.ax.set_ylim((-0.5 * 1.2 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2*self.R),
+                          0.5 * 1.5 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2*self.R)))
+        self.ax.set_aspect('equal', adjustable='box')
+        # 设置坐标轴名称
+        self.ax.set_xlabel('Tile feed direction')
+        self.ax.set_ylabel('Beam swing direction')
+        # 单独隐藏刻度和标签
+        # self.ax.set_xticks([])         # 隐藏刻度
+        self.ax.set_xticklabels([])  # 隐藏刻度标签
+        #self.x_range_numtext = 0
+        self.one_size=self.msize * self.v1
+        # 标识符位置设定
+        self.grinding_num = self.ax.text(0.7,0.88,'',transform=self.ax.transAxes,fontsize=8,color='white')
+        # self.ytext_ani = self.ax.text(0.7,0.74,'',transform=self.ax.transAxes,fontsize=8,color='white')
+
+        # 设置子图颜色
+        deep_blue = (31 / 255, 55 / 255, 96 / 255)
+        self.ax.set_facecolor(deep_blue)
+        # 设置坐标轴线的颜色为白色
+        self.ax.spines['bottom'].set_color('white')
+        self.ax.spines['top'].set_color('white')
+        self.ax.spines['right'].set_color('white')
+        self.ax.spines['left'].set_color('white')
+        # 设置坐标轴的刻度颜色为白色
+        self.ax.tick_params(axis='x', colors='white')
+        self.ax.tick_params(axis='y', colors='white')
+        # 设置坐标轴标签的颜色为白色
+        self.ax.xaxis.label.set_color('white')
+        self.ax.yaxis.label.set_color('white')
+        # 设置坐标轴标题字体颜色为白色
+        self.ax.title.set_color('white')
+
+    def inner_cal_matrix(self):
+        v1=self.v1
+        v2=self.v2
+        constant_t=self.t1
+        motionless_t=self.t2
+        a=self.a
+        between=self.between
+        msize=self.msize
+        accelerate_t = round(v2 / a, 2)
+        t1=accelerate_t
+        t2=constant_t
+        t3=accelerate_t
+        t4=motionless_t
+        t5=accelerate_t
+        t6=constant_t
+        t7=accelerate_t
+        t8=motionless_t
+        period=4*accelerate_t+2*motionless_t+2*constant_t
+        # 正式计算
+        n=self.n
+        between_cell=math.floor(between/v1/msize)    # 间距步长
+        time=np.arange(0,period,msize)               # 时间变量
+        T_size=math.floor(period/msize)              # 单周期步长
+        # 磨头中心坐标
+        X_location=np.zeros((1,T_size))
+        Y_location=np.zeros((1,T_size))
+        for k in range(0,T_size):
+            t=time[k]
+            # 第一段
+            if t >= 0 and t < t1:
+                x_0 = v1 * t
+                y_0 = 0.5 * a * t ** 2
+            elif t >= t1 and t < t1 + t2:
+                # 第二段
+                x_0 = v1 * t
+                y_0 = 0.5 * a * t1 ** 2 + v2 * (t - t1)
+            # 第三段
+            elif t >= (t1 + t2) and t < (t1 + t2 + t3):
+                x_0 = v1 * t
+                y_0 = 0.5 * a * t1 ** 2 + v2 * t2 + v2 * (t - t1 - t2) - 0.5 * a * (t - t1 - t2) ** 2
+            # 第四段
+            elif t >= (t1 + t2 + t3) and t < (t1 + t2 + t3 + t4):
+                x_0 = v1 * t
+                y_0 = 0.5 * a * t1 ** 2 + v2 * t2 + v2 * t3 - 0.5 * a * t3 ** 2
+            # 第五段
+            elif t >= (t1 + t2 + t3 + t4) and t < (t1 + t2 + t3 + t4 + t5):
+                x_0 = v1 * t
+                y_0 = 0.5 * a * t1 ** 2 + v2 * t2 + v2 * t3 - 0.5 * a * t3 ** 2 - 0.5 * a * (
+                            t - t1 - t2 - t3 - t4) ** 2
+            # 第六段
+            elif t >= (t1 + t2 + t3 + t4 + t5) and t < (t1 + t2 + t3 + t4 + t5 + t6):
+                x_0 = v1 * t
+                y_0 = 0.5 * a * t1 ** 2 + v2 * t2 + v2 * t3 - 0.5 * a * t3 ** 2 - 0.5 * a * t5 ** 2 - v2 * (
+                            t - t1 - t2 - t3 - t4 - t5)
+            # 第七段
+            elif t >= (t1 + t2 + t3 + t4 + t5 + t6) and t < (t1 + t2 + t3 + t4 + t5 + t6 + t7):
+                x_0 = v1 * t
+                y_0 = 0.5 * a * t1 ** 2 + v2 * t2 + v2 * t3 - 0.5 * a * t3 ** 2 - 0.5 * a * t5 ** 2 - v2 * t6 - v2 * (
+                            t - t1 - t2 - t3 - t4 - t5 - t6) + 0.5 * a * (t - t1 - t2 - t3 - t4 - t5 - t6) ** 2
+            # 第八段
+            elif t >= (t1 + t2 + t3 + t4 + t5 + t6 + t7) and t <= (t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8):
+                x_0 = v1 * t
+                y_0 = 0
+            X_location[0,k] = x_0
+            Y_location[0,k] = y_0
+        all_time_n=T_size*n
+        self.single_X_location=np.zeros((1,all_time_n))
+        self.single_Y_location=np.zeros((1,all_time_n))
+        for i in range(0,n):
+            self.single_X_location[0,i*T_size:(i+1)*T_size] = X_location+period*v1*i
+            self.single_Y_location[0,i*T_size:(i+1)*T_size] = Y_location
+        return self.single_X_location, self.single_Y_location
+
+    # 同步摆动动画更新函数
+    def equal_update(self,j):
+        # 设置坐标轴移动
+        self.x_range[0] -= self.one_size
+        self.x_range[1] -= self.one_size
+        self.ax.set_xlim(self.x_range)
+        # 绘制x、y、num的标识(坐标信息相对不移动)
+        self.grinding_num.set_text('Same_grinding_num=%.0f' % self.num)
+
+        # self.ytext_ani.set_text('y_location=%.3f mm' % (self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)))
+
+        # 绘制抛光轨迹进行叠加
+        patches_1 = []
+        patches_2 = []
+        for i in range(0, self.num_two):
+            circle_1 = Circle(xy=(-(self.single_X_location[0, j] + i * self.beam_between),
+                                  self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)),
+                              radius=self.R, alpha=0.05,
+                              color=self.color_7[i])
+            circle_2 = Circle(xy=(-(self.single_X_location[0, j] + i * self.beam_between + self.between),
+                                  self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)), radius=self.R, alpha=0.05,
+                              color=self.color_7[i])
+            self.ax.add_patch(circle_1)
+            self.ax.add_patch(circle_2)
+            patches_1.append(circle_1)
+            patches_2.append(circle_2)
+        #return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches_1 + patches_2
+        return [self.grinding_num] + patches_1 + patches_2 # 去掉 y 轴坐标变化
+
+    # 交叉摆动动画更新函数
+    def cross_update(self, j):
+        # 设置坐标轴移动
+        self.x_range[0] -= self.one_size
+        self.x_range[1] -= self.one_size
+        self.ax.set_xlim(self.x_range)
+        # 绘制x、y、num的标识(坐标信息相对不移动)
+        self.grinding_num.set_text('Same_grinding_num=%.0f' % self.num)
+        # self.xtext_ani.set_text('x_location=%.3f mm' % (self.single_X_location[0, j]))
+        # self.ytext_ani.set_text(
+        #     'y_location=%.3f mm' % (self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)))
+        # 绘制抛光轨迹进行叠加
+        patches_1 = []
+        patches_2 = []
+        for i in range(0, self.num_two):
+            # 横梁数为奇数
+            if (i + 2) % 2 == 0:
+                circle_1 = Circle(xy=(-(self.single_X_location[0, j] + i * self.beam_between),
+                                      self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)),
+                                  radius=self.R, alpha=0.05,
+                                  color=self.color_7[i])
+                circle_2 = Circle(xy=(-(self.single_X_location[0, j] + i * self.beam_between + self.between),
+                                      self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)),
+                                  radius=self.R, alpha=0.05,
+                                  color=self.color_7[i])
+            # 横梁数为偶数
+            else:
+                circle_1 = Circle(xy=(-(self.single_X_location[0, j] + i * self.beam_between),
+                                      self.single_Y_location[0, j + self.cross_size] - 0.5 * (
+                                                  self.v2 ** 2 / self.a + self.v2 * self.t1)), radius=self.R,
+                                  alpha=0.05,
+                                  color=self.color_7[i])
+
+                circle_2 = Circle(xy=(-(self.single_X_location[0, j] + i * self.beam_between + self.between),
+                                      self.single_Y_location[0, j + self.cross_size] - 0.5 * (
+                                                  self.v2 ** 2 / self.a + self.v2 * self.t1)), radius=self.R,
+                                  alpha=0.05,
+                                  color=self.color_7[i])
+            self.ax.add_patch(circle_1)
+            self.ax.add_patch(circle_2)
+            patches_1.append(circle_1)
+            patches_2.append(circle_2)
+        # return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches_1 + patches_2
+        return [self.grinding_num] + patches_1 + patches_2 # 去掉 y 轴坐标变化
+
+    # 顺序摆动动画更新函数
+    def order_update(self, j):
+        # 设置坐标轴移动
+        self.x_range[0] -= self.one_size
+        self.x_range[1] -= self.one_size
+        self.ax.set_xlim(self.x_range)
+        # 绘制x、y、num的标识(坐标信息相对不移动)
+        self.grinding_num.set_text('Same_grinding_num=%.0f' % self.num)
+        # self.xtext_ani.set_text('x_location=%.3f mm' % (self.single_X_location[0, j]))
+        # self.ytext_ani.set_text(
+        #     'y_location=%.3f mm' % (self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)))
+        # 绘制抛光轨迹进行叠加
+        patches_1 = []
+        patches_2 = []
+        for i in range(0, self.num_two):
+            # 延时绘制效果
+            if j >= self.delay_time_size * i:
+                circle_1 = Circle(xy=(-(self.single_X_location[0, j] + (self.num_two - i - 1) * self.beam_between),
+                                      self.single_Y_location[0, j - self.delay_time_size * i] - 0.5 * (
+                                                  self.v2 ** 2 / self.a + self.v2 * self.t1)),
+                                  radius=self.R, alpha=0.05,
+                                  color=self.color_7[i])
+                circle_2 = Circle(
+                    xy=(-(self.single_X_location[0, j] + (self.num_two - i - 1) * self.beam_between - self.between),
+                        self.single_Y_location[0, j - self.delay_time_size * i] - 0.5 * (
+                                    self.v2 ** 2 / self.a + self.v2 * self.t1)), radius=self.R, alpha=0.05,
+                    color=self.color_7[i])
+                self.ax.add_patch(circle_1)
+                self.ax.add_patch(circle_2)
+                patches_1.append(circle_1)
+                patches_2.append(circle_2)
+        # return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches_1 + patches_2
+        return [self.grinding_num] + patches_1 + patches_2 # 去掉 y 轴坐标变化
+
+    def emit(self):
+        if self.mode == 'equal':
+            An_fun = self.equal_update
+        elif self.mode == 'cross':
+            An_fun = self.cross_update
+        elif self.mode == 'order':
+            An_fun = self.order_update
+        else:
+            raise ValueError('mode must be equal or cross or order')
+        ani = animation.FuncAnimation(self.fig, An_fun, frames=self.all_time_n_1, interval=100, repeat=False)
+        ani.save('animation/' + self.animation_name + '.gif', fps=30, writer='pillow')
+        #ani.save('donghua.gif', fps=30, writer='pillow')
+        # 动画分割
+        input_gif = 'animation/' + self.animation_name + '.gif'
+        split_frames = int(self.all_time_n / self.n * 3)
+        output_gif_1 = 'animation/' + self.animation_name + '_1' + '.gif'
+        output_gif_2 = 'animation/' + self.animation_name + '_2' + '.gif'
+        split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
+        plt.close('运行轨迹动画')
+        return (self.animation_name)
+
+# 静态动画绘制
+'''
 class AnimationProduce():
     def __init__(self,**kwargs):
         # 动画名字
@@ -1311,138 +1794,7 @@ class AnimationProduce():
             self.single_X_location[0,i*T_size:(i+1)*T_size] = X_location+period*v1*i
             self.single_Y_location[0,i*T_size:(i+1)*T_size] = Y_location
         return self.single_X_location, self.single_Y_location
-
-    # ---------动画绘制过程屏蔽-----------
-    '''
-    # 同步摆动动画更新函数
-    def equal_update(self,j):
-        # 设置坐标轴移动
-        self.x_range[0] -= self.one_size
-        self.x_range[1] -= self.one_size
-        self.ax.set_xlim(self.x_range)
-        # 绘制x、y、num的标识(坐标信息相对不移动)
-        self.grinding_num.set_text('Same_grinding_num=%.0f' % self.num)
-
-        self.ytext_ani.set_text('y_location=%.3f mm' % (self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)))
-
-        # 绘制抛光轨迹进行叠加
-        patches_1 = []
-        patches_2 = []
-        for i in range(0, self.num_two):
-            circle_1 = Circle(xy=(-(self.single_X_location[0, j] + i * self.beam_between),
-                                  self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)),
-                              radius=self.R, alpha=0.05,
-                              color=self.color_7[i])
-            circle_2 = Circle(xy=(-(self.single_X_location[0, j] + i * self.beam_between + self.between),
-                                  self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)), radius=self.R, alpha=0.05,
-                              color=self.color_7[i])
-            self.ax.add_patch(circle_1)
-            self.ax.add_patch(circle_2)
-            patches_1.append(circle_1)
-            patches_2.append(circle_2)
-        #return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches_1 + patches_2
-        return [self.grinding_num, self.ytext_ani] + patches_1 + patches_2
-
-    # 交叉摆动动画更新函数
-    def cross_update(self, j):
-        # 设置坐标轴移动
-        self.x_range[0] -= self.one_size
-        self.x_range[1] -= self.one_size
-        self.ax.set_xlim(self.x_range)
-        # 绘制x、y、num的标识(坐标信息相对不移动)
-        self.grinding_num.set_text('Same_grinding_num=%.0f' % self.num)
-        # self.xtext_ani.set_text('x_location=%.3f mm' % (self.single_X_location[0, j]))
-        self.ytext_ani.set_text(
-            'y_location=%.3f mm' % (self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)))
-        # 绘制抛光轨迹进行叠加
-        patches_1 = []
-        patches_2 = []
-        for i in range(0, self.num_two):
-            # 横梁数为奇数
-            if (i + 2) % 2 == 0:
-                circle_1 = Circle(xy=(-(self.single_X_location[0, j] + i * self.beam_between),
-                                      self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)),
-                                  radius=self.R, alpha=0.05,
-                                  color=self.color_7[i])
-                circle_2 = Circle(xy=(-(self.single_X_location[0, j] + i * self.beam_between + self.between),
-                                      self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)),
-                                  radius=self.R, alpha=0.05,
-                                  color=self.color_7[i])
-            # 横梁数为偶数
-            else:
-                circle_1 = Circle(xy=(-(self.single_X_location[0, j] + i * self.beam_between),
-                                      self.single_Y_location[0, j + self.cross_size] - 0.5 * (
-                                                  self.v2 ** 2 / self.a + self.v2 * self.t1)), radius=self.R,
-                                  alpha=0.05,
-                                  color=self.color_7[i])
-
-                circle_2 = Circle(xy=(-(self.single_X_location[0, j] + i * self.beam_between + self.between),
-                                      self.single_Y_location[0, j + self.cross_size] - 0.5 * (
-                                                  self.v2 ** 2 / self.a + self.v2 * self.t1)), radius=self.R,
-                                  alpha=0.05,
-                                  color=self.color_7[i])
-            self.ax.add_patch(circle_1)
-            self.ax.add_patch(circle_2)
-            patches_1.append(circle_1)
-            patches_2.append(circle_2)
-        # return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches_1 + patches_2
-        return [self.grinding_num, self.ytext_ani] + patches_1 + patches_2
-
-    # 顺序摆动动画更新函数
-    def order_update(self, j):
-        # 设置坐标轴移动
-        self.x_range[0] -= self.one_size
-        self.x_range[1] -= self.one_size
-        self.ax.set_xlim(self.x_range)
-        # 绘制x、y、num的标识(坐标信息相对不移动)
-        self.grinding_num.set_text('Same_grinding_num=%.0f' % self.num)
-        # self.xtext_ani.set_text('x_location=%.3f mm' % (self.single_X_location[0, j]))
-        self.ytext_ani.set_text(
-            'y_location=%.3f mm' % (self.single_Y_location[0, j] - 0.5 * (self.v2 ** 2 / self.a + self.v2 * self.t1)))
-        # 绘制抛光轨迹进行叠加
-        patches_1 = []
-        patches_2 = []
-        for i in range(0, self.num_two):
-            # 延时绘制效果
-            if j >= self.delay_time_size * i:
-                circle_1 = Circle(xy=(-(self.single_X_location[0, j] + (self.num_two - i - 1) * self.beam_between),
-                                      self.single_Y_location[0, j - self.delay_time_size * i] - 0.5 * (
-                                                  self.v2 ** 2 / self.a + self.v2 * self.t1)),
-                                  radius=self.R, alpha=0.05,
-                                  color=self.color_7[i])
-                circle_2 = Circle(
-                    xy=(-(self.single_X_location[0, j] + (self.num_two - i - 1) * self.beam_between - self.between),
-                        self.single_Y_location[0, j - self.delay_time_size * i] - 0.5 * (
-                                    self.v2 ** 2 / self.a + self.v2 * self.t1)), radius=self.R, alpha=0.05,
-                    color=self.color_7[i])
-                self.ax.add_patch(circle_1)
-                self.ax.add_patch(circle_2)
-                patches_1.append(circle_1)
-                patches_2.append(circle_2)
-        # return [self.grinding_num, self.xtext_ani, self.ytext_ani] + patches_1 + patches_2
-        return [self.grinding_num, self.ytext_ani] + patches_1 + patches_2
-
-    def emit(self):
-        if self.mode == 'equal':
-            An_fun = self.equal_update
-        elif self.mode == 'cross':
-            An_fun = self.cross_update
-        elif self.mode == 'order':
-            An_fun = self.order_update
-        else:
-            raise ValueError('mode must be equal or cross or order')
-        ani = animation.FuncAnimation(self.fig, An_fun, frames=self.all_time_n_1, interval=100, repeat=False)
-        ani.save('animation/' + self.animation_name + '.gif', fps=30, writer='pillow')
-        #ani.save('donghua.gif', fps=30, writer='pillow')
-        # 动画分割
-        input_gif = 'animation/' + self.animation_name + '.gif'
-        split_frames = int(self.all_time_n / self.n * 3)
-        output_gif_1 = 'animation/' + self.animation_name + '_1' + '.gif'
-        output_gif_2 = 'animation/' + self.animation_name + '_2' + '.gif'
-        split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
-        plt.close('运行轨迹动画')
-        return (self.animation_name)
-    '''
+    
     # -----------新增绘制静态图片内容-------------
     def emit(self):
         # period_num = math.floor(self.one_size * 3)
@@ -1519,7 +1871,7 @@ class AnimationProduce():
             raise ValueError('mode must be equal or cross or order or self_order')
 
         return (self.animation_name)
-
+'''
 # -------------------智能计算------------------
 def double_num_calculate(v1,ceramic_width,between,beam_between,R,a,mo,**kwargs):
     # mode = enerage or efficient

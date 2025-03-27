@@ -460,7 +460,13 @@ class MainWindow_impl(MainWindow):
         params = single_num_calculate(v1,ceramic_width,beam_between,R,a,mo,mode='enerage')
         # 计算结果-数据集更新
         self.single_parameter_intelligent.update(params)
-        params.update({'mode': 'order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+
+        # 静态动画参数输入
+        # params.update({'mode': 'order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+
+        # 动态动画参数输入
+        params.update({'mode': 'order', 'fig': self.canvas.fig, 'animation_name': animation_name})
+
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -478,7 +484,12 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.single_parameter_intelligent.update(params)
 
-        params.update({'mode': 'order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+        # 静态动画参数输入
+        # params.update({'mode': 'order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+
+        # 动态动画参数输入
+        params.update({'mode': 'order', 'fig': self.canvas.fig, 'animation_name': animation_name})
+
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -499,7 +510,11 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.single_parameter_intelligent.update(params)
 
-        params.update({'mode': 'self_order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+        # 静态动画参数输入
+        # params.update({'mode': 'self_order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+        # 动态动画参数输入
+        params.update({'mode': 'self_order', 'fig': self.canvas.fig, 'animation_name': animation_name})
+
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -518,6 +533,9 @@ class MainWindow_impl(MainWindow):
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
         self.single_parameter_manual['lineEdit_swing'] = round(a*(v2/a)**2+v2*constant_time,2)
         self.single_parameter_manual['lineEdit_num_output'] = num
+
+        # 静态动画参数集
+        '''
         params = {
             'mode': 'equal',
             'fig': self.canvas.fig,
@@ -528,6 +546,28 @@ class MainWindow_impl(MainWindow):
             'lineEdit_stay_time_output': stay_time,
             'lineEdit_accelerate': a,
             #'between': between,
+            'lineEdit_beam_between': beam_between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_output': num,
+            'lineEdit_diameter': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width': ceramic_width,
+            # 顺序摆参数
+            # 'delay_time': delay_time,
+            # 自定义计算参数
+            # 'group': group,
+        }
+        '''
+        # 动态动画参数及
+        params = {
+            'mode': 'equal',
+            'fig': self.canvas.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_output': stay_time,
+            'lineEdit_accelerate': a,
+            # 'between': between,
             'lineEdit_beam_between': beam_between,
             'lineEdit_grind_length': mo,
             'lineEdit_num_output': num,
@@ -556,6 +596,9 @@ class MainWindow_impl(MainWindow):
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
         self.single_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
         self.single_parameter_manual['lineEdit_num_output'] = num
+
+        # 静态动画参数集
+        '''
         params = {
             'mode': 'cross',
             'fig': self.canvas.fig,
@@ -577,6 +620,29 @@ class MainWindow_impl(MainWindow):
             # 自定义计算参数
             # 'group': group,
         }
+        '''
+        # 动态动画参数集
+        params = {
+            'mode': 'cross',
+            'fig': self.canvas.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_output': stay_time,
+            'lineEdit_accelerate': a,
+            # 'between': between,
+            'lineEdit_beam_between': beam_between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_output': num,
+            'R': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width': ceramic_width,
+            # 顺序摆参数
+            # 'delay_time': delay_time,
+            # 自定义计算参数
+            # 'group': group,
+        }
+
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_manual_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -600,6 +666,9 @@ class MainWindow_impl(MainWindow):
         self.single_parameter_manual['lineEdit_delay_time_list'] = delay_time_list
         self.single_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
         self.single_parameter_manual['lineEdit_num_output'] = num
+
+        # 静态动画参数集
+        '''
         params = {
             'mode': 'order',
             'fig': self.canvas.fig,
@@ -610,6 +679,28 @@ class MainWindow_impl(MainWindow):
             'lineEdit_stay_time_output': stay_time,
             'lineEdit_accelerate': a,
             #'between': between,
+            'lineEdit_beam_between': beam_between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_output': num,
+            'R': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width': ceramic_width,
+            # 顺序摆参数
+            'lineEdit_delay_time': delay_time,
+            # 自定义计算参数
+            # 'group': group,
+        }
+        '''
+        # 动态动画参数集
+        params = {
+            'mode': 'order',
+            'fig': self.canvas.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_output': stay_time,
+            'lineEdit_accelerate': a,
+            # 'between': between,
             'lineEdit_beam_between': beam_between,
             'lineEdit_grind_length': mo,
             'lineEdit_num_output': num,
@@ -642,7 +733,11 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.double_parameter_intelligent.update(params)
 
-        params.update({'mode': 'order','fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+        # 静态动画参数输入
+        # params.update({'mode': 'order','fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+        # 动态动画参数输入
+        params.update({'mode': 'order', 'fig': self.canvas.fig, 'animation_name': animation_name})
+
         self.worker_thread_plot = DoubleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -661,7 +756,11 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.double_parameter_intelligent.update(params)
 
-        params.update({'mode': 'order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+        # 静态动画参数输入
+        # params.update({'mode': 'order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+        # 动态动画参数输入
+        params.update({'mode': 'order', 'fig': self.canvas.fig,'animation_name': animation_name})
+
         self.worker_thread_plot = DoubleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -682,7 +781,12 @@ class MainWindow_impl(MainWindow):
         params = self_define_calculate(v1,t2,ceramic_width,between,beam_between,R,a,num_input,mo,group)
         # 计算结果-数据集更新
         self.double_parameter_intelligent.update(params)
-        params.update({'mode': 'self_order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+
+        # 静态动画参数输入
+        # params.update({'mode': 'self_order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+        # 动态动画参数输入
+        params.update({'mode': 'self_order', 'fig': self.canvas.fig,'animation_name': animation_name})
+
         self.worker_thread_plot = DoubleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -703,6 +807,9 @@ class MainWindow_impl(MainWindow):
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
         self.double_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
         self.double_parameter_manual['lineEdit_num_output'] = num
+
+        # 静态动画参数集
+        '''
         params = {
             'mode': 'equal',
             'fig': self.canvas.fig,
@@ -724,6 +831,29 @@ class MainWindow_impl(MainWindow):
             # 自定义计算参数
             #'group': group,
         }
+        '''
+        # 动态动画参数集
+        params = {
+            'mode': 'equal',
+            'fig': self.canvas.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_output': stay_time,
+            'lineEdit_accelerate': a,
+            'lineEdit_between': between,
+            'lineEdit_beam_between': beam_between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_output': num,
+            'R': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width': ceramic_width,
+            # 顺序摆参数
+            # 'delay_time': delay_time,
+            # 自定义计算参数
+            # 'group': group,
+        }
+
         self.worker_thread_plot = DoubleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.double_manual_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -743,10 +873,35 @@ class MainWindow_impl(MainWindow):
         R = kwargs.get('lineEdit_diameter')/2
         self.double_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
         self.double_parameter_manual['lineEdit_num_output'] = num
+
+        # 静态动画参数集
+        '''
         params = {
             'mode': 'cross',
             'fig': self.canvas.fig,
             'fig_2': self.canvas_animation.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_output': stay_time,
+            'lineEdit_accelerate': a,
+            'lineEdit_between': between,
+            'lineEdit_beam_between': beam_between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_output': num,
+            'R': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width': ceramic_width,
+            # 顺序摆参数
+            # 'delay_time': delay_time,
+            # 自定义计算参数
+            # 'group': group,
+        }
+        '''
+        # 动态动画参数集
+        params = {
+            'mode': 'cross',
+            'fig': self.canvas.fig,
             'lineEdit_belt_speed': v1,
             'lineEdit_beam_swing_speed': v2,
             'lineEdit_beam_constant_time': constant_time,
@@ -790,6 +945,9 @@ class MainWindow_impl(MainWindow):
         self.double_parameter_manual['lineEdit_delay_time_list'] = delay_time_list
         self.double_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
         self.double_parameter_manual['lineEdit_num_output'] = num
+
+        # 静态动画参数集
+        '''
         params = {
             'mode': 'order',
             'fig': self.canvas.fig,
@@ -811,6 +969,28 @@ class MainWindow_impl(MainWindow):
             # 自定义计算参数
             #'group': group,
         }
+        '''
+        # 动态动画参数集
+        params = {
+            'mode': 'order',
+            'fig': self.canvas.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_output': stay_time,
+            'lineEdit_accelerate': a,
+            'lineEdit_between': between,
+            'lineEdit_beam_between': beam_between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_output': num,
+            'R': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width': ceramic_width,
+            # 顺序摆参数
+            'lineEdit_delay_time': delay_time,
+            # 自定义计算参数
+            # 'group': group,
+        }
 
         self.worker_thread_plot = DoubleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.double_manual_thread_signal)  # 连接子线程的信号
@@ -831,7 +1011,11 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.equal_parameter_intelligent.update(params)
 
-        params.update({'mode': 'equal', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig, 'animation_name': animation_name})
+        # 静态动画绘制
+        # params.update({'mode': 'equal', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig, 'animation_name': animation_name})
+        # 动态动画绘制
+        params.update({'mode': 'equal', 'fig': self.canvas.fig, 'animation_name': animation_name})
+
         self.worker_thread_plot = EqualWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.equal_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -849,7 +1033,11 @@ class MainWindow_impl(MainWindow):
         # 计算结果-数据集更新
         self.equal_parameter_intelligent.update(params)
 
-        params.update({'mode': 'equal', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig, 'animation_name': animation_name})
+        # 静态动画绘制
+        # params.update({'mode': 'equal', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig, 'animation_name': animation_name})
+        # 动态动画绘制
+        params.update({'mode': 'equal', 'fig': self.canvas.fig, 'animation_name': animation_name})
+
         self.worker_thread_plot = EqualWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.equal_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -869,7 +1057,12 @@ class MainWindow_impl(MainWindow):
         params = equal_self_define_calculate(v1, t2, ceramic_width, between,R, a, num_input, mo)
         # 计算结果-数据集更新
         self.equal_parameter_intelligent.update(params)
-        params.update({'mode': 'self_order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig, 'animation_name': animation_name})
+
+        # 静态动画绘制
+        # params.update({'mode': 'self_order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig, 'animation_name': animation_name})
+        # 动态动画绘制
+        params.update({'mode': 'self_order', 'fig': self.canvas.fig, 'animation_name': animation_name})
+
         self.worker_thread_plot = EqualWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.equal_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -889,6 +1082,9 @@ class MainWindow_impl(MainWindow):
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
         self.equal_parameter_manual['lineEdit_swing'] = round(a * (v2 / a) ** 2 + v2 * constant_time, 2)
         self.equal_parameter_manual['lineEdit_num_output'] = num
+
+        # 静态动画参数集
+        '''
         params = {
             'mode': 'equal',
             'fig': self.canvas.fig,
@@ -909,6 +1105,28 @@ class MainWindow_impl(MainWindow):
             # 自定义计算参数
             # 'group': group,
         }
+        '''
+        # 动态动画参数集
+        params = {
+            'mode': 'equal',
+            'fig': self.canvas.fig,
+            'lineEdit_belt_speed': v1,
+            'lineEdit_beam_swing_speed': v2,
+            'lineEdit_beam_constant_time': constant_time,
+            'lineEdit_stay_time_output': stay_time,
+            'lineEdit_accelerate': a,
+            'lineEdit_between': between,
+            'lineEdit_grind_length': mo,
+            'lineEdit_num_output': num,
+            'R': R,
+            'animation_name': animation_name,
+            'lineEdit_ceramic_width': ceramic_width,
+            # 顺序摆参数
+            # 'delay_time': delay_time,
+            # 自定义计算参数
+            # 'group': group,
+        }
+
         self.worker_thread_plot = EqualWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.equal_manual_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
@@ -918,9 +1136,8 @@ class MainWindow_impl(MainWindow):
     def single_intelligent_thread_signal(self, result):
         self.timer.stop()
         self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
-        # 动画屏蔽
-        '''
-        # 刷新画布
+
+        # 动态动画显示
         self.canvas.draw()
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
@@ -937,11 +1154,13 @@ class MainWindow_impl(MainWindow):
         # 启动新的动画
         self.movie.start()
         button_enable(self.button_list)
-        '''
-        # 图片显示
-        self.canvas.draw()
-        self.canvas_animation.draw()  # 新增（静态轨迹动画）
-        button_enable(self.button_list)
+
+
+        # 静态动画显示
+        # self.canvas.draw()
+        # self.canvas_animation.draw()  # 新增（静态轨迹动画）
+        # button_enable(self.button_list)
+
         # 参数集更新
         self.single_parameter_intelligent['lineEdit_coefficient'] = result[0]
         # 字符转换
@@ -958,12 +1177,12 @@ class MainWindow_impl(MainWindow):
         self.timer.stop()
         self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
 
-        # 图片显示(静态图片)
-        self.canvas.draw()
-        self.canvas_animation.draw()  # 新增（静态轨迹动画）
-        button_enable(self.button_list)
-        '''
-        # 刷新画布
+        # 静态动画显示
+        # self.canvas.draw()
+        # self.canvas_animation.draw()  # 新增（静态轨迹动画）
+        # button_enable(self.button_list)
+
+        # 动态动画显示
         self.canvas.draw()
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
@@ -980,7 +1199,6 @@ class MainWindow_impl(MainWindow):
         # 启动新的动画
         self.movie.start()
         button_enable(self.button_list)
-        '''
 
         # 参数集更新
         self.single_parameter_manual['lineEdit_coefficient'] = result[0]
@@ -996,25 +1214,27 @@ class MainWindow_impl(MainWindow):
     def double_intelligent_thread_signal(self, result):
         self.timer.stop()
         self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
-        # 刷新画布(轨迹分布 轨迹动画)
-        self.canvas.draw()
-        self.canvas_animation.draw()  # 新增（静态轨迹动画）
 
-        # 新增注释（屏蔽动画）
-        # # 清空 QLabel 中的内容
-        # self.animation_QLabel.clear()
-        # # 创建新的 QMovie 对象并设置到 QLabel
-        # animation_name = result[1]
-        # # self.movie = QMovie(ani)
-        # # self.animation_QLabel.setMovie(self.movie)
-        # # 加载GIF动画
-        # self.movie = QMovie('./animation/' + animation_name + '_1.gif')
-        # self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
-        # self.movie.updated.connect(self.updated)
-        # # self.movie.setloopCount(1)  # 设置只播放一次
+        # 静态动画显示
+        # self.canvas.draw()
+        # self.canvas_animation.draw()  # 新增（静态轨迹动画）
+
+        # 动态动画显示
+        self.canvas.draw()
+        # 清空 QLabel 中的内容
+        self.animation_QLabel.clear()
+        # 创建新的 QMovie 对象并设置到 QLabel
+        animation_name = result[1]
+        # self.movie = QMovie(ani)
         # self.animation_QLabel.setMovie(self.movie)
-        # # 启动新的动画
-        # self.movie.start()
+        # 加载GIF动画
+        self.movie = QMovie('./animation/' + animation_name + '_1.gif')
+        self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
+        self.movie.updated.connect(self.updated)
+        # self.movie.setloopCount(1)  # 设置只播放一次
+        self.animation_QLabel.setMovie(self.movie)
+        # 启动新的动画
+        self.movie.start()
 
         button_enable(self.button_list)
         # 参数集更新
@@ -1027,29 +1247,32 @@ class MainWindow_impl(MainWindow):
         for i in self.motion_out_param_line_edit_names_2:
             self.motion_out_param_frame.content_down_layout.set_line_edit_value(i,self.double_parameter_intelligent[i])
         print(self.double_parameter_intelligent)
+
     # 双头摆-人工寻优-子进程信号接收函数
     def double_manual_thread_signal(self, result):
         self.timer.stop()
         self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
-        # 刷新画布
-        self.canvas.draw()
-        self.canvas_animation.draw()  # 新增（静态轨迹动画）
 
-        # 新增注释（屏蔽动画）
-        # # 清空 QLabel 中的内容
-        # self.animation_QLabel.clear()
-        # # 创建新的 QMovie 对象并设置到 QLabel
-        # animation_name = result[1]
-        # # self.movie = QMovie(ani)
-        # # self.animation_QLabel.setMovie(self.movie)
-        # # 加载GIF动画
-        # self.movie = QMovie('./animation/' + animation_name + '_1.gif')
-        # self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
-        # self.movie.updated.connect(self.updated)
-        # # self.movie.setloopCount(1)  # 设置只播放一次
+        # 静态动画显示
+        # self.canvas.draw()
+        # self.canvas_animation.draw()  # 新增（静态轨迹动画）
+
+        # 动态动画显示
+        self.canvas.draw()
+        # 清空 QLabel 中的内容
+        self.animation_QLabel.clear()
+        # 创建新的 QMovie 对象并设置到 QLabel
+        animation_name = result[1]
+        # self.movie = QMovie(ani)
         # self.animation_QLabel.setMovie(self.movie)
-        # # 启动新的动画
-        # self.movie.start()
+        # 加载GIF动画
+        self.movie = QMovie('./animation/' + animation_name + '_1.gif')
+        self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
+        self.movie.updated.connect(self.updated)
+        # self.movie.setloopCount(1)  # 设置只播放一次
+        self.animation_QLabel.setMovie(self.movie)
+        # 启动新的动画
+        self.movie.start()
 
         button_enable(self.button_list)
         # 参数集更新
@@ -1066,24 +1289,27 @@ class MainWindow_impl(MainWindow):
     def equal_intelligent_thread_signal(self, result):
         self.timer.stop()
         self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
-        # 刷新画布
+
+        # 静态动画显示
+        # self.canvas.draw()
+        # self.canvas_animation.draw()  # 新增（静态轨迹动画）
+
+        # 动态动画显示
         self.canvas.draw()
-        self.canvas_animation.draw()  # 新增（静态轨迹动画）
-        # 新增注释（屏蔽动画）
-        # # 清空 QLabel 中的内容
-        # self.animation_QLabel.clear()
-        # # 创建新的 QMovie 对象并设置到 QLabel
-        # animation_name = result[1]
-        # # self.movie = QMovie(ani)
-        # # self.animation_QLabel.setMovie(self.movie)
-        # # 加载GIF动画
-        # self.movie = QMovie('./animation/' + animation_name + '_1.gif')
-        # self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
-        # self.movie.updated.connect(self.updated)
-        # # self.movie.setloopCount(1)  # 设置只播放一次
+        # 清空 QLabel 中的内容
+        self.animation_QLabel.clear()
+        # 创建新的 QMovie 对象并设置到 QLabel
+        animation_name = result[1]
+        # self.movie = QMovie(ani)
         # self.animation_QLabel.setMovie(self.movie)
-        # # 启动新的动画
-        # self.movie.start()
+        # 加载GIF动画
+        self.movie = QMovie('./animation/' + animation_name + '_1.gif')
+        self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
+        self.movie.updated.connect(self.updated)
+        # self.movie.setloopCount(1)  # 设置只播放一次
+        self.animation_QLabel.setMovie(self.movie)
+        # 启动新的动画
+        self.movie.start()
 
         button_enable(self.button_list)
         # 参数集更新
@@ -1100,25 +1326,26 @@ class MainWindow_impl(MainWindow):
     def equal_manual_thread_signal(self, result):
         self.timer.stop()
         self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
-        # 刷新画布
-        self.canvas.draw()
-        self.canvas_animation.draw()  # 新增（静态轨迹动画）
+        # 静态动画显示
+        # self.canvas.draw()
+        # self.canvas_animation.draw()  # 新增（静态轨迹动画）
 
-        # 新增注释（屏蔽动画）
-        # # 清空 QLabel 中的内容
-        # self.animation_QLabel.clear()
-        # # 创建新的 QMovie 对象并设置到 QLabel
-        # animation_name = result[1]
-        # # self.movie = QMovie(ani)
-        # # self.animation_QLabel.setMovie(self.movie)
-        # # 加载GIF动画
-        # self.movie = QMovie('./animation/' + animation_name + '_1.gif')
-        # self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
-        # self.movie.updated.connect(self.updated)
-        # # self.movie.setloopCount(1)  # 设置只播放一次
+        # 动态动画显示
+        self.canvas.draw()
+        # 清空 QLabel 中的内容
+        self.animation_QLabel.clear()
+        # 创建新的 QMovie 对象并设置到 QLabel
+        animation_name = result[1]
+        # self.movie = QMovie(ani)
         # self.animation_QLabel.setMovie(self.movie)
-        # # 启动新的动画
-        # self.movie.start()
+        # 加载GIF动画
+        self.movie = QMovie('./animation/' + animation_name + '_1.gif')
+        self.movie2 = QMovie('./animation/' + animation_name + '_2.gif')
+        self.movie.updated.connect(self.updated)
+        # self.movie.setloopCount(1)  # 设置只播放一次
+        self.animation_QLabel.setMovie(self.movie)
+        # 启动新的动画
+        self.movie.start()
 
         button_enable(self.button_list)
         # 参数集更新

@@ -357,17 +357,18 @@ class MainWindow(QWidget):
         self.chart_frame2.setStyleSheet(frameStyleSheet)
         center_layout.addWidget(self.chart_frame2)
 
-        # 创建一个 QLabel ，用来播放轨迹动画（暂时屏蔽）
-        # self.animation_QLabel = QLabel()
-        # # 轨迹动画尺寸调整***
-        # self.animation_QLabel.setFixedSize(920, 228)
-        # # 设置 QLabel 背景颜色
-        # self.animation_QLabel.setStyleSheet("background-color: white;")  # 设置背景色为 lightgray
-        # self.animation_QLabel.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
-        # chart2_layout.addWidget(self.animation_QLabel, alignment=Qt.AlignmentFlag.AlignCenter)
-        # chart2_layout.addStretch()
+        # 创建一个 QLabel ，用来播放轨迹动画
+        self.animation_QLabel = QLabel()
+        # 轨迹动画尺寸调整***
+        self.animation_QLabel.setFixedSize(920, 228)
+        # 设置 QLabel 背景颜色
+        self.animation_QLabel.setStyleSheet("background-color: white;")  # 设置背景色为 lightgray
+        self.animation_QLabel.setAttribute(Qt.WA_TranslucentBackground)  # 设置背景透明
+        chart2_layout.addWidget(self.animation_QLabel, alignment=Qt.AlignmentFlag.AlignCenter)
+        chart2_layout.addStretch()
 
-        # 创建一个QWidget()，用来显示 轨迹动画静态绘图
+        # 创建一个QWidget()，用来显示 轨迹动画静态绘图（暂时屏蔽）
+        '''
         self.animation_QWidget = QWidget()
         # 轨迹动画尺寸调整***
         self.animation_QWidget.setFixedSize(920, 228)
@@ -379,10 +380,9 @@ class MainWindow(QWidget):
         # 将绘图内容添加到QWidget中
         animation_QWidget_layout = QVBoxLayout(self.animation_QWidget)
         animation_QWidget_layout.addWidget(self.canvas_animation)
-
         chart2_layout.addWidget(self.animation_QWidget, alignment=Qt.AlignmentFlag.AlignCenter)
         chart2_layout.addStretch()
-
+        '''
 
 
         # self.animation_QLabel.setAlignment(Qt.AlignCenter)
