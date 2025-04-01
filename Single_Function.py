@@ -1331,16 +1331,27 @@ class AnimationProduce():
         #self.fig = figure
         self.ax = self.fig.add_subplot(111)  # 默认111代表1*1的图的第一个子图
         # 设置坐标轴范围
-        self.x_range = [-(self.num*self.between+(self.num-1)*(self.beam_between-self.between)+200),period * (self.n-4) * self.v1]
+        # self.x_range = [-(self.num*self.between+(self.num-1)*(self.beam_between-self.between)+200),period * (self.n-4) * self.v1]   # 原来x轴范围
+        # 保证三种模式图像框大小一致
+        self.x_range_equal = [-(self.num * self.beam_between + 200),period * (self.n - 4) * self.v1]   # 同步摆x周范围
+        self.x_range_cross = [-(self.num * self.beam_between + 200), period * (self.n - 4) * self.v1]  # 交叉摆x周范围
+        self.x_range_order = [-(self.num * self.between + 200), period * (self.n - 4) * self.v1]  # 顺序摆x周范围
+        # 判断模式选择合适的x轴范围
+        if self.mode == 'equal':
+            self.x_range = self.x_range_equal
+        elif self.mode == 'cross':
+            self.x_range = self.x_range_cross
+        else:
+            self.x_range = self.x_range_order
         self.ax.set_xlim(self.x_range)
-        self.ax.set_ylim((-0.5 * 1.2 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2 * self.R),
-                          0.5 * 1.5 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2 * self.R)))
+        self.ax.set_ylim((-0.5 * 1.3 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2 * self.R),
+                          0.5 * 1.6 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2 * self.R)))
         self.ax.set_aspect('equal', adjustable='box')
         # 设置坐标轴名称
         self.ax.set_xlabel('Tile feed direction')
         self.ax.set_ylabel('Beam swing direction')
         # 单独隐藏刻度和标签
-        # self.ax.set_xticks([])         # 隐藏刻度
+        self.ax.set_xticks([])         # 隐藏刻度
         self.ax.set_xticklabels([])  # 隐藏刻度标签
         #self.x_range_numtext = 0
         self.one_size=self.msize * self.v1
