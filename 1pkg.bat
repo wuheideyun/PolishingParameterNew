@@ -1,8 +1,8 @@
 @echo off
 REM Disable the command output to prevent the command from being displayed on the console
 chcp 936
-call d:\ProgramData\anaconda3\Scripts\activate C:\Users\pengwei\.conda\envs\pyside6
-start cmd.exe \K "d:\ProgramData\anaconda3\Scripts\activate.bat" "C:\Users\pengwei\.conda\envs\pyside6" >C:\Users\pengwei\AppData\Roaming\.anaconda\navigator\scripts\pyside6\console_shortcut-out-2.txt 2>C:\Users\pengwei\AppData\Roaming\.anaconda\navigator\scripts\pyside6\console_shortcut-err-2.txt
+call d:\ProgramData\anaconda3\Scripts\activate C:\Users\pengw\.conda\envs\pyside6
+start cmd.exe \K "d:\ProgramData\anaconda3\Scripts\activate.bat" "C:\Users\pengw\.conda\envs\pyside6" >C:\Users\pengw\AppData\Roaming\.anaconda\navigator\scripts\pyside6\console_shortcut-out-2.txt 2>C:\Users\pengw\AppData\Roaming\.anaconda\navigator\scripts\pyside6\console_shortcut-err-2.txt
 
 
 
@@ -32,7 +32,7 @@ if exist "%cd%\%folder_to_delete2%" (
     echo folder %folder_to_delete2% dose not exist.
 )
 
-"C:\Users\pengwei\.conda\envs\pyside6\Scripts\pyinstaller.exe"    main.py
+"C:\Users\pengw\.conda\envs\pyside6\Scripts\pyinstaller.exe"    main.py
 
 REM Check whether the destination folder exists. If it does not exist, create it
 if not exist "%cd%\%target_folder%" (

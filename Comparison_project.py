@@ -56,22 +56,38 @@ class ComparisonWorkerThread(QThread):
         # 创建绘图图层
         ax_list = []
         print('self.count_figure:'+str(self.count_figure))
-        for i in range(1,self.count_figure*2+1):
-            print("i:"+str(i))
-            ax = self.fig.add_subplot(self.count_figure,2,i)
-            # 设置 子图 标签
+        for i in range(1, self.count_figure * 2 + 1):
+            print("i:" + str(i))
+            ax = self.fig.add_subplot(self.count_figure, 2, i)
+            # Set subplot labels
             ax.set_xlabel('主皮带进给方向')
             ax.set_ylabel('横梁摆动方向')
             print(self.args[(i - 1) // 2]['mode'])
-            # 摆动模式：  同-equal 交叉摆-cross 顺序摆-order 自定义方案-self_order
-            if self.args[(i - 1) // 2]['mode'] == 'order':
-                ax.set_title("顺序摆模式")
-            elif self.args[(i - 1) // 2]['mode'] == 'cross':
-                ax.set_title("交叉摆模式")
-            elif self.args[(i - 1) // 2]['mode'] == 'equal':
-                ax.set_title("同步摆模式")
-            elif self.args[(i - 1) // 2]['mode'] == 'self_order':
-                ax.set_title("自定义模式")
+
+            # Determine the title based on device and mode
+            device = self.args[(i - 1) // 2]['device']
+            mode = self.args[(i - 1) // 2]['mode']
+
+            if device == 'single':
+                title_prefix = "单头摆抛光机-"
+            elif device == 'double':
+                title_prefix = "双头摆抛光机-"
+            elif device == 'equal':
+                title_prefix = "同步摆抛光机-"
+            else:
+                title_prefix = ""  # Default case if device is unspecified
+
+            if mode == 'order':
+                ax.set_title(title_prefix + "顺序摆模式")
+            elif mode == 'cross':
+                ax.set_title(title_prefix + "交叉摆模式")
+            elif mode == 'equal':
+                ax.set_title(title_prefix + "同步摆模式")
+            elif mode == 'self_order':
+                ax.set_title(title_prefix + "自定义模式")
+            else:
+                ax.set_title(title_prefix)  # Fallback if mode is unrecognized
+
             ax_list.append(ax)
         # 绘制轨迹中心线--(位置：1 3 5 7 )    绘制仿真图--(位置：2 4 6 8 )
         j = 1

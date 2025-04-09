@@ -65,7 +65,7 @@ if __name__ == "__main__":
     # tcp.write_short('DM.300',[1])
     # value = tcp.read_short('DM.300',2)
     # print('信号DM.300:'+str(value.result_value[0]))
-    values = -1234789
+    values = -111
     value = tcp.read_float('DM.260',2)
     print(value.result_value[0])
     tcp.write_float('DM.2260',values)

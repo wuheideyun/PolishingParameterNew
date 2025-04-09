@@ -190,8 +190,9 @@ class OutputReportWidget(QWidget):
 
     def set_filter_condition(self, filter_condition):
         """设置过滤条件并重新加载数据"""
-        self.filter_condition = filter_condition
-        self.title_label.setText('数据库：【'+filter_condition+"】抛光参数")
+        # self.filter_condition = filter_condition
+        # self.title_label.setText('数据库：【'+filter_condition+"】抛光参数")
+        self.title_label.setText('抛光参数选择')
         self.load_data_from_database()
 
     def on_compare_btn(self):

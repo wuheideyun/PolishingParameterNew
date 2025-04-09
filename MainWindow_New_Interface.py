@@ -642,7 +642,7 @@ class MainWindow(QWidget):
         palette = QPalette()
         palette.setBrush(QPalette.Window, QBrush(scaled_image))
         self.setPalette(palette)
-        # self.setAutoFillBackground(True)  # 确保背景填充
+        self.setAutoFillBackground(False)  # 确保背景填充
 
 
         # 单头摆/双头摆/同步摆设备选择

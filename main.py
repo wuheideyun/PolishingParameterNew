@@ -1,5 +1,7 @@
 import sys
+import os
 
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 from MainWindow_new_impl import MainWindow_impl
@@ -31,7 +33,12 @@ global_style = """
     """
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    # 启用高 DPI 缩放支持
+    # app.setAttribute(Qt.AA_EnableHighDpiScaling)
+    # app.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
+    # 设置全局样式（可选）
+    app.setStyle("Fusion")
     app.setWindowIcon(QIcon(":writered"))
     # 设置全局样式表
     app.setStyleSheet(global_style)
