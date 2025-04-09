@@ -358,7 +358,7 @@ class SingleWorkerThread(QThread):
         ax_2.set_aspect('equal', adjustable='box')
         # 设置图片文本
         ani_text = ax_2.text(0.7, 0.82, '', transform=ax_2.transAxes, fontsize=10, color='white')
-        ani_text.set_text('Same_grinding_num=%.0f' % float(self.num))
+        ani_text.set_text('Same_grinding_num=%.0f' % float(self.num*self.group))
         num_two = math.ceil(self.num / 2)
         color_7 = ['red', 'orange', 'green', 'cyan', 'blue', 'purple', 'yellow', 'lightgreen',
                    'slategrey', 'cornflowerblue', 'navy', 'indigo', 'violet', 'plum', 'oldlace', 'maroon',
