@@ -390,6 +390,7 @@ class MainWindow_impl(MainWindow):
         # 字符类型转换
         single_parameter_intelligent = dict_value_to_float(self.single_parameter_intelligent)
         double_parameter_intelligent = dict_value_to_float(self.double_parameter_intelligent)
+        print(f'double_parameter_intelligent = {double_parameter_intelligent}')
         equal_parameter_intelligent = dict_value_to_float(self.equal_parameter_intelligent)
         if self.current_device == 1:
             self.single_self_project(animation_name=self.MatchAnimationName(single_parameter_intelligent,11,"SingleSelfProject"),**single_parameter_intelligent)

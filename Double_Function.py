@@ -258,11 +258,15 @@ class DoubleWorkerThread(QThread):
             self.stay_time = kwargs.get('lineEdit_stay_time_output', 0)
         self.R = kwargs.get('R', 270)
         self.mo = kwargs.get('lineEdit_grind_length', 150)
-        self.ceramic_width = kwargs.get('lineEdit_ceramic_width', 800)
+        self.ceramic_width = kwargs.get('lineEdit_ceramic_width', 800)    # 进砖宽度
         # 顺序摆参数
         self.delay_time = kwargs.get('lineEdit_delay_time', 0)
         # 自定义计算参数
-        self.group = round(kwargs.get('lineEdit_group_count', 1))
+        if self.ceramic_width >= 800:
+            self.group = round(kwargs.get('lineEdit_group_count', 1))
+        else:
+            self.group = round(self.num_input / 2)
+            self.num_input = 2
 
         self.animation_name = kwargs.get('animation_name', 'ani')
 
@@ -282,7 +286,7 @@ class DoubleWorkerThread(QThread):
         # 轨迹中心线坐标信息
         MLP = MiddleLinePlot(v1=self.v1, v2=self.v2, constant_time=self.constant_time, stay_time=self.stay_time
                              , a=self.a, between=self.between, beam_between=self.beam_between, delay_time=self.delay_time
-                             , num_input=self.num_input, group=self.group)
+                             , num_input=self.num_input, group=self.group,ceramic_width = self.ceramic_width)
         single_X_location, single_Y_location = MLP.inner_calculate()
         # 轨迹动画生成
         if self.mode == 'self_order':
@@ -359,8 +363,11 @@ class DoubleWorkerThread(QThread):
         accelerate_t = self.v2 / self.a
         period = 4 * accelerate_t + 2 * self.stay_time + 2 * self.constant_time
         # 设置图层属性
-        ax_2.set_xlim((-200, period * 3 * self.v1 + self.between))
-        ax_2.set_ylim((-200, self.a * (self.v2 / self.a) ** 2 + self.v2 * self.constant_time + 600))
+        beam_swing = (self.a * (self.v2 / self.a) ** 2 + self.v2 * self.constant_time)  # 摆幅
+        ax_2.set_ylim((-beam_swing * 0.2, beam_swing * 1.5))
+        # 为保证图像尺寸，设定 x轴 范围为 y轴 的5.5 倍
+        length_y = beam_swing * 1.7 * 8
+        ax_2.set_xlim((-beam_swing * 0.2, length_y - beam_swing * 0.2))
         ax_2.set_aspect('equal', adjustable='box')
         # 设置图片文本
         ani_text = ax_2.text(0.7, 0.82, '', transform=ax_2.transAxes, fontsize=10, color='white')
@@ -369,7 +376,10 @@ class DoubleWorkerThread(QThread):
         color_7 = ['red', 'orange', 'green', 'cyan', 'blue', 'purple', 'yellow', 'lightgreen',
                    'slategrey', 'cornflowerblue', 'navy', 'indigo', 'violet', 'plum', 'oldlace', 'maroon',
                    'lightcyan', 'lightseagreen', 'seagreen', 'springgreen']  # 红橙黄绿青蓝紫
-        all_time_n = math.floor(period / 0.01) * 3
+
+        self.n = math.ceil(length_y / (period * self.v1)) + 3
+        all_time_n = math.floor(period / 0.01) * self.n
+
         cross_size = round((self.v2/self.a + self.constant_time + self.stay_time + self.v2/self.a) / 0.01)
         if self.mode == 'equal':
             for i in range(0, num_two):
@@ -861,12 +871,8 @@ class PolishingDistributionThread():
         self.delay_time = kwargs.get('delay_time', 0)
         # 自定义计算参数
         self.group = kwargs.get('group', 0)
-
-        self.n = 6  # 周期数目
         self.w = 600  # 转速
-
         accelerate_t = round(self.v2 / self.a, 2)
-
         self.t1 = accelerate_t
         self.t2 = self.constant_time
         self.t3 = accelerate_t
@@ -876,6 +882,10 @@ class PolishingDistributionThread():
         self.t7 = accelerate_t
         self.t8 = self.stay_time
         self.period = self.t1 + self.t2 + self.t3 + self.t4 + self.t5 + self.t6 + self.t7 + self.t8
+
+        cover_width = math.ceil(math.ceil(self.v2 * self.t2 + self.a * self.t1 ** 2 + 2 * self.R))
+        x_plus = cover_width * 8
+        self.n = math.ceil(x_plus / (self.period * self.v1)) + 3
 
         self.c_length_cell = 10  # 统计区域长度最小单位
         self.c_width_cell = 10  # 统计区域宽度最小单位
@@ -969,9 +979,13 @@ class PolishingDistributionThread():
         cover_width = math.ceil(math.ceil(self.v2 * self.t2 + self.a * self.t1 ** 2 + 2 * self.R) / 10)
         begin_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2)
         terminate_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2) + cover_width
+
+        cover_length = cover_width * 4
         begin_length = math.ceil((50 + self.v1 * 3 * self.period) / 10)
-        terminate_length = begin_length + math.ceil((2 * self.v1 * self.period + 2 * self.R) / 10)
+        terminate_length = begin_length + cover_length
+
         object_matrix = all_H[begin_width + 1:terminate_width, begin_length + 1:terminate_length]
+
         equal_subsample = np.mean(object_matrix)  # 子样平均数
         middle_matrix = np.power(object_matrix, 2) - np.power(equal_subsample, 2)
         variance_matrix = np.mean(middle_matrix)  # 子样方差
@@ -1013,8 +1027,11 @@ class PolishingDistributionThread():
         cover_width = math.ceil(math.ceil(self.v2 * self.t2 + self.a * self.t1 ** 2 + 2 * self.R) / 10)
         begin_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2)
         terminate_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2) + cover_width
-        begin_length = math.ceil((50 + self.v1 * (self.n - 5) * self.period) / 10)
-        terminate_length = begin_length + math.ceil((2 * self.v1 * self.period + 2 * self.R) / 10)
+
+        cover_length = cover_width * 4
+        begin_length = math.ceil((50 + self.v1 * 3 * self.period) / 10)
+        terminate_length = begin_length + cover_length
+
         object_matrix = all_H[begin_width + 1:terminate_width, begin_length + 1:terminate_length]
         equal_subsample = np.mean(object_matrix)  # 子样平均数
         middle_matrix = np.power(object_matrix, 2) - np.power(equal_subsample, 2)
@@ -1051,8 +1068,10 @@ class PolishingDistributionThread():
         cover_width = math.ceil(math.ceil(self.v2 * self.t2 + self.a * self.t1 ** 2 + 2 * self.R) / 10)
         begin_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2)
         terminate_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2) + cover_width
+
+        cover_length = cover_width * 4
         begin_length = math.ceil((50 + self.v1 * 3 * self.period) / 10)
-        terminate_length = begin_length + math.ceil((2 * self.v1 * self.period + 2 * self.R) / 10)
+        terminate_length = begin_length + cover_length
 
         object_matrix = all_H[begin_width + 1:terminate_width, begin_length + 1:terminate_length]
         equal_subsample = np.mean(object_matrix)  # 子样平均数
@@ -1099,10 +1118,14 @@ class PolishingDistributionThread():
         cover_width = math.ceil(math.ceil(self.v2 * self.t2 + self.a * self.t1 ** 2 + 2 * self.R) / 10)
         begin_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2)
         terminate_width = math.ceil(math.ceil(self.c_width_mulcell - cover_width) / 2) + cover_width
+
+        cover_length = cover_width * 4
         begin_length = math.ceil((50 + self.v1 * 3 * self.period) / 10)
-        terminate_length = begin_length + math.ceil((2 * self.v1 * self.period + 2 * self.R) / 10)
+        terminate_length = begin_length + cover_length
+
         # object_matrix = np.zeros((terminate_width - begin_width, terminate_length - begin_length))
         object_matrix = all_group_H[begin_width + 1:terminate_width, begin_length + 1:terminate_length]
+
         equal_subsample = np.mean(object_matrix)  # 子样平均数
         middle_matrix = np.power(object_matrix, 2) - np.power(equal_subsample, 2)
         variance_matrix = np.mean(middle_matrix)  # 子样方差
@@ -1250,12 +1273,18 @@ class MiddleLinePlot():
         self.num = kwargs.get('num_input', 0)
         self.between = kwargs.get('between', 0)
         self.beam_between=kwargs.get('beam_between', 0)
+        self.ceramic_width = kwargs.get('ceramic_width', 0)
         # 顺序摆参数
         self.delay_time = kwargs.get('delay_time', 0)
         # 自定义计算参数
         self.group = kwargs.get('group', 0)
 
-        self.n=4
+        beam_swing = (self.a * (self.v2 / self.a) ** 2 + self.v2 * self.constant_time)  # 摆幅
+        period = 4 * self.v2 / self.a + self.constant_time * 2 + 2 * self.stay_time
+        # 为保证图像尺寸，设定 x轴 范围为 y轴 的5.5 倍
+        length_y = beam_swing * 1.7 * 8
+        self.n = math.ceil(length_y / (period * self.v1)) + 3
+
     def inner_calculate(self):
         # 参数赋值
         v1 = self.v1
@@ -1385,14 +1414,29 @@ class AnimationProduce():
         self.beam_between=kwargs.get('beam_between', 0)
         # 顺序摆参数
         self.delay_time = kwargs.get('delay_time', 0)
-
-        self.n=6
         self.msize=0.15
         self.delay_time_size = round(self.delay_time / self.msize)
         self.beam_between_cell = math.floor(self.beam_between / self.v1 / self.msize)  # 横梁步长
         self.cross_size=round((2 * round(self.v2/self.a,2) + self.t1 + self.t2)/self.msize)
         self.num_two = math.floor(self.num / 2)
         period = round(4 * (self.v2 / self.a) + 2 * self.t1 + 2 * self.t2, 2)
+        # 创建坐标绘图区
+        # self.fig = figure
+        self.ax = self.fig.add_subplot(111)  # 默认111代表1*1的图的第一个子图
+        # 设置 y 轴范围
+        self.ax.set_ylim((-0.5 * 1.3 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2 * self.R),
+                          0.5 * 1.6 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2 * self.R)))
+        # y轴长度
+        length_y = 0.5 * 1.6 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2 * self.R) + 0.5 * 1.3 * (
+                (self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2 * self.R)
+        # 为保证图像尺寸，设定 x轴 范围为 y轴 的 5 倍
+        x_plus = length_y * 5.5
+        all_between = self.num_two * self.between + (self.num_two - 1) * (self.beam_between - self.between)
+        self.x_range = [-all_between*1.1,x_plus - all_between*1.1]
+        self.ax.set_xlim(self.x_range)
+        # 适合图像范围周期
+        self.n = math.ceil(x_plus / (period * self.v1)) + 2
+
         self.all_time_n = math.floor(period / self.msize) * self.n
         self.all_time_n_1 = math.floor(period / self.msize) * (self.n-1)
         self.color_7 = ['red','orange','green','cyan','blue','purple','yellow',
@@ -1400,26 +1444,7 @@ class AnimationProduce():
                         'plum','oldlace','maroon','lightcyan','lightseagreen','seagreen','springgreen']  # 红橙黄绿青蓝紫
         # 计算矩阵
         self.single_X_location,self.single_Y_location=self.inner_cal_matrix()
-        # 创建坐标绘图区
-        #self.fig = figure
-        self.ax = self.fig.add_subplot(111)  # 默认111代表1*1的图的第一个子图
-        # 设置坐标轴范围
-        # self.x_range = [-(self.num_two*self.between+(self.num_two-1)*(self.beam_between-self.between)+200),period * (self.n-4) * self.v1]  # 原来x轴范围
-        # 保证三种模式图像框大小一致
-        self.x_range_equal = [-(self.num_two * self.between + (self.num_two-1) * self.beam_between + 200), period * (self.n - 4) * self.v1]  # 同步摆x周范围
-        self.x_range_cross = [-(self.num_two * self.between + (self.num_two-1) * self.beam_between + 200), period * (self.n - 4) * self.v1]  # 交叉摆x周范围
-        self.x_range_order = [-(self.num * self.between + 200), period * (self.n - 4) * self.v1]  # 顺序摆x周范围
-        # 判断模式选择合适的x轴范围
-        if self.mode == 'equal':
-            self.x_range = self.x_range_equal
-        elif self.mode == 'cross':
-            self.x_range = self.x_range_cross
-        else:
-            self.x_range = self.x_range_order
-        self.ax.set_xlim(self.x_range)
-        # 动画
-        self.ax.set_ylim((-0.5 * 1.3 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2*self.R),
-                          0.5 * 1.6 * ((self.a * (self.v2 / self.a) ** 2 + self.v2 * self.t1) + 2*self.R)))
+
         self.ax.set_aspect('equal', adjustable='box')
         # 设置坐标轴名称
         self.ax.set_xlabel('Tile feed direction')
@@ -1645,7 +1670,7 @@ class AnimationProduce():
         #ani.save('donghua.gif', fps=30, writer='pillow')
         # 动画分割
         input_gif = 'animation/' + self.animation_name + '.gif'
-        split_frames = int(self.all_time_n / self.n * 3)
+        split_frames = int(self.all_time_n / self.n * (self.n-2))
         output_gif_1 = 'animation/' + self.animation_name + '_1' + '.gif'
         output_gif_2 = 'animation/' + self.animation_name + '_2' + '.gif'
         split_gif(input_gif, split_frames, output_gif_1, output_gif_2)
@@ -1999,12 +2024,55 @@ def self_define_calculate(v1,t2,ceramic_width,between,beam_between,R,a,num,mo,gr
     # 参数集
     params = {}
     params.update(
-                {'lineEdit_belt_speed': v1, 'lineEdit_beam_swing_speed': v2, 'lineEdit_beam_constant_time': t1, 'lineEdit_stay_time_output': t2
-                ,'lineEdit_num_input':num, 'lineEdit_num_output': num*group, 'lineEdit_delay_time': delay_time, 'lineEdit_delay_time_list': delay_time_self_list
-                ,'lineEdit_stay_time_input':t2,'lineEdit_swing': round(a*t_a**2+v2*t1,2), 'lineEdit_ceramic_width': ceramic_width
-                ,'lineEdit_group_count':group, 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R
-                , 'lineEdit_accelerate': a,'self_delay_time':self_delay_time,'lineEdit_grind_length':mo})
-    '''
+        {'lineEdit_belt_speed': v1, 'lineEdit_beam_swing_speed': v2, 'lineEdit_beam_constant_time': t1,'lineEdit_stay_time_output': t2
+    , 'lineEdit_num_input': num, 'lineEdit_num_output': num * group, 'lineEdit_delay_time': delay_time,'lineEdit_delay_time_list': delay_time_self_list
+    , 'lineEdit_stay_time_input': t2, 'lineEdit_swing': round(a * t_a ** 2 + v2 * t1, 2),'lineEdit_ceramic_width': ceramic_width, 'lineEdit_group_count': group
+    , 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R, 'lineEdit_accelerate': a, 'self_delay_time': self_delay_time, 'lineEdit_grind_length': mo})
+
+    # 增加小砖算法
+    if ceramic_width <= 800:
+        if v2 <= 200:       # 若横梁摆动速度小于200则判定摆动速度过慢
+            num_small = 2  # 针对小砖缩短单周期长度
+            group_small  = num / 2  # 针对小砖增多叠加次数
+            B = ceramic_width + 200 - 2 * R
+            distance_period = between * num_small
+            t_all = round(distance_period / v1, 2)
+            # 边部停留时间设定
+            t_a_in = (t_all - 2 * t2) / 2
+            # t_a 加速时间
+            # t_e 匀速时间
+            # H 摆幅
+            # t_总=2*t_a+t_e
+            # f=a*t_a^2-a*t_a*t_总+H
+            par_a = a
+            par_b = -a * t_a_in
+            par_c = B
+            if par_b ** 2 - 4 * par_a * par_c >= 0:
+                t_a = (-par_b - (par_b ** 2 - 4 * par_a * par_c) ** 0.5) / (2 * a)
+            else:
+                t_a = t_a_in / 2
+                ValueError('The swing cannot reach the set value!')
+            # t1 = t_a  # 加速时间
+            t1 = round(t_a_in - 2 * t_a, 2)
+            v2 = round(a * t_a, 2)
+            delay_time = round((beam_between - 2 * between) / v1, 2)
+            self_delay_time = round(between / group_small*2 / v1, 2)
+            # 多组磨头叠加延时时间计算
+            delay_time_self_list = []
+            for i in range(0, round(num_small / 2 * group_small)):
+                current_delay_time = round(i * delay_time, 2)
+                if (i * 2 / num_small) >= 1:
+                    current_delay_time += math.floor(i * 2 / num_small) * self_delay_time
+                delay_time_self_list.append(round(current_delay_time, 2))
+            # 参数集
+            params = {}
+            params.update(
+                        {'lineEdit_belt_speed': v1, 'lineEdit_beam_swing_speed': v2, 'lineEdit_beam_constant_time': t1, 'lineEdit_stay_time_output': t2
+                        ,'lineEdit_num_input':num, 'lineEdit_num_output': num_small*group_small, 'lineEdit_delay_time': delay_time, 'lineEdit_delay_time_list': delay_time_self_list
+                        ,'lineEdit_stay_time_input':t2,'lineEdit_swing': round(a*t_a**2+v2*t1,2), 'lineEdit_ceramic_width': ceramic_width
+                        ,'lineEdit_group_count':group, 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R
+                        , 'lineEdit_accelerate': a,'self_delay_time':self_delay_time,'lineEdit_grind_length':mo})
+            ''' 
     result=np.zeros((1,8))
     result[0 , 0] = v1
     result[0 , 1] = v2
