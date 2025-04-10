@@ -1142,6 +1142,16 @@ class MainWindow_impl(MainWindow):
         self.canvas.draw()
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
+
+        # 释放旧的 QMovie 对象
+        if hasattr(self, 'movie') and self.movie is not None:
+            self.movie.stop()
+            self.movie.deleteLater()
+        # 释放旧的 QMovie 对象
+        if hasattr(self, 'movie2') and self.movie2 is not None:
+            self.movie2.stop()
+            self.movie2.deleteLater()
+
         # 创建新的 QMovie 对象并设置到 QLabel
         animation_name = result[1]
         # self.movie = QMovie(ani)
@@ -1187,6 +1197,14 @@ class MainWindow_impl(MainWindow):
         self.canvas.draw()
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
+        # 释放旧的 QMovie 对象
+        if hasattr(self, 'movie') and self.movie is not None:
+            self.movie.stop()
+            self.movie.deleteLater()
+        # 释放旧的 QMovie 对象
+        if hasattr(self, 'movie2') and self.movie2 is not None:
+            self.movie2.stop()
+            self.movie2.deleteLater()
         # 创建新的 QMovie 对象并设置到 QLabel
         animation_name = result[1]
         # self.movie = QMovie(ani)
@@ -1224,6 +1242,14 @@ class MainWindow_impl(MainWindow):
         self.canvas.draw()
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
+        # 释放旧的 QMovie 对象
+        if hasattr(self, 'movie') and self.movie is not None:
+            self.movie.stop()
+            self.movie.deleteLater()
+        # 释放旧的 QMovie 对象
+        if hasattr(self, 'movie2') and self.movie2 is not None:
+            self.movie2.stop()
+            self.movie2.deleteLater()
         # 创建新的 QMovie 对象并设置到 QLabel
         animation_name = result[1]
         # self.movie = QMovie(ani)
@@ -1262,6 +1288,14 @@ class MainWindow_impl(MainWindow):
         self.canvas.draw()
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
+        # 释放旧的 QMovie 对象
+        if hasattr(self, 'movie') and self.movie is not None:
+            self.movie.stop()
+            self.movie.deleteLater()
+        # 释放旧的 QMovie 对象
+        if hasattr(self, 'movie2') and self.movie2 is not None:
+            self.movie2.stop()
+            self.movie2.deleteLater()
         # 创建新的 QMovie 对象并设置到 QLabel
         animation_name = result[1]
         # self.movie = QMovie(ani)
@@ -1299,6 +1333,14 @@ class MainWindow_impl(MainWindow):
         self.canvas.draw()
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
+        # 释放旧的 QMovie 对象
+        if hasattr(self, 'movie') and self.movie is not None:
+            self.movie.stop()
+            self.movie.deleteLater()
+        # 释放旧的 QMovie 对象
+        if hasattr(self, 'movie2') and self.movie2 is not None:
+            self.movie2.stop()
+            self.movie2.deleteLater()
         # 创建新的 QMovie 对象并设置到 QLabel
         animation_name = result[1]
         # self.movie = QMovie(ani)
@@ -1335,6 +1377,14 @@ class MainWindow_impl(MainWindow):
         self.canvas.draw()
         # 清空 QLabel 中的内容
         self.animation_QLabel.clear()
+        # 释放旧的 QMovie 对象
+        if hasattr(self, 'movie') and self.movie is not None:
+            self.movie.stop()
+            self.movie.deleteLater()
+        # 释放旧的 QMovie 对象
+        if hasattr(self, 'movie2') and self.movie2 is not None:
+            self.movie2.stop()
+            self.movie2.deleteLater()
         # 创建新的 QMovie 对象并设置到 QLabel
         animation_name = result[1]
         # self.movie = QMovie(ani)

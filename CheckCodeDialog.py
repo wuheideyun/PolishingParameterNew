@@ -9,13 +9,14 @@ import random
 import sqlite3
 import time
 import uuid
-from tkinter.tix import Form
+# from tkinter.tix import Form
 import datetime
 from PySide6.QtCore import Qt, Signal, QSettings, QCoreApplication
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QCheckBox, QGridLayout, \
     QSpacerItem, QSizePolicy, QMessageBox, QComboBox
 from cryptography.fernet import Fernet
+# import tkinter.tix as tix
 
 
 from DatabaseHelper import DatabaseHelper
@@ -277,3 +278,6 @@ def generate_activation_code(duration_type: str) -> str:
     oldcode = f"{duration_type}-{unique_id}-{checksum}"
     newcode = fernet.encrypt(oldcode.encode()).decode()
     return newcode
+
+# print(dir(tix))
+# print('111')
