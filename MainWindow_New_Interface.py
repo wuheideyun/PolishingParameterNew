@@ -101,9 +101,9 @@ class MainWindow(QWidget):
         }
         # 设备图片路径映射
         self.device_image_mapping = {
-            1: "Resources/单头摆模组.png",
-            2: "Resources/双头摆模组.png",
-            3: "Resources/同步摆模组.png"
+            1: ":DeviceSingle",
+            2: ":DeviceDouble",
+            3: ":DeviceEqual"
         }
         # 模式切换标签    1：智能寻优模式  2：方案验证模式
         self.current_mode = 1
@@ -991,17 +991,17 @@ class MainWindow(QWidget):
     def update_device_image(self):
         # 获取当前设备的图片路径
         image_path = self.device_image_mapping.get(self.current_device)
-        if image_path and os.path.exists(image_path):
-            # 加载图片
-            pixmap = QPixmap(image_path)
-            # 获取图片标签的固定大小
-            label_size = self.device_image_label.size()
-            # 缩放图片以适应标签大小，保持纵横比
-            scaled_pixmap = pixmap.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            # 设置图片
-            self.device_image_label.setPixmap(scaled_pixmap)
-        else:
-            print(f"图片路径不存在: {image_path}")
+        # if image_path and os.path.exists(image_path):
+        # 加载图片
+        pixmap = QPixmap(image_path)
+        # 获取图片标签的固定大小
+        label_size = self.device_image_label.size()
+        # 缩放图片以适应标签大小，保持纵横比
+        scaled_pixmap = pixmap.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        # 设置图片
+        self.device_image_label.setPixmap(scaled_pixmap)
+        # else:
+        #     print(f"图片路径不存在: {image_path}")
 
 
 if __name__ == "__main__":

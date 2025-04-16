@@ -6,6 +6,7 @@ from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication
 from MainWindow_new_impl import MainWindow_impl
 import Resources
+import Resources_Device
 
 global_style = """
     QMessageBox {

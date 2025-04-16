@@ -1,0 +1,10 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+
+        <file alias="DeviceDouble">./Resources/Device/Double.png</file>
+        <file alias="DeviceEqual">./Resources/Device/Equal.png</file>
+
+
+    </qresource>
+</RCC>

@@ -1,27 +1,11 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
     <qresource>
-        <file alias="AI">./Resources/AI.png</file>
-        <file alias="dickbookgray">./Resources/dickbookgray.png</file>
         <file alias="tips">./Resources/tips.png</file>
         <file alias="tips1">./Resources/tips1.png</file>
-        <file alias="dickbookred">./Resources/dickbookred.png</file>
-        <file alias="firstpagegray">./Resources/firstpagegray.png</file>
-        <file alias="firstpagered">./Resources/firstpagered.png</file>
-        <file alias="kedalogo">./Resources/KEDA.png</file>
-        <file alias="kedalogo2">./Resources/KEDA(1).png</file>
         <file alias="single_click">./Resources/single_click.png</file>
         <file alias="quora">./Resources/quora.png</file>
-        <file alias="mytransgray">./Resources/mytransgray.png</file>
-        <file alias="mytransred">./Resources/mytransred.png</file>
-        <file alias="shotimg">./Resources/shotimg.png</file>
-        <file alias="soulunwengray">./Resources/soulunwengray.png</file>
-        <file alias="soulunwenred">./Resources/soulunwenred.png</file>
-        <file alias="transgray">./Resources/transgray.png</file>
-        <file alias="transred">./Resources/transred.png</file>
         <file alias="user">./Resources/user.svg</file>
-        <file alias="writegray">./Resources/writegray.png</file>
-        <file alias="writered">./Resources/writered.png</file>
         <file alias="CkOpen">./Resources/CkOpen.png</file>
         <file alias="CkClose">./Resources/CkClose.png</file>
         <file alias="close16">./Resources/close16.svg</file>
@@ -39,7 +23,6 @@
         <file alias="activation_code">./Resources/LoginDlg/activation_code.svg</file>
         <file alias="QQ">./Resources/LoginDlg/QQ.svg</file>
         <file alias="weibo">./Resources/LoginDlg/weibo.svg</file>
-        <file alias="weichat">./Resources/LoginDlg/weichat.svg</file>
         <file alias="down_arrow">./Resources/down_arrow.svg</file>
         <file alias="keda">./Resources/LoginDlg/keda.jpg</file>
 
@@ -70,6 +53,7 @@
         <file alias="SingleClicked">./Resources/NewUI/Button/SingleClicked.png</file>
         <file alias="SmallFrame">./Resources/NewUI/Button/Small.png</file>
         <file alias="SmallFrameClicked">./Resources/NewUI/Button/SmallClicked.png</file>
+        <file alias="DeviceSingle">./Resources/Device/Single.png</file>
 
 
     </qresource>
