@@ -36,7 +36,8 @@ if __name__ == '__main__':
     # 启用高 DPI 缩放支持
     # app.setAttribute(Qt.AA_EnableHighDpiScaling)
     # app.setAttribute(Qt.AA_UseHighDpiPixmaps)
-
+    # app = QApplication(sys.argv)
+    app.setStyleSheet("QHeaderView::section { color: white; }")  # 全局强制设置表头文本颜色
     # 设置全局样式（可选）
     app.setStyle("Fusion")
     app.setWindowIcon(QIcon(":writered"))

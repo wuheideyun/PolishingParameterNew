@@ -55,6 +55,7 @@ class MotionInputOutputParamCombineWidget(QWidget):
         main_layout.addStretch()
         main_layout.addLayout(button_layout)
         main_layout.addStretch()
+        main_layout.addSpacerItem(QSpacerItem(5, 5, QSizePolicy.Fixed, QSizePolicy.Fixed))
 
         param_middle_label = QLabel("运动输出参数")
         param_middle_label.setFixedHeight(30)
@@ -79,7 +80,7 @@ class MotionInputOutputParamCombineWidget(QWidget):
         main_layout.addLayout(self.content_middle_layout)
         self.content_middle_layout.set_line_edit_editable(line_edit_names,True)
         param_bottom_label = QLabel("产品质量参数")
-        param_bottom_label.setFixedHeight(30)
+        param_bottom_label.setFixedHeight(25)
         # 设置字体大小和字体类型
         param_font = QFont("Microsoft YaHei", 16)  # "Microsoft YaHei" 为字体类型，18 为字体大小
         param_bottom_label.setFont(param_font)
@@ -100,7 +101,7 @@ class MotionInputOutputParamCombineWidget(QWidget):
         self.content_bottom_layout = JustifiedGridLayout(labels, line_edit_names)
         main_layout.addLayout(self.content_bottom_layout)
         self.content_bottom_layout.set_line_edit_editable(line_edit_names, True)
-        main_layout.addSpacerItem(QSpacerItem(0, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        main_layout.addSpacerItem(QSpacerItem(0, 15, QSizePolicy.Expanding, QSizePolicy.Fixed))
         self.loadParameter()  # 在初始化时加载设置
         # 设置主布局
         self.setLayout(main_layout)

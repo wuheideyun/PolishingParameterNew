@@ -127,7 +127,7 @@ class MainWindow_impl(MainWindow):
         self.motion_out_param_frame.content_down_layout.sig_textChanged.connect(
             partial(line_eidt_textchange, list=self.equal_parameter_intelligent))
 
-        # 运动参数-人工寻优界面--运动输入参数 and 运动输出参数 and 产品质量参数- self.motion_input_out_param_manual_frame
+        # 运动参数-方案验证界面--运动输入参数 and 运动输出参数 and 产品质量参数- self.motion_input_out_param_manual_frame
         motion_out_param_param_manual_line_edit_names = [
             "lineEdit_production_volume", "lineEdit_beam_swing_speed", "lineEdit_beam_constant_time",
             "lineEdit_stay_time_input", "lineEdit_num_input", "lineEdit_accelerate", "lineEdit_ceramic_width",
@@ -297,8 +297,8 @@ class MainWindow_impl(MainWindow):
             params['device'] = '3'
         # 判断摆动模式
         if self.current_mode == 2:
-            current_mode = '人工寻优'
-            params['lineEdit_stay_time'] = params['lineEdit_stay_time_input']#人工寻优的【边部停留时间】取input
+            current_mode = '方案验证'
+            params['lineEdit_stay_time'] = params['lineEdit_stay_time_input']#方案验证的【边部停留时间】取input
         elif self.current_mode == 1:
             params['lineEdit_stay_time'] = params['lineEdit_stay_time_output']#智能寻优的【边部停留时间】取output
             current_mode = '智能寻优'
@@ -520,7 +520,7 @@ class MainWindow_impl(MainWindow):
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
-    # -------------------------单头摆-人工寻优逻辑函数--------------------------------
+    # -------------------------单头摆-方案验证逻辑函数--------------------------------
     def single_synchronization_project(self,animation_name,**kwargs):
         v1 = kwargs.get('lineEdit_belt_speed')
         v2 = kwargs.get('lineEdit_beam_swing_speed')
@@ -792,7 +792,7 @@ class MainWindow_impl(MainWindow):
         self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
-    # ------------------------------------双头摆人工寻优------------------------------------------------------------------------------
+    # ------------------------------------双头摆方案验证------------------------------------------------------------------------------
     # 双头摆-同步摆模式-子进程启动函数
     def double_synchronization_project(self,animation_name,**kwargs):
         v1 = kwargs.get('lineEdit_belt_speed')
@@ -1068,7 +1068,7 @@ class MainWindow_impl(MainWindow):
         self.worker_thread_plot.result_signal.connect(self.equal_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
-    # ------------------------------------同步摆人工寻优------------------------------------------------------------------------------
+    # ------------------------------------同步摆方案验证------------------------------------------------------------------------------
     # 同步摆-同步摆模式-子进程启动函数
     def equal_synchronization_project(self, animation_name, **kwargs):
         v1 = kwargs.get('lineEdit_belt_speed')
@@ -1183,7 +1183,7 @@ class MainWindow_impl(MainWindow):
             self.motion_out_param_frame.content_down_layout.set_line_edit_value(i,self.single_parameter_intelligent[i])
         # print(self.single_parameter_intelligent)
 
-    # 单头摆-人工寻优-子进程信号接收函数
+    # 单头摆-方案验证-子进程信号接收函数
     def single_manual_thread_signal(self, result):
         self.timer.stop()
         self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
@@ -1275,7 +1275,7 @@ class MainWindow_impl(MainWindow):
             self.motion_out_param_frame.content_down_layout.set_line_edit_value(i,self.double_parameter_intelligent[i])
         print(self.double_parameter_intelligent)
 
-    # 双头摆-人工寻优-子进程信号接收函数
+    # 双头摆-方案验证-子进程信号接收函数
     def double_manual_thread_signal(self, result):
         self.timer.stop()
         self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")
@@ -1365,7 +1365,7 @@ class MainWindow_impl(MainWindow):
         for i in self.motion_out_param_line_edit_names_2:
             self.motion_out_param_frame.content_down_layout.set_line_edit_value(i,self.equal_parameter_intelligent[i])
 
-    # 同步摆-人工寻优-子进程信号接收函数
+    # 同步摆-方案验证-子进程信号接收函数
     def equal_manual_thread_signal(self, result):
         self.timer.stop()
         self.status_label.setText("【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算完毕，请查看计算结果。")

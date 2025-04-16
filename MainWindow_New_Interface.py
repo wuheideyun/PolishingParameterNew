@@ -88,7 +88,7 @@ class MainWindow(QWidget):
         self.left_frame_width = 395
         self.middle_frame_width = 1050
         self.right_frame_width = 410
-        self.setWindowTitle("抛光参数计算系统")
+        self.setWindowTitle("抛光仿真系统")
         self.setStyleSheet("color: white;")
         # 设备切换标签    1：单头摆  2：双头摆  3：同步摆
         self.current_device = 1
@@ -97,11 +97,11 @@ class MainWindow(QWidget):
             2: "双头摆",
             3: "同步摆"
         }
-        # 模式切换标签    1：智能寻优模式  2：人工寻优模式
+        # 模式切换标签    1：智能寻优模式  2：方案验证模式
         self.current_mode = 1
         self.mode_mapping = {
             1: "智能寻优模式",
-            2: "人工寻优模式"
+            2: "方案验证模式"
         }
         # 方案选择 1：节能方案  2：高品质方案  3: 自定义修正方案  4：同步摆动模式  5：交叉摆动模式  6：顺序摆动模式
         self.solution_selection = 1
@@ -402,7 +402,7 @@ class MainWindow(QWidget):
         self.first_widget.setFixedHeight(75)
         self.intelligent_search_mode = ImageChangeButton("智能寻优模式",":MiddleFrame",":MiddleFrameClicked",200,45)
         self.intelligent_search_mode.clicked.connect(self.switch_search_motion_param_intelligence_clicked)
-        self.artificial_search_mode = ImageChangeButton("人工寻优模式",":MiddleFrame",":MiddleFrameClicked",200,45)
+        self.artificial_search_mode = ImageChangeButton("方案验证模式",":MiddleFrame",":MiddleFrameClicked",200,45)
         self.artificial_search_mode.clicked.connect(self.switch_search_motion_param_manual_clicked)
         self.save_button = ImageChangeButton("参数保存",":SmallFrame",":SmallFrameClicked",114,37,True)
         first_layout.addSpacerItem(QSpacerItem(136,50,QSizePolicy.Expanding,QSizePolicy.Expanding))
@@ -490,7 +490,7 @@ class MainWindow(QWidget):
         self.combine_frame.setContentsMargins(0,0,0,0)
         self.combine_frame.setLayout(self.right_intelligent_search_mode_layout)
 
-        # 运动参数-人工寻优界面
+        # 运动参数-方案验证界面
         self.motion_input_out_param_manual_frame = MotionInputOutputParamCombineWidget()
         self.motion_input_out_param_manual_frame.setFixedSize(self.right_frame_width-5,825)
         self.motion_input_out_param_manual_frame.setContentsMargins(30,0,30,0)

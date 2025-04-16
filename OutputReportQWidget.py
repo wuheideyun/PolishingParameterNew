@@ -93,6 +93,7 @@ class OutputReportWidget(QWidget):
         self.table_widget.setHorizontalHeaderLabels(
             ["序号", "模式","方案选择","主皮带速度", "进砖宽度", "摆动速度", "边部停留时间","边部停留时间", "设备","操作",  "操作"]
         )
+
         # 隐藏序号列
         self.table_widget.setColumnHidden(0, True)
         self.table_widget.setColumnHidden(6, True)
@@ -118,12 +119,28 @@ class OutputReportWidget(QWidget):
         # 设置表头字体加粗
         header_font = QFont("Microsoft YaHei", 18, QFont.Bold )
         self.table_widget.horizontalHeader().setFont(header_font)
+        # 在设置表头相关属性时，添加明确的样式表
+        self.table_widget.setStyleSheet("""
+                    QTableWidget {
+                        color: white;
+                        gridline-color: rgb(221, 221, 221);
+                        border: 1px solid rgb(221, 221, 221);
+                    }
+                    QHeaderView::section {
+                        background-color: rgb(31, 55, 96); /* 表头背景颜色，与窗口背景一致 */
+                        color: white; /* 表头文本颜色明确设置为白色 */
+                        border: 1px solid rgb(221, 221, 221);
+                        font-family: "Microsoft YaHei";
+                        font-size: 18px;
+                        font-weight: bold;
+                    }
+                """)
         # 设置表头字体颜色为黑色
-        palette = self.table_widget.horizontalHeader().palette()  # 获取水平表头的调色板
-        palette.setColor(QPalette.Text, QColor(Qt.black))  # 设置字体颜色为黑色
+        # palette = self.table_widget.horizontalHeader().palette()  # 获取水平表头的调色板
+        # palette.setColor(QPalette.Text, QColor(Qt.white))  # 设置字体颜色为黑色
         self.table_widget.setStyleSheet("color: white; gridline-color: rgb(221, 221, 221);border: 1px solid rgb(221, 221, 221);")
 
-        self.table_widget.horizontalHeader().setPalette(palette)  # 应用调色板到水平表头
+        # self.table_widget.horizontalHeader().setPalette(palette)  # 应用调色板到水平表头
         # 从数据库加载数据
         self.load_data_from_database()
         header = self.table_widget.horizontalHeader()
