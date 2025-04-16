@@ -28,7 +28,8 @@ class HostParamSingleWidget(QWidget):
         param_label.setFont(param_font)
         param_label.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
         layout.addWidget(param_label)
-
+        # 添加一个负的上边距，使标签向上移动10个像素
+        param_label.setContentsMargins(0, -20, 0, 0)
         # 定义标签和编辑框的文本
         labels = [
             "横梁间距(mm)：", "磨头直径(mm)：", "磨块长度(mm)：", "工作时长(h)："
