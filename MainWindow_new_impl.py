@@ -1182,6 +1182,20 @@ class MainWindow_impl(MainWindow):
         for i in self.motion_out_param_line_edit_names_2:
             self.motion_out_param_frame.content_down_layout.set_line_edit_value(i,self.single_parameter_intelligent[i])
         # print(self.single_parameter_intelligent)
+        # self.single_parameter_intelligent['lineEdit_accelerate']  # 加速度
+        # self.single_parameter_intelligent['lineEdit_beam_swing_speed']  # 摆动速度
+        # self.single_parameter_intelligent['lineEdit_beam_constant_time']  # 匀速摆动时间
+        # self.single_parameter_intelligent['lineEdit_stay_time_output']  # 边部停留时间
+        # 从字典中获取各个参数并转换为float类型
+        accelerate = float(self.single_parameter_intelligent['lineEdit_accelerate'])
+        beam_swing_speed = float(self.single_parameter_intelligent['lineEdit_beam_swing_speed'])
+        beam_constant_time = float(self.single_parameter_intelligent['lineEdit_beam_constant_time'])
+        stay_time_output = float(self.single_parameter_intelligent['lineEdit_stay_time_output'])
+
+        # 根据公式进行计算
+        result = 60 / (beam_constant_time * 2 + stay_time_output * 2 + beam_swing_speed / accelerate * 4)
+        result_str = "{:.4f}".format(result)
+        self.motion_out_param_frame.content_down_layout.set_line_edit_value('lineEdit_frequency', result_str)
 
     # 单头摆-方案验证-子进程信号接收函数
     def single_manual_thread_signal(self, result):
@@ -1273,8 +1287,22 @@ class MainWindow_impl(MainWindow):
             self.motion_out_param_frame.content_up_layout.set_line_edit_value(i,self.double_parameter_intelligent[i])
         for i in self.motion_out_param_line_edit_names_2:
             self.motion_out_param_frame.content_down_layout.set_line_edit_value(i,self.double_parameter_intelligent[i])
-        print(self.double_parameter_intelligent)
+        # print(self.double_parameter_intelligent)
 
+        # self.double_parameter_intelligent['lineEdit_accelerate']  # 加速度
+        # self.double_parameter_intelligent['lineEdit_beam_swing_speed']  # 摆动速度
+        # self.double_parameter_intelligent['lineEdit_beam_constant_time']  # 匀速摆动时间
+        # self.double_parameter_intelligent['lineEdit_stay_time_output']  # 边部停留时间
+        # 从字典中获取各个参数并转换为float类型
+        accelerate = float(self.double_parameter_intelligent['lineEdit_accelerate'])
+        beam_swing_speed = float(self.double_parameter_intelligent['lineEdit_beam_swing_speed'])
+        beam_constant_time = float(self.double_parameter_intelligent['lineEdit_beam_constant_time'])
+        stay_time_output = float(self.double_parameter_intelligent['lineEdit_stay_time_output'])
+
+        # 根据公式进行计算
+        result = 60 / (beam_constant_time * 2 + stay_time_output * 2 + beam_swing_speed / accelerate * 4)
+        result_str = "{:.4f}".format(result)
+        self.motion_out_param_frame.content_down_layout.set_line_edit_value('lineEdit_frequency', result_str)
     # 双头摆-方案验证-子进程信号接收函数
     def double_manual_thread_signal(self, result):
         self.timer.stop()
@@ -1356,15 +1384,30 @@ class MainWindow_impl(MainWindow):
 
         button_enable(self.button_list)
         # 参数集更新
+
         self.equal_parameter_intelligent['lineEdit_coefficient'] = result[0]
         # 字符转换
         dict_value_to_str(self.equal_parameter_intelligent)
+        # self.motion_out_param_frame.content_down_layout.set_line_edit_value(i, self.equal_parameter_intelligent[i])
         # 界面输出参数赋值
         for i in self.motion_out_param_line_edit_names:
             self.motion_out_param_frame.content_up_layout.set_line_edit_value(i,self.equal_parameter_intelligent[i])
         for i in self.motion_out_param_line_edit_names_2:
             self.motion_out_param_frame.content_down_layout.set_line_edit_value(i,self.equal_parameter_intelligent[i])
+        self.equal_parameter_intelligent['lineEdit_accelerate']#加速度
+        self.equal_parameter_intelligent['lineEdit_beam_swing_speed']#摆动速度
+        self.equal_parameter_intelligent['lineEdit_beam_constant_time']#匀速摆动时间
+        self.equal_parameter_intelligent['lineEdit_stay_time_output']#边部停留时间
+        # 从字典中获取各个参数并转换为float类型
+        accelerate = float(self.equal_parameter_intelligent['lineEdit_accelerate'])
+        beam_swing_speed = float(self.equal_parameter_intelligent['lineEdit_beam_swing_speed'])
+        beam_constant_time = float(self.equal_parameter_intelligent['lineEdit_beam_constant_time'])
+        stay_time_output = float(self.equal_parameter_intelligent['lineEdit_stay_time_output'])
 
+        # 根据公式进行计算
+        result = 60 / (beam_constant_time * 2 + stay_time_output * 2 + beam_swing_speed / accelerate * 4)
+        result_str = "{:.4f}".format(result)
+        self.motion_out_param_frame.content_down_layout.set_line_edit_value('lineEdit_frequency', result_str)
     # 同步摆-方案验证-子进程信号接收函数
     def equal_manual_thread_signal(self, result):
         self.timer.stop()

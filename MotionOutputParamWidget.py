@@ -51,11 +51,11 @@ class MotionOutputParamWidget(QWidget):
 
         # 定义标签和编辑框的文本
         labels = [
-            "均匀系数："
+            "均匀系数：", "频次："
         ]
         # 定义编辑框的名称
         line_edit_names = [
-             "lineEdit_coefficient"
+             "lineEdit_coefficient","lineEdit_frequency"
         ]
         # 创建自定义的网格布局
         self.content_down_layout = JustifiedGridLayout(labels, line_edit_names)
