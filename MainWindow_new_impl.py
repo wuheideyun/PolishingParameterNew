@@ -227,7 +227,7 @@ class MainWindow_impl(MainWindow):
     def on_save_btn(self):
         if not self.ifcalcflag:
             nodata_box = QMessageBox()
-            nodata_box.setWindowTitle("警告")
+            nodata_box.setWindowTitle(self.tr("警告"))
             nodata_box.setText("请先进行方案选择操作，计算出【运动输出参数】后再进行保存参数操作！")
             nodata_box.setStandardButtons(QMessageBox.Ok)
 

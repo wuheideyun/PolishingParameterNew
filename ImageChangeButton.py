@@ -11,6 +11,8 @@ class ImageChangeButton(QPushButton):
         super().__init__()
         self.text = text
         self.setFixedSize(fixed_w, fixed_h)
+        self.original_width = fixed_w  # 保存原始宽度
+        self.current_width = fixed_w  # 当前宽度
         # 初始化标志位
         self.is_clicked = False  # 用于判断是否被点击
         self.image_path1 = image_path1
@@ -42,7 +44,7 @@ class ImageChangeButton(QPushButton):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.drawPixmap(self.rect(), self.pixmap)
+        painter.drawPixmap(0, 0, self.width(), self.height(), self.pixmap)
 
         # 设置字体大小
         font = self.font()
@@ -124,3 +126,24 @@ class ImageChangeButton(QPushButton):
         self.current_image_path = self.image_path2
         self.pixmap = QPixmap(self.current_image_path)
         self.update()
+
+    def set_name(self, newName):
+        self.text = newName
+
+        # 获取字体度量，计算文本宽度
+        font = self.font()
+        font.setPointSize(16)  # 与 paintEvent 一致
+        font_metrics = QFontMetrics(font)
+        text_width = font_metrics.horizontalAdvance(newName)
+
+        # 计算新宽度：文本宽度 + 边距（例如 20 像素）
+        padding = 20
+        new_width = max(self.original_width, text_width + padding)
+
+        # 如果文本宽度超过当前宽度，动态调整按钮宽度
+        if new_width != self.current_width:
+            self.current_width = new_width
+            self.setFixedSize(new_width, self.height())
+            self.setIconSize(QSize(new_width, self.height()))  # 同步图标大小
+
+        self.update()  # 触发重绘

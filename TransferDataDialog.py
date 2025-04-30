@@ -11,7 +11,7 @@ from ImageChangeButton import ImageChangeButton
 class TransferDataDialog(QDialog):
     def __init__(self, selected_data):
         super().__init__()
-        self.setWindowTitle("数据传输")
+        self.setWindowTitle(self.tr("数据传输"))
         self.setGeometry(450, 200, 100, 150)  # 调整窗口大小
         self.setStyleSheet("background-color: rgb(31, 55, 96); color: white;")  # 设置背景颜色和字体颜色
 
@@ -46,14 +46,25 @@ class TransferDataDialog(QDialog):
         parameter_layout = QGridLayout(parameter_frame)  # 使用网格布局
 
         # 添加参数区域标题
-        parameter_title = QLabel("确认发送参数", self)
+        parameter_title = QLabel(self.tr("确认发送参数"), self)
         parameter_title.setFont(QFont("Microsoft YaHei", 14, QFont.Bold))
         parameter_title.setAlignment(Qt.AlignCenter)
         parameter_title.setStyleSheet("QLabel { border: none; }")  # 设置无边框
         main_layout.addWidget(parameter_title)
 
         # 创建标签和不可编辑的输入框
-        labels = ["模式", "方案选择","设备", "主皮带速度(mm/s)","横梁摆动速度(mm/s)", "加速度大小(mm/s²)",  "同粒度磨头数(个)", "摆幅(mm)", "延时时间(s)", "横梁边部停留时间(s)"]
+        labels = [
+            self.tr("模式"), 
+            self.tr("方案选择"),
+            self.tr("设备"), 
+            self.tr("主皮带速度(mm/s)"),
+            self.tr("横梁摆动速度(mm/s)"), 
+            self.tr("加速度大小(mm/s²)"),  
+            self.tr("同粒度磨头数(个)"), 
+            self.tr("摆幅(mm)"), 
+            self.tr("延时时间(s)"), 
+            self.tr("横梁边部停留时间(s)")
+        ]
         self.line_edits = []
 
         # 设置字体
@@ -94,7 +105,7 @@ class TransferDataDialog(QDialog):
         connection_layout.setAlignment(connection_frame, Qt.AlignmentFlag.AlignHCenter)
 
         # 添加设备连接区域标题
-        connection_title = QLabel("设备连接配置", self)
+        connection_title = QLabel(self.tr("设备连接配置"), self)
         connection_title.setFont(QFont("Microsoft YaHei", 14, QFont.Bold))
         connection_title.setAlignment(Qt.AlignCenter)
         connection_title.setStyleSheet("QLabel { border: none; }")  # 设置无边框
@@ -104,7 +115,7 @@ class TransferDataDialog(QDialog):
         font = QFont("Microsoft YaHei", 12)
 
         # 创建标签和输入框
-        self.plc_ip_label = QLabel("PLC IP:", self)
+        self.plc_ip_label = QLabel(self.tr("PLC IP:"), self)
         self.plc_ip_label.setFont(font)
         self.plc_ip_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)  # 标签宽度仅包含文本
         self.plc_ip_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)  # 文字右对齐并垂直居中
@@ -116,7 +127,7 @@ class TransferDataDialog(QDialog):
             "background-color: #444; border: 1px solid #666; border-radius: 3px; padding: 5px;")
         self.plc_ip_edit.setFixedWidth(150)  # 调整输入框宽度
 
-        self.port_label = QLabel("端口号:", self)
+        self.port_label = QLabel(self.tr("端口号:"), self)
         self.port_label.setFont(font)
         self.port_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)  # 标签宽度仅包含文本
         self.port_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)  # 文字右对齐并垂直居中
@@ -140,11 +151,11 @@ class TransferDataDialog(QDialog):
         connection_layout.addWidget(self.port_edit, 0, 3)
 
         # 创建保存按钮
-        self.save_button = ImageChangeButton("保存配置", ":SmallFrame", ":SmallFrameClicked", 114, 37, True)
+        self.save_button = ImageChangeButton(self.tr("保存配置"), ":SmallFrame", ":SmallFrameClicked", 114, 37, True)
         self.save_button.clicked.connect(self.save_settings)
 
         # 创建连接PLC按钮
-        self.connect_button = ImageChangeButton("连接PLC", ":SmallFrame", ":SmallFrameClicked", 114, 37, True)
+        self.connect_button = ImageChangeButton(self.tr("连接PLC"), ":SmallFrame", ":SmallFrameClicked", 114, 37, True)
         self.connect_button.clicked.connect(self.toggle_connection)
 
         # 添加按钮到布局
@@ -152,7 +163,7 @@ class TransferDataDialog(QDialog):
         connection_layout.addWidget(self.connect_button, 1, 1)
 
         # 创建状态标签和圆形图标
-        self.status_label = QLabel("连接状态:", self)
+        self.status_label = QLabel(self.tr("连接状态:"), self)
         self.status_label.setFont(font)
         self.status_label.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)  # 标签宽度仅包含文本
         self.status_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)  # 文字右对齐并垂直居中
@@ -173,7 +184,7 @@ class TransferDataDialog(QDialog):
 
     def create_send_button(self, main_layout):
         # 创建发送按钮
-        self.send_button = ImageChangeButton("发送参数", ":SmallFrame", ":SmallFrameClicked", 114, 37, True)
+        self.send_button = ImageChangeButton(self.tr("发送参数"), ":SmallFrame", ":SmallFrameClicked", 114, 37, True)
         self.send_button.clicked.connect(self.send_data)
 
         # 添加到主布局
