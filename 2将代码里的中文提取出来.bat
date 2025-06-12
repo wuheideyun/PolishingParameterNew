@@ -1,2 +1,2 @@
-C:\Users\pengw\.conda\envs\pyside6\Lib\site-packages\PySide6\lupdate.exe MotionInputParamWidget.py MotionOutputParamWidget.py MotionInputParamWidget.py MotionInputParamWidget.py HostParamDoubleWidget.py HostParamEqualWidget.py HostParamSingleWidget.py MotionInputOutputParamCombineWidget.py  MainWindow_New_Interface.py -ts translations/zh_CN.ts translations/en_US.ts
+C:\Users\pengw\.conda\envs\pyside6\Lib\site-packages\PySide6\lupdate.exe TransferDataDialog.py MotionInputParamWidget.py MotionOutputParamWidget.py MotionInputParamWidget.py MotionInputParamWidget.py HostParamDoubleWidget.py HostParamEqualWidget.py HostParamSingleWidget.py MotionInputOutputParamCombineWidget.py  MainWindow_New_Interface.py -ts translations/zh_CN.ts translations/en_US.ts
 pause
