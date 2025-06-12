@@ -50,12 +50,11 @@ class TitleBar(QWidget):
 
         # 创建菜单
         self.menu = QMenu()
-        self.action1 = QAction("激活码验证",self)
+        self.action1 = QAction(self.tr("激活码验证"), self)
         self.action1.triggered.connect(self.action1_triggered)
-        # self.menu.addAction("激活码验证", self.action1_triggered)
         self.menu.addAction(self.action1)
-        # self.menu.addAction("会员中心", self.action2_triggered)
         self.menu.addSeparator()
+        # self.menu.addAction("会员中心", self.action2_triggered)
         # self.menu.addAction("意见反馈")
         # self.menu.addAction("关于")
         # self.menu.addAction("退出登录", self.action2_triggered)
