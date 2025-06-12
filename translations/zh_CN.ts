@@ -588,4 +588,102 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>TransferDataDialog</name>
+    <message>
+        <location filename="../TransferDataDialog.py" line="14"/>
+        <source>数据传输</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="49"/>
+        <source>确认发送参数</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="57"/>
+        <source>模式</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="58"/>
+        <source>方案选择</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="59"/>
+        <source>设备</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="60"/>
+        <source>主皮带速度(mm/s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="61"/>
+        <source>横梁摆动速度(mm/s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="62"/>
+        <source>加速度大小(mm/s²)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="63"/>
+        <source>同粒度磨头数(个)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="64"/>
+        <source>摆幅(mm)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="65"/>
+        <source>延时时间(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="68"/>
+        <source>横梁边部停留时间(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="108"/>
+        <source>设备连接配置</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="118"/>
+        <source>PLC IP:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="130"/>
+        <source>端口号:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="154"/>
+        <source>保存配置</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="158"/>
+        <source>连接PLC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="166"/>
+        <source>连接状态:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../TransferDataDialog.py" line="187"/>
+        <source>发送参数</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 </TS>

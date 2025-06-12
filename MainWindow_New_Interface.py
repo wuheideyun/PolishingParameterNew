@@ -277,7 +277,7 @@ class MainWindow(QWidget):
         chart1_font = QFont("Microsoft YaHei", 18)
         chart_label1.setFont(chart1_font)
 
-        chart_label1.setFixedWidth(150)
+        chart_label1.setFixedWidth(80)
         # chart_label1.setStyleSheet("QLabel { writing-mode: vertical-rl; }")
         # chart1_layout.addSpacing(10)
         chart1_layout.addWidget(chart_label1)

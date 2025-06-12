@@ -41,10 +41,10 @@ class MainWindow_impl(MainWindow):
         self.equal_parameter_manual = {}  # 字典-用于储存输出参数（包括输入参数）
 
         # 主机参数-同步摆-self.host_param_equal_frame
-        host_param_equal_line_edit_names = [
+        self.host_param_equal_line_edit_names = [
             "lineEdit_between", "lineEdit_diameter", "lineEdit_grind_length", "lineEdit_work_time"
         ]
-        for i in host_param_equal_line_edit_names:
+        for i in self.host_param_equal_line_edit_names:
             self.equal_parameter_intelligent[i] = self.host_param_equal_frame.content_layout.get_line_edit_value(i)
             self.equal_parameter_manual[i] = self.host_param_equal_frame.content_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
@@ -54,10 +54,10 @@ class MainWindow_impl(MainWindow):
             partial(line_eidt_textchange, list=self.equal_parameter_manual))
 
         # 主机参数-双头摆- self.host_param_double_frame
-        host_param_double_line_edit_names = [
+        self.host_param_double_line_edit_names = [
             "lineEdit_between", "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length", "lineEdit_work_time"
         ]
-        for i in host_param_double_line_edit_names:
+        for i in self.host_param_double_line_edit_names:
             self.double_parameter_intelligent[i] = self.host_param_double_frame.content_layout.get_line_edit_value(i)
             self.double_parameter_manual[i] = self.host_param_double_frame.content_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
@@ -67,10 +67,10 @@ class MainWindow_impl(MainWindow):
             partial(line_eidt_textchange, list=self.double_parameter_manual))
 
         # 主机参数-单头摆- self.host_param_single_frame
-        host_param_single_line_edit_names = [
+        self.host_param_single_line_edit_names = [
             "lineEdit_beam_between", "lineEdit_diameter", "lineEdit_grind_length", "lineEdit_work_time"
         ]
-        for i in host_param_single_line_edit_names:
+        for i in self.host_param_single_line_edit_names:
             self.single_parameter_intelligent[i] = self.host_param_single_frame.content_layout.get_line_edit_value(i)
             self.single_parameter_manual[i] = self.host_param_single_frame.content_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
@@ -80,11 +80,11 @@ class MainWindow_impl(MainWindow):
             partial(line_eidt_textchange, list=self.single_parameter_manual))
 
         # 运动输入参数- self.motion_in_param_frame
-        motion_in_param_line_edit_names = [
+        self.motion_in_param_line_edit_names = [
             "lineEdit_production_volume", "lineEdit_ceramic_width", "lineEdit_accelerate", "lineEdit_overlap",
             "lineEdit_num_input", "lineEdit_group_count", "lineEdit_stay_time_input"
         ]
-        for i in motion_in_param_line_edit_names:
+        for i in self.motion_in_param_line_edit_names:
             self.single_parameter_intelligent[i] = self.motion_in_param_frame.content_layout.get_line_edit_value(i)
             self.double_parameter_intelligent[i] = self.motion_in_param_frame.content_layout.get_line_edit_value(i)
             self.equal_parameter_intelligent[i] = self.motion_in_param_frame.content_layout.get_line_edit_value(i)
@@ -128,7 +128,7 @@ class MainWindow_impl(MainWindow):
             partial(line_eidt_textchange, list=self.equal_parameter_intelligent))
 
         # 运动参数-方案验证界面--运动输入参数 and 运动输出参数 and 产品质量参数- self.motion_input_out_param_manual_frame
-        motion_out_param_param_manual_line_edit_names = [
+        self.motion_out_param_param_manual_line_edit_names = [
             "lineEdit_production_volume", "lineEdit_beam_swing_speed", "lineEdit_beam_constant_time",
             "lineEdit_stay_time_input", "lineEdit_num_input", "lineEdit_accelerate", "lineEdit_ceramic_width",
             "lineEdit_delay_time"
@@ -140,27 +140,18 @@ class MainWindow_impl(MainWindow):
         # 产品质量参数
         self.motion_out_param_param_manual_line_edit_names_3 = ["lineEdit_coefficient"]
 
-        for i in motion_out_param_param_manual_line_edit_names:
-            self.single_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(
-                i)
-            self.double_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(
-                i)
-            self.equal_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(
-                i)
+        for i in self.motion_out_param_param_manual_line_edit_names:
+            self.single_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(i)
+            self.double_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(i)
+            self.equal_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(i)
         for i in self.motion_out_param_param_manual_line_edit_names_2:
-            self.single_parameter_manual[
-                i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
-            self.double_parameter_manual[
-                i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
-            self.equal_parameter_manual[
-                i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
+            self.single_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
+            self.double_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
+            self.equal_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
         for i in self.motion_out_param_param_manual_line_edit_names_3:
-            self.single_parameter_manual[
-                i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
-            self.double_parameter_manual[
-                i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
-            self.equal_parameter_manual[
-                i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
+            self.single_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
+            self.double_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
+            self.equal_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
         # 监听参数变更信息，并更新到数据集中
         self.motion_input_out_param_manual_frame.content_up_layout.sig_textChanged.connect(
             partial(line_eidt_textchange, list=self.single_parameter_manual))
@@ -183,9 +174,9 @@ class MainWindow_impl(MainWindow):
         self.motion_input_out_param_manual_frame.content_bottom_layout.sig_textChanged.connect(
             partial(line_eidt_textchange, list=self.equal_parameter_manual))
         # 主皮带速度初始-计算赋值
-        edit_list = [self.single_parameter_intelligent, self.double_parameter_intelligent, self.equal_parameter_intelligent
+        self.edit_list = [self.single_parameter_intelligent, self.double_parameter_intelligent, self.equal_parameter_intelligent
             ,self.single_parameter_manual,self.double_parameter_manual,self.equal_parameter_manual]
-        for i in edit_list:
+        for i in self.edit_list:
             if belt_speed_value_empty(i):
                 i['lineEdit_belt_speed'] = belt_speed_calculate(i)
 
@@ -210,6 +201,51 @@ class MainWindow_impl(MainWindow):
         # self.lineEdit_beam_between.setText(600)
         self.button_list=[self.button_energy_project,self.button_efficient_project,self.button_selfdefine_project
                      ,self.button_synchronization_mode,self.button_cross_mode,self.button_order_mode]
+
+    #更新字典值
+    def update_values(self):
+
+        for i in self.host_param_single_line_edit_names:
+            self.single_parameter_intelligent[i] = self.host_param_single_frame.content_layout.get_line_edit_value(i)
+            self.single_parameter_manual[i] = self.host_param_single_frame.content_layout.get_line_edit_value(i)
+
+        for i in self.host_param_double_line_edit_names:
+            self.double_parameter_intelligent[i] = self.host_param_double_frame.content_layout.get_line_edit_value(i)
+            self.double_parameter_manual[i] = self.host_param_double_frame.content_layout.get_line_edit_value(i)
+
+        for i in self.host_param_equal_line_edit_names:
+            self.equal_parameter_intelligent[i] = self.host_param_equal_frame.content_layout.get_line_edit_value(i)
+            self.equal_parameter_manual[i] = self.host_param_equal_frame.content_layout.get_line_edit_value(i)
+
+        for i in self.motion_in_param_line_edit_names:
+            self.single_parameter_intelligent[i] = self.motion_in_param_frame.content_layout.get_line_edit_value(i)
+            self.double_parameter_intelligent[i] = self.motion_in_param_frame.content_layout.get_line_edit_value(i)
+            self.equal_parameter_intelligent[i] = self.motion_in_param_frame.content_layout.get_line_edit_value(i)
+
+        for i in self.motion_out_param_line_edit_names:
+            self.single_parameter_intelligent[i] = self.motion_out_param_frame.content_up_layout.get_line_edit_value(i)
+            self.double_parameter_intelligent[i] = self.motion_out_param_frame.content_up_layout.get_line_edit_value(i)
+            self.equal_parameter_intelligent[i] = self.motion_out_param_frame.content_up_layout.get_line_edit_value(i)
+        for i in self.motion_out_param_line_edit_names_2:
+            self.single_parameter_intelligent[i] = self.motion_out_param_frame.content_down_layout.get_line_edit_value(i)
+            self.double_parameter_intelligent[i] = self.motion_out_param_frame.content_down_layout.get_line_edit_value(i)
+            self.equal_parameter_intelligent[i] = self.motion_out_param_frame.content_down_layout.get_line_edit_value(i)
+
+        for i in self.motion_out_param_param_manual_line_edit_names:
+            self.single_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(i)
+            self.double_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(i)
+            self.equal_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_up_layout.get_line_edit_value(i)
+        for i in self.motion_out_param_param_manual_line_edit_names_2:
+            self.single_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
+            self.double_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
+            self.equal_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_middle_layout.get_line_edit_value(i)
+        for i in self.motion_out_param_param_manual_line_edit_names_3:
+            self.single_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
+            self.double_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
+            self.equal_parameter_manual[i] = self.motion_input_out_param_manual_frame.content_bottom_layout.get_line_edit_value(i)
+        for i in self.edit_list:
+            if belt_speed_value_empty(i):
+                i['lineEdit_belt_speed'] = belt_speed_calculate(i)
 
     def concatenate_values(self,params):
         result = []
@@ -315,6 +351,7 @@ class MainWindow_impl(MainWindow):
 
     # 按钮点击槽函数(计算)
     def enerage_project_clicked(self):
+        self.update_values()
         self.ifcalcflag = True
         self.solution_selection = 1
         self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
@@ -347,6 +384,7 @@ class MainWindow_impl(MainWindow):
         return "_".join(map(str, result))
 
     def efficient_project_clicked(self):
+        self.update_values()
         self.ifcalcflag = True
         self.solution_selection = 2
         self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
@@ -382,6 +420,7 @@ class MainWindow_impl(MainWindow):
                 return False
         return True
     def self_define_project_clicked(self):
+        self.update_values()
         self.ifcalcflag = True
         self.solution_selection = 3
         button_disable(self.button_list)
@@ -402,6 +441,7 @@ class MainWindow_impl(MainWindow):
 
     # 按钮点击槽函数(仿真)
     def syn_project(self):
+        self.update_values()
         self.solution_selection = 4
         self.ifcalcflag = True
         button_disable(self.button_list)
@@ -420,6 +460,7 @@ class MainWindow_impl(MainWindow):
             return
 
     def cross_project(self):
+        self.update_values()
         self.ifcalcflag = True
         self.solution_selection = 5
         button_disable(self.button_list)
@@ -435,6 +476,7 @@ class MainWindow_impl(MainWindow):
             return
 
     def order_project(self):
+        self.update_values()
         self.ifcalcflag = True
         self.solution_selection = 6
         self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]

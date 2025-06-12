@@ -96,7 +96,7 @@ class DataModel(QObject):
                      params['lineEdit_belt_speed'],
                      params['lineEdit_ceramic_width'],
                      params['lineEdit_beam_swing_speed'],
-                     params['lineEdit_stay_time_input'])
+                     params['lineEdit_stay_time_output'])
                 ]
                 cursor.executemany(
                     'INSERT INTO param (production, num, mode, motion_param, swing_mode,device_name,full_motion_param,belt_speed,ceramic_width,beam_swing_speed,stay_time) VALUES (?,?,?,?,?,?,?,?,?,?,?)',

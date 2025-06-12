@@ -67,13 +67,13 @@ class MotionOutputParamWidget(QWidget):
         self.main_layout.addLayout(self.content_down_layout)
         self.content_down_layout.set_line_edit_editable(self.line_edit_names_down, True)
 
-        # 添加保存按钮（原代码中被注释，恢复以保持一致性）
-        self.save_button = ImageChangeButton(self.tr("参数保存"), ":SmallFrame", ":SmallFrameClicked", 114, 37, True)
-        self.save_button.clicked.connect(self.saveParameters)
+
+        # self.save_button = ImageChangeButton(self.tr("参数保存"), ":SmallFrame", ":SmallFrameClicked", 114, 37, True)
+        # self.save_button.clicked.connect(self.saveParameters)
 
         self.button_layout = QHBoxLayout()
         self.button_layout.addStretch()
-        self.button_layout.addWidget(self.save_button)
+        # self.button_layout.addWidget(self.save_button)
         self.main_layout.addStretch()
         self.main_layout.addLayout(self.button_layout)
 
@@ -109,7 +109,7 @@ class MotionOutputParamWidget(QWidget):
         ]
         self.content_down_layout.update_labels(updated_labels_down)
         # 更新保存按钮
-        self.save_button.set_name(self.tr("参数保存"))
+        # self.save_button.set_name(self.tr("参数保存"))
 
     def saveParameters(self):
         """保存各个LineEdit控件的数据到配置文件"""
