@@ -46,7 +46,7 @@ from PyQt5.QtWidgets import QWidget, QDesktopWidget, QApplication, QMessageBox, 
 from PyQt5.QtGui import QPalette, QFont, QIcon, QBrush, QColor, QPainter
 
 class WindowsLoad(QtWidgets.QMainWindow):
-	Language = 2                                 # 1代表中文，2代表英文
+	Language = 1                                 # 1代表中文，2代表英文
 	ShowAuthorInfomation = True                  # 是否显示相关的信息
 	WindowWidth = 1005
 	WindowHeight = 645
@@ -134,7 +134,7 @@ class WindowsLoad(QtWidgets.QMainWindow):
 		self.pushButton102.setText("S7-1500")
 		self.pushButton102.setObjectName("pushButton102")
 		self.pushButton102.clicked.connect(self.pushButton102_click)
-		
+
 		self.pushButton103 = QtWidgets.QPushButton(self.siemensGroupBox)
 		self.pushButton103.setGeometry(QtCore.QRect(18, 104, 150, 32))
 		self.pushButton103.setText("S7-400")
@@ -174,7 +174,7 @@ class WindowsLoad(QtWidgets.QMainWindow):
 		self.pushButton201.setText("Modbus Tcp")
 		self.pushButton201.setObjectName("pushButton201")
 		self.pushButton201.clicked.connect(self.pushButton201_click)
-  
+
 		self.pushButton202 = QtWidgets.QPushButton(self.modbusGroupBox)
 		self.pushButton202.setGeometry(QtCore.QRect(15, 64, 150, 32))
 		self.pushButton202.setText("Modbus Rtu OverTcp")
@@ -216,7 +216,7 @@ class WindowsLoad(QtWidgets.QMainWindow):
 		self.abGroupBox = QtWidgets.QGroupBox(self)
 		self.abGroupBox.setTitle("AB PLC(罗克韦尔)")
 		self.abGroupBox.setGeometry(QtCore.QRect(968, 133, 185, 121))
-  
+
 		self.pushButton901 = QtWidgets.QPushButton(self.abGroupBox)
 		self.pushButton901.setGeometry(QtCore.QRect(15, 24, 150, 32))
 		self.pushButton901.setText("CIP")
@@ -658,7 +658,7 @@ class FormMelsecBinary(QtWidgets.QMainWindow):
 		self.userControlHead = UserControlHead(self)
 		self.userControlHead.setGeometry(QtCore.QRect(0, 0, 1004, 32))
 		self.userControlHead.protocol.setText('MC 3E Binary')
-		
+
 		self.melsec = None
 		self.Address = 'D100'
 
@@ -757,8 +757,7 @@ class FormMelsecBinary(QtWidgets.QMainWindow):
 	def center(self):
 		screen = QDesktopWidget().screenGeometry()
 		size = self.geometry()
-		self.move((screen.width() - size.width()) / 2,
-				  (screen.height() - size.height()) / 2)
+		self.move(0,0)
 	def button_connect_click(self):
 		self.melsec = MelsecMcNet(self.textboxIp.text(), int(self.textboxPort.text()))
 		self.melsec.receiveTimeOut = 5000
@@ -845,7 +844,7 @@ class FormSiemens(QtWidgets.QMainWindow):
 		self.userControlHead = UserControlHead(self)
 		self.userControlHead.setGeometry(QtCore.QRect(0, 0, 1004, 32))
 		self.userControlHead.setProtocol(str(self.siemensPLCS))
-		
+
 		self.siemens = None
 		self.Address = 'M100'
 
@@ -874,7 +873,7 @@ class FormSiemens(QtWidgets.QMainWindow):
 		else:
 			self.textbox15 = QtWidgets.QLineEdit( '4D57', self.settings)
 		self.textbox15.setGeometry(354, 7, 33, 23)
-		
+
 		if self.siemensPLCS != SiemensPLCS.S200:
 			self.label23= QtWidgets.QLabel('Slot:', self.settings)
 		else:
@@ -944,7 +943,7 @@ class FormSiemens(QtWidgets.QMainWindow):
 		self.groupBox5 = QtWidgets.QGroupBox(self.panel2)
 		self.groupBox5.setTitle('Special function test')
 		self.groupBox5.setGeometry(546, 243, 419, 278)
-		
+
 		self.textbox3 = QtWidgets.QTextEdit('', self.groupBox5)
 		self.textbox3.setGeometry(16, 93, 388, 145)
 
@@ -953,8 +952,7 @@ class FormSiemens(QtWidgets.QMainWindow):
 	def center(self):
 		screen = QDesktopWidget().screenGeometry()
 		size = self.geometry()
-		self.move((screen.width() - size.width()) / 2,
-				  (screen.height() - size.height()) / 2)
+		self.move(0,0)
 	def button_connect_click(self):
 		self.siemens = SiemensS7Net(self.siemensPLCS,self.textboxIp.text())
 		self.siemens.port = int(self.textboxPort.text())
@@ -1008,7 +1006,7 @@ class FormSiemensFetchWriteNet(QtWidgets.QMainWindow):
 		self.userControlHead = UserControlHead(self)
 		self.userControlHead.setGeometry(QtCore.QRect(0, 0, 1004, 32))
 		self.userControlHead.setProtocol('Fetch/Write')
-		
+
 		self.siemens = None
 		self.Address = 'M100'
 
@@ -1081,7 +1079,7 @@ class FormSiemensFetchWriteNet(QtWidgets.QMainWindow):
 		self.groupBox5 = QtWidgets.QGroupBox(self.panel2)
 		self.groupBox5.setTitle('Special function test')
 		self.groupBox5.setGeometry(546, 243, 419, 278)
-		
+
 		self.textbox3 = QtWidgets.QTextEdit('', self.groupBox5)
 		self.textbox3.setGeometry(16, 93, 388, 145)
 
@@ -1090,8 +1088,7 @@ class FormSiemensFetchWriteNet(QtWidgets.QMainWindow):
 	def center(self):
 		screen = QDesktopWidget().screenGeometry()
 		size = self.geometry()
-		self.move((screen.width() - size.width()) / 2,
-				  (screen.height() - size.height()) / 2)
+		self.move(0,0)
 	def button_connect_click(self):
 		self.siemens = SiemensFetchWriteNet(self.textboxIp.text(), int(self.textboxPort.text()))
 		connect = self.siemens.ConnectServer()
@@ -1134,7 +1131,7 @@ class FormOmron(QtWidgets.QMainWindow):
 		self.userControlHead = UserControlHead(self)
 		self.userControlHead.setGeometry(QtCore.QRect(0, 0, 1004, 32))
 		self.userControlHead.setProtocol('Fins-Tcp')
-		
+
 		self.omron = None
 		self.Address = 'D100'
 
@@ -1161,7 +1158,7 @@ class FormOmron(QtWidgets.QMainWindow):
 		self.textbox16 = QtWidgets.QLineEdit("", self.settings)
 		self.textbox16.setGeometry(387, 5, 56, 23)
 		self.textbox16.setText('0')
-  
+
 		self.label25 = QtWidgets.QLabel('SA1', self.settings)
 		self.label25.move(311, 35)
 		self.textbox15 = QtWidgets.QLineEdit("", self.settings)
@@ -1230,7 +1227,7 @@ class FormOmron(QtWidgets.QMainWindow):
 		self.groupBox5 = QtWidgets.QGroupBox(self.panel2)
 		self.groupBox5.setTitle('Special function test')
 		self.groupBox5.setGeometry(546, 243, 419, 278)
-		
+
 		self.textbox3 = QtWidgets.QTextEdit('', self.groupBox5)
 		self.textbox3.setGeometry(16, 93, 388, 145)
 
@@ -1239,8 +1236,7 @@ class FormOmron(QtWidgets.QMainWindow):
 	def center(self):
 		screen = QDesktopWidget().screenGeometry()
 		size = self.geometry()
-		self.move((screen.width() - size.width()),
-				  (screen.height() - size.height()))
+		self.move(0,0)
 	def button_connect_click(self):
 		self.omron = OmronFinsNet(self.textboxIp.text(), int(self.textboxPort.text()))
 		self.omron.DA2 = int(self.textbox16.text())
@@ -1388,8 +1384,7 @@ class FormModbus(QtWidgets.QMainWindow):
 	def center(self):
 		screen = QDesktopWidget().screenGeometry()
 		size = self.geometry()
-		self.move((screen.width() - size.width()) / 2,
-				  (screen.height() - size.height()) / 2)
+		self.move(0,0)
 	def button_connect_click(self):
 		self.modbus = ModbusTcpNet(self.textboxIp.text(), int(self.textboxPort.text()), int(self.textbox16.text()))
 		self.modbus.isAddressStartWithZero = self.checkBox1.isChecked()
@@ -1542,8 +1537,7 @@ class FormModbusRtuOverTcp(QtWidgets.QMainWindow):
 	def center(self):
 		screen = QDesktopWidget().screenGeometry()
 		size = self.geometry()
-		self.move((screen.width() - size.width()) / 2,
-				  (screen.height() - size.height()) / 2)
+		self.move(0,0)
 	def button_connect_click(self):
 		self.modbus = ModbusRtuOverTcp(self.textboxIp.text(), int(self.textboxPort.text()), int(self.textbox16.text()))
 		self.modbus.isAddressStartWithZero = self.checkBox1.isChecked()
@@ -1687,8 +1681,7 @@ class FormAllenBrandly(QtWidgets.QMainWindow):
 	def center(self):
 		screen = QDesktopWidget().screenGeometry()
 		size = self.geometry()
-		self.move((screen.width() - size.width()) / 2,
-				  (screen.height() - size.height()) / 2)
+		self.move(0,0)
 	def button_connect_click(self):
 		self.plc = AllenBradleyNet(self.textboxIp.text(), int(self.textboxPort.text()))
 		self.plc.Slot = int(self.textbox16.text())
