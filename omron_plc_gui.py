@@ -235,7 +235,7 @@ class PLCInterface:
         ip_address = self.ip_entry.get()
         try:
             self.communicator.connect(ip_address)
-            messagebox.showinfo("成功", f"已连接到PLC: {ip_address}")
+            # messagebox.showinfo("成功", f"已连接到PLC: {ip_address}")
             self.connect_button.config(state=tk.DISABLED)
             self.disconnect_button.config(state=tk.NORMAL)
             self.query_button.config(state=tk.NORMAL)
@@ -247,7 +247,7 @@ class PLCInterface:
     def disconnect_plc(self):
         try:
             self.communicator.disconnect()
-            messagebox.showinfo("成功", "已断开PLC连接")
+            # messagebox.showinfo("成功", "已断开PLC连接")
             self.connect_button.config(state=tk.NORMAL)
             self.disconnect_button.config(state=tk.DISABLED)
             self.query_button.config(state=tk.DISABLED)
@@ -264,7 +264,7 @@ class PLCInterface:
             return
 
         try:
-            value = self.communicator.read_bool(variable_name)[0]  # 默认读取布尔值
+            value = self.communicator.read_short(variable_name)[0]  # 默认读取布尔值
             self.display_var.set(str(value))
         except Exception as e:
             messagebox.showerror("错误", str(e))

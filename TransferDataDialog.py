@@ -28,7 +28,8 @@ class PLCInterface(QDialog):
         {"name": "同步操作面设定值", "type": "float"},
         {"name": "同步非操作面设定值", "type": "float"},
         {"name": "横梁同步操作面停留时间", "type": "int"},
-        {"name": "横梁同步非操作面停留时间", "type": "int"}
+        {"name": "横梁同步非操作面停留时间", "type": "int"},
+        {"name": "延时时间", "type": "int"}
     ]
 
     PARAMETER_MAPPING = {
@@ -40,6 +41,7 @@ class PLCInterface(QDialog):
         "横梁1加速度": "加速度大小",
         "同步操作面设定值": "摆幅",
         "横梁同步操作面停留时间": "横梁边部停留时间",
+        "延时时间": "延时时间",
     }
 
     def __init__(self, plc, line_edits, parent=None):
@@ -229,6 +231,9 @@ class PLCInterface(QDialog):
             if self.line_edits[9].text():#横梁边部停留时间
                 self.write_entries[15].setText(str(float(self.line_edits[9].text())*100))
                 self.write_entries[16].setText(str(float(self.line_edits[9].text())*100))
+            if self.line_edits[8].text():#延时时间
+                value = str(float(self.line_edits[8].text())*100)
+                self.write_entries[17].setText(str(value))
             scheme = self.line_edits[1].text()
             if scheme == "交叉摆":
                 self.write_entries[3].setText("True")
