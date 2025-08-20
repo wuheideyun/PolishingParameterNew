@@ -22,10 +22,18 @@ from PIL import Image, ImageSequence
 from Double_Function import DoubleWorkerThread,double_num_calculate,self_define_calculate
 from Single_Function import SingleWorkerThread,single_num_calculate,single_self_define_calculate
 from Equal_Function import EqualWorkerThread,equal_num_calculate,equal_self_define_calculate
+from WholeLineConfigDialog import WholeLineConfigDialog
+from WholeLineConfigManager import WholeLineConfigManager
 
 class MainWindow_impl(MainWindow):
     def __init__(self):
         super().__init__()
+
+        # 1. 创建配置管理器的实例
+        self.config_manager = WholeLineConfigManager()
+        # 2. 调用 load_config() 方法，它会读取 whole_line_config.ini 并返回一个包含所有数据的字典
+        self.whole_line_params = self.config_manager.load_config()
+
         # 获取当前目录下的database.db文件路径
         self.db_path = os.path.join(os.getcwd(), "database.db")
         # 单头摆-参数汇总
@@ -197,6 +205,8 @@ class MainWindow_impl(MainWindow):
 
 
         self.save_button.clicked.connect(self.on_save_btn)
+        # 新增：连接“整线配置”按钮的点击事件
+        self.line_config_button.clicked.connect(self.open_line_config_dialog)
         # 界面所有编辑框收集
         # self.lineEdit_beam_between.setText(600)
         self.button_list=[self.button_energy_project,self.button_efficient_project,self.button_selfdefine_project
@@ -351,6 +361,25 @@ class MainWindow_impl(MainWindow):
 
     # 按钮点击槽函数(计算)
     def enerage_project_clicked(self):
+        # print("--- 已成功获取整线配置参数 ---")
+        # import json
+        # print(json.dumps(self.whole_line_params, indent=4, ensure_ascii=False))
+        # # 获取抛光机总数
+        # machine_count = self.whole_line_params.get('global', {}).get('machine_count', 0)
+        # print(f"\n抛光机总数: {machine_count}")
+        #
+        # # 获取第一台设备的参数
+        # if machine_count > 0:
+        #     first_device_params = self.whole_line_params.get('devices', [])[0]
+        #     print(f"1号机机型: {first_device_params.get('type')}")
+        #     print(f"1号机磨头数: {first_device_params.get('head_count')}")
+        #     print(f"1号机磨块配比: {first_device_params.get('grinding_config')}")
+        #
+        # # 获取第一个设备间距
+        # if machine_count > 1:
+        #     first_spacing = self.whole_line_params.get('spacings', [])[0]
+        #     print(f"1-2号机间距: {first_spacing}")
+
         self.update_values()
         self.ifcalcflag = True
         self.solution_selection = 1
@@ -1500,8 +1529,19 @@ class MainWindow_impl(MainWindow):
             self.movie.stop()
             self.animation_QLabel.setMovie(self.movie2)
             self.movie2.start()
+    # 新增：“整线配置”按钮的槽函数
+    def open_line_config_dialog(self):
+        """
+        打开整线配置对话框的槽函数。
+        """
+        print("“整线配置”按钮被点击！正在打开新窗口...")
+        # 实例化我们新的对话框，并传入 self 作为父窗口
+        dialog = WholeLineConfigDialog(self)
+        # 以模态方式显示对话框，程序会在这里暂停直到对话框关闭
+        dialog.exec()
 
-# 编辑框值发生变化时，值同步到参数集合中-监听
+
+    # 编辑框值发生变化时，值同步到参数集合中-监听
 def line_eidt_textchange(name, text, list):
     list[name] = text
     # 实时更新住皮带速度

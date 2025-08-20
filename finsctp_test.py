@@ -23,7 +23,7 @@ def swap_bytes(data,dig):
         return data[1:2] + data[0:1]
 
 if __name__ == "__main__":
-    tcp = FinsTcp.FinsTcp('192.168.4.1',9600,22)
+    tcp = FinsTcp.FinsTcp('192.168.2.15',9600,15)
     # value = tcp.read_short('DM.000',2)
     # print('DM.000:'+str(value.result_value[0]))
     # value = tcp.read_short('DM.300',2)
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     tcp.write_float('DM.2260',values)
     tcp.disconnect()
     time.sleep(1)
-    tcp = FinsTcp.FinsTcp('192.168.4.1',9600,22)
+    tcp = FinsTcp.FinsTcp('192.168.2.15',9600,22)
     value = tcp.read_float('DM.260', 2)
     print(value.result_value[0])
 

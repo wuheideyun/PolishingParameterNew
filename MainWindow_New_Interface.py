@@ -577,9 +577,18 @@ class MainWindow(QWidget):
 
         # 底部 - 输出报告按钮
         self.report_button = ImageChangeButton(self.tr("输出报告"), ":SmallFrame", ":SmallFrameClicked", 166, 37, True)
+        # 新增“整线配置”按钮
+        self.line_config_button = ImageChangeButton(self.tr("整线配置"), ":SmallFrame", ":SmallFrameClicked", 166, 37,
+                                                    True)
         # 添加向右对齐的report_按钮
         bottom_layout.addWidget(self.report_button, alignment=Qt.AlignRight | Qt.AlignBottom)
-        self.report_button.clicked.connect(self.open_new_window)
+
+        # 新增：在两个按钮之间添加一个小的间隔
+        bottom_layout.addSpacerItem(QSpacerItem(20, 60, QSizePolicy.Fixed, QSizePolicy.Fixed))
+
+        # 新增：添加“整线配置”按钮
+        bottom_layout.addWidget(self.line_config_button, alignment=Qt.AlignRight | Qt.AlignBottom)
+
         # 如果需要，在按钮后添加一个间隔符
         bottom_layout.addSpacerItem(QSpacerItem(170, 60, QSizePolicy.Fixed, QSizePolicy.Fixed))
 
