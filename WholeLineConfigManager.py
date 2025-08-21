@@ -132,9 +132,10 @@ if __name__ == '__main__':
         'global': {'machine_count': 2},
         'spacings': ['100.5'],
         'devices': [
-            {'type': '单头摆', 'head_count': '8', 'head_spacing': '650', 'beam_spacing': '1900',
+            # --- 核心改动 4：在测试数据中也彻底替换 key ---
+            {'type': '单头摆', 'head_count': '8', 'between': '650', 'beam_between': '1900',
              'grinding_config': ['140', '180', '240']},
-            {'type': '双头摆', 'head_count': '10', 'head_spacing': '660', 'beam_spacing': '2000',
+            {'type': '双头摆', 'head_count': '10', 'between': '660', 'beam_between': '2000',
              'grinding_config': ['320', '400', '600']}
         ],
         'communication': [
@@ -142,7 +143,6 @@ if __name__ == '__main__':
             {'ip': '192.168.1.11', 'port': '9600'}
         ]
     }
-
     # 创建管理器实例
     manager = WholeLineConfigManager()
 

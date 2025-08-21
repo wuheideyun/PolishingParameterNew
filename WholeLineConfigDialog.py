@@ -155,7 +155,6 @@ class WholeLineConfigDialog(QDialog):
                 if isinstance(widget, QLineEdit):
                     spacings.append(widget.text())
         all_configs['spacings'] = spacings
-
         devices = []
         for i in range(self.machines_layout.count()):
             device_config = {}
@@ -163,17 +162,14 @@ class WholeLineConfigDialog(QDialog):
             if isinstance(device_widget, WholeLineDeviceWidget):
                 device_config['type'] = device_widget.type_combo.currentText()
                 device_config['head_count'] = device_widget.head_count_edit.text()
-                device_config['head_spacing'] = device_widget.head_spacing_edit.text()
-                device_config['beam_spacing'] = device_widget.beam_spacing_edit.text()
+                device_config['between'] = device_widget.between_edit.text()
+                device_config['beam_between'] = device_widget.beam_between_edit.text()
 
-            # ------------------- 核心修正：在这里添加磨块数据收集 -------------------
-            # 确保 grinding_config_layout 中有对应的 widget
             if i < self.grinding_config_layout.count():
                 grinding_widget = self.grinding_config_layout.itemAt(i).widget()
                 if isinstance(grinding_widget, WholeLineGrindingHeadWidget):
                     grinding_selections = [combo.currentText() for combo in grinding_widget.grit_combos]
                     device_config['grinding_config'] = grinding_selections
-            # --------------------------------------------------------------------
 
             devices.append(device_config)
         all_configs['devices'] = devices
@@ -208,8 +204,6 @@ class WholeLineConfigDialog(QDialog):
 
     def populate_ui_with_data(self, data: dict, target_count=None):
         machine_count = target_count if target_count is not None else data.get('global', {}).get('machine_count', 1)
-
-        # 临时阻塞信号，避免在设置值时触发 on_machine_count_changed
         self.machine_count_spinbox.blockSignals(True)
         self.machine_count_spinbox.setValue(machine_count)
         self.machine_count_spinbox.blockSignals(False)
@@ -239,8 +233,8 @@ class WholeLineConfigDialog(QDialog):
                 device_info = devices_data[i]
                 device_widget.type_combo.setCurrentText(device_info.get('type', '单头摆'))
                 device_widget.head_count_edit.setText(device_info.get('head_count', ''))
-                device_widget.head_spacing_edit.setText(device_info.get('head_spacing', ''))
-                device_widget.beam_spacing_edit.setText(device_info.get('beam_spacing', ''))
+                device_widget.between_edit.setText(device_info.get('between', ''))
+                device_widget.beam_between_edit.setText(device_info.get('beam_between', ''))
             self.machines_layout.addWidget(device_widget)
 
             com_group = QGroupBox(f"{i + 1} 号机通讯")
@@ -283,8 +277,8 @@ class WholeLineConfigDialog(QDialog):
             if child.widget():
                 child.widget().deleteLater()
 
-        # ------------------- 核心修正：改为从已填充的UI控件中获取数据 -------------------
-        # 不再依赖 gather_ui_data，因为它可能还没收集到最新的磨块数据
+        all_data = self.gather_ui_data()
+        devices_data = all_data.get('devices', [])
 
         for i in range(self.machines_layout.count()):
             device_widget = self.machines_layout.itemAt(i).widget()
@@ -296,17 +290,11 @@ class WholeLineConfigDialog(QDialog):
                     head_count = 0
                 if head_count > 0:
                     grinding_widget = WholeLineGrindingHeadWidget(device_number, head_count)
-
-                    # 当加载配置时，尝试从已有的数据中恢复磨块设置
-                    # 这一步在 populate_ui_with_data 之后、用户修改之前执行
-                    config_data = self.config_manager.load_config()
-                    devices_data = config_data.get('devices', [])
                     if i < len(devices_data):
                         grinding_data = devices_data[i].get('grinding_config', [])
                         for combo_idx, combo in enumerate(grinding_widget.grit_combos):
                             if combo_idx < len(grinding_data):
                                 combo.setCurrentText(grinding_data[combo_idx])
-
                     self.grinding_config_layout.addWidget(grinding_widget)
 
 
