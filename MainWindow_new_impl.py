@@ -2,7 +2,7 @@ import os
 import sqlite3
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QMessageBox, QDialog
 
 from MainWindow_New_Interface import MainWindow
 from PySide6.QtGui import QMovie
@@ -361,24 +361,24 @@ class MainWindow_impl(MainWindow):
 
     # 按钮点击槽函数(计算)
     def enerage_project_clicked(self):
-        # print("--- 已成功获取整线配置参数 ---")
-        # import json
-        # print(json.dumps(self.whole_line_params, indent=4, ensure_ascii=False))
-        # # 获取抛光机总数
-        # machine_count = self.whole_line_params.get('global', {}).get('machine_count', 0)
-        # print(f"\n抛光机总数: {machine_count}")
-        #
-        # # 获取第一台设备的参数
-        # if machine_count > 0:
-        #     first_device_params = self.whole_line_params.get('devices', [])[0]
-        #     print(f"1号机机型: {first_device_params.get('type')}")
-        #     print(f"1号机磨头数: {first_device_params.get('head_count')}")
-        #     print(f"1号机磨块配比: {first_device_params.get('grinding_config')}")
-        #
-        # # 获取第一个设备间距
-        # if machine_count > 1:
-        #     first_spacing = self.whole_line_params.get('spacings', [])[0]
-        #     print(f"1-2号机间距: {first_spacing}")
+        print("--- 已成功获取整线配置参数 ---")
+        import json
+        print(json.dumps(self.whole_line_params, indent=4, ensure_ascii=False))
+        # 获取抛光机总数
+        machine_count = self.whole_line_params.get('global', {}).get('machine_count', 0)
+        print(f"\n抛光机总数: {machine_count}")
+
+        # 获取第一台设备的参数
+        if machine_count > 0:
+            first_device_params = self.whole_line_params.get('devices', [])[0]
+            print(f"1号机机型: {first_device_params.get('type')}")
+            print(f"1号机磨头数: {first_device_params.get('head_count')}")
+            print(f"1号机磨块配比: {first_device_params.get('grinding_config')}")
+
+        # 获取第一个设备间距
+        if machine_count > 1:
+            first_spacing = self.whole_line_params.get('spacings', [])[0]
+            print(f"1-2号机间距: {first_spacing}")
 
         self.update_values()
         self.ifcalcflag = True
@@ -1532,13 +1532,32 @@ class MainWindow_impl(MainWindow):
     # 新增：“整线配置”按钮的槽函数
     def open_line_config_dialog(self):
         """
-        打开整线配置对话框的槽函数。
+        打开整线配置对话框，并在保存成功后刷新主窗口的参数实例变量。
         """
         print("“整线配置”按钮被点击！正在打开新窗口...")
-        # 实例化我们新的对话框，并传入 self 作为父窗口
         dialog = WholeLineConfigDialog(self)
-        # 以模态方式显示对话框，程序会在这里暂停直到对话框关闭
-        dialog.exec()
+
+        # 打开对话框并等待其关闭
+        result = dialog.exec()
+
+        # 只有当用户点击了“保存配置”按钮（对话框返回 Accepted）时，才执行刷新
+        if result == QDialog.DialogCode.Accepted:
+            print("检测到配置已保存，正在刷新主窗口的参数...")
+
+            # --- 核心步骤：重新加载配置到 self.whole_line_params ---
+            self.whole_line_params = self.config_manager.load_config()
+
+            # 现在，self.whole_line_params 已经是最新版本了
+            # 我们可以安全地使用它
+            print("\n--- 主窗口的 self.whole_line_params 已刷新为最新值 ---")
+            import json
+            print(json.dumps(self.whole_line_params, indent=4, ensure_ascii=False))
+
+            # 例如，更新状态栏以示反馈
+            machine_count = self.whole_line_params.get('global', {}).get('machine_count', 0)
+            self.status_label.setText(f"整线配置更新成功，共 {machine_count} 台设备。")
+        else:
+            print("用户取消了配置，主窗口参数未作修改。")
 
 
     # 编辑框值发生变化时，值同步到参数集合中-监听

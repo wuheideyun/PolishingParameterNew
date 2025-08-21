@@ -193,14 +193,14 @@ class WholeLineConfigDialog(QDialog):
                 if child.widget():
                     child.widget().deleteLater()
         self.populate_ui_with_data(current_data, target_count=count)
-        self.update_grinding_tab()
+        self.update_grinding_tab(current_data)
 
     def load_configuration_to_ui(self):
         self.machine_count_spinbox.blockSignals(True)
         config_data = self.config_manager.load_config()
         self.populate_ui_with_data(config_data)
         self.machine_count_spinbox.blockSignals(False)
-        self.update_grinding_tab()
+        self.update_grinding_tab(config_data)
 
     def populate_ui_with_data(self, data: dict, target_count=None):
         machine_count = target_count if target_count is not None else data.get('global', {}).get('machine_count', 1)
@@ -271,14 +271,17 @@ class WholeLineConfigDialog(QDialog):
                 return False, f"{i + 1}号机通讯的IP地址格式不正确！"
         return True, ""
 
-    def update_grinding_tab(self):
+    def update_grinding_tab(self, source_data=None):
+        # --- 核心修正：如果未提供数据源，则从当前UI收集 ---
+        if source_data is None:
+            source_data = self.gather_ui_data()
+
         while self.grinding_config_layout.count():
             child = self.grinding_config_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
 
-        all_data = self.gather_ui_data()
-        devices_data = all_data.get('devices', [])
+        devices_data = source_data.get('devices', [])
 
         for i in range(self.machines_layout.count()):
             device_widget = self.machines_layout.itemAt(i).widget()
@@ -290,11 +293,14 @@ class WholeLineConfigDialog(QDialog):
                     head_count = 0
                 if head_count > 0:
                     grinding_widget = WholeLineGrindingHeadWidget(device_number, head_count)
+
+                    # 优先使用传入的数据源来恢复磨块设置
                     if i < len(devices_data):
                         grinding_data = devices_data[i].get('grinding_config', [])
                         for combo_idx, combo in enumerate(grinding_widget.grit_combos):
                             if combo_idx < len(grinding_data):
                                 combo.setCurrentText(grinding_data[combo_idx])
+
                     self.grinding_config_layout.addWidget(grinding_widget)
 
 

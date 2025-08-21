@@ -582,6 +582,7 @@ class MainWindow(QWidget):
                                                     True)
         # 添加向右对齐的report_按钮
         bottom_layout.addWidget(self.report_button, alignment=Qt.AlignRight | Qt.AlignBottom)
+        self.report_button.clicked.connect(self.open_new_window)
 
         # 新增：在两个按钮之间添加一个小的间隔
         bottom_layout.addSpacerItem(QSpacerItem(20, 60, QSizePolicy.Fixed, QSizePolicy.Fixed))
