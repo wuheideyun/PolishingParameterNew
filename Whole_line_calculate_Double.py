@@ -621,32 +621,32 @@ def self_define_calculate_whole_line_option_1(between,beam_between,machine_count
         all_params_gather.append(single_machine_params_gather)
     return all_params_gather
 
-if __name__ == '__main__':
-    # 全局变量
-    v1=500
-    ceramic_width=1200
-    R = 270
-    a = 1000
-    mo = 140
-    # 方法传参
-    between = [650,600,650]
-    beam_between = [1906,1906,1906]
-    machine_count = 3
-    head_count = [[4,6,4],[5,7,4],[7,5,2]]
-    # B = ceramic_width + 200 - 2 * R
-    # v2_max = (B/a)**0.5 * a
-    # print(v2_max)
-
-    start_time = te.time()  # 记录开始时间
-    # params_1 : PLC接收参数 ; params_2 : 仿真计算接收参数
-    params_1,params_2= self_define_calculate_whole_line(between, beam_between, machine_count, head_count, a)
-    end_time = te.time()  # 记录结束时间
-    duration = end_time - start_time  # 计算执行时间
-    print(f"程序运行时间：{duration}秒")
-
-    import json
-    print(json.dumps(params_1, indent=4, ensure_ascii=False))
-    print(json.dumps(params_2, indent=4, ensure_ascii=False))
-
-    # params_3 = self_define_calculate_new(v1,ceramic_width,between,beam_between,R,a,num,mo)
-    # print(params_3)
+# if __name__ == '__main__':
+#     # 全局变量
+#     v1=500
+#     ceramic_width=1200
+#     R = 270
+#     a = 1000
+#     mo = 140
+#     # 方法传参
+#     between = [650,600,650]
+#     beam_between = [1906,1906,1906]
+#     machine_count = 3
+#     head_count = [[4,6,4],[5,7,4],[7,5,2]]
+#     # B = ceramic_width + 200 - 2 * R
+#     # v2_max = (B/a)**0.5 * a
+#     # print(v2_max)
+#
+#     start_time = te.time()  # 记录开始时间
+#     # params_1 : PLC接收参数 ; params_2 : 仿真计算接收参数
+#     params_1,params_2= self_define_calculate_whole_line(between, beam_between, machine_count, head_count, a)
+#     end_time = te.time()  # 记录结束时间
+#     duration = end_time - start_time  # 计算执行时间
+#     print(f"程序运行时间：{duration}秒")
+#
+#     import json
+#     print(json.dumps(params_1, indent=4, ensure_ascii=False))
+#     print(json.dumps(params_2, indent=4, ensure_ascii=False))
+#
+#     # params_3 = self_define_calculate_new(v1,ceramic_width,between,beam_between,R,a,num,mo)
+#     # print(params_3)
