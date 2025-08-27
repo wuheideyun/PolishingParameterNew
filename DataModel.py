@@ -194,6 +194,25 @@ class DataModel(QObject):
         except sqlite3.Error as e:
             print(f"Error querying multiple data: {e}")
             return []
+    def query_full_by_id(self, row_id: str) -> dict:
+        """根据单个 rowid 查询数据，并将 full_motion_param 反序列化为字典"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "SELECT full_motion_param FROM param WHERE rowid=?",
+                    (row_id,)
+                )
+                result = cursor.fetchone()
+                if result and result[0]:
+                    # 将 full_motion_param (JSON字符串) 反序列化为字典
+                    return json.loads(result[0])
+                else:
+                    print(f"在数据库中未找到 rowid={row_id} 的记录或参数为空。")
+                    return {}
+        except Exception as e:
+            print(f"根据ID查询数据时出错: {e}")
+            return {}
     def close(self):
         """关闭数据库连接"""
         self.connection.close()

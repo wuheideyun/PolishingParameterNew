@@ -18,18 +18,24 @@ class WholeLineConfigManager:
     def save_config(self, config_data: dict):
         """
         将一个结构化的字典保存到 .ini 文件中。
+        :param config_data: 包含所有配置的大字典。
         """
+        # --- 保存全局配置 ---
         if 'global' in config_data:
             self.settings.beginGroup('Global')
             for key, value in config_data['global'].items():
                 self.settings.setValue(key, value)
             self.settings.endGroup()
+
+        # --- 保存设备间距 ---
         if 'spacings' in config_data:
             self.settings.beginGroup('Spacing')
-            self.settings.remove("")
+            self.settings.remove("")  # 清除旧的间距数据
             for i, value in enumerate(config_data['spacings']):
                 self.settings.setValue(f'spacing_{i + 1}_{i + 2}', value)
             self.settings.endGroup()
+
+        # --- 保存通讯配置 ---
         if 'communication' in config_data:
             self.settings.beginGroup('Communication')
             self.settings.remove("")
@@ -37,10 +43,15 @@ class WholeLineConfigManager:
                 self.settings.setValue(f'ip_{i + 1}', comm.get('ip', ''))
                 self.settings.setValue(f'port_{i + 1}', comm.get('port', ''))
             self.settings.endGroup()
+
+        # --- 保存每台设备的详细配置 ---
         if 'devices' in config_data:
-            for group in self.settings.childGroups():
+            # 先清除所有旧的 [Device_X] 节
+            all_groups = self.settings.childGroups()
+            for group in all_groups:
                 if group.startswith('Device_'):
                     self.settings.remove(group)
+
             for i, device_data in enumerate(config_data['devices']):
                 group_name = f'Device_{i + 1}'
                 self.settings.beginGroup(group_name)
@@ -50,6 +61,7 @@ class WholeLineConfigManager:
                     else:
                         self.settings.setValue(key, value)
                 self.settings.endGroup()
+
         self.settings.sync()
         print(f"配置已成功保存到 {self.config_path}")
 
@@ -58,16 +70,24 @@ class WholeLineConfigManager:
         从 .ini 文件中读取配置，并组装成一个结构化的字典返回。
         """
         config_data = {'global': {}, 'spacings': [], 'devices': [], 'communication': []}
+
         self.settings.beginGroup('Global')
         config_data['global']['machine_count'] = self.settings.value('machine_count', 1, type=int)
+
+        config_data['global']['whole_line_calc_enabled'] = self.settings.value(
+            'whole_line_calc_enabled', False, type=bool
+        )
         self.settings.endGroup()
+
         machine_count = config_data['global']['machine_count']
+
         self.settings.beginGroup('Spacing')
         spacings = []
         for i in range(machine_count - 1):
             spacings.append(self.settings.value(f'spacing_{i + 1}_{i + 2}', ''))
         config_data['spacings'] = spacings
         self.settings.endGroup()
+
         self.settings.beginGroup('Communication')
         comms = []
         for i in range(machine_count):
@@ -75,6 +95,7 @@ class WholeLineConfigManager:
             comms.append(comm)
         config_data['communication'] = comms
         self.settings.endGroup()
+
         devices = []
         for i in range(machine_count):
             device_data = {}
@@ -90,29 +111,25 @@ class WholeLineConfigManager:
             devices.append(device_data)
             self.settings.endGroup()
         config_data['devices'] = devices
+
         return config_data
 
-
-    def get_grinding_counts(self) -> list:
+    def get_grit_counts(self) -> list:
         """
         1. 返回一个嵌套列表，每个子列表代表一台抛光机的磨块目数汇总 (从小到大排序)。
-        例如：[[4, 6, 4], [6, 6, 4]]
         """
         config = self.load_config()
         result_list = []
 
-        # 遍历每一台设备
         for device in config.get('devices', []):
             device_grits = device.get('grinding_config', [])
 
             if not device_grits:
-                result_list.append([])  # 如果该设备没有配置磨块，则添加一个空列表
+                result_list.append([])
                 continue
 
-            # 使用 Counter 统计当前设备的每种目数数量
             grit_counts = Counter(device_grits)
 
-            # 按照预定义的 GRIT_ORDER 顺序来生成当前设备的结果列表
             current_device_result = []
             for grit in self.GRIT_ORDER:
                 if grit in grit_counts:
@@ -125,7 +142,6 @@ class WholeLineConfigManager:
     def get_all_head_counts(self) -> list:
         """
         2. 返回所有抛光机的磨头数列表。
-        例如：[10, 20, 30]
         """
         config = self.load_config()
         head_counts = []
@@ -140,7 +156,6 @@ class WholeLineConfigManager:
     def get_all_betweens(self) -> list:
         """
         3. 返回所有抛光机的磨头间距(between)列表。
-        例如：[500.0, 500.0, 600.5, 700.0]
         """
         config = self.load_config()
         betweens = []
@@ -155,7 +170,6 @@ class WholeLineConfigManager:
     def get_all_beam_betweens(self) -> list:
         """
         4. 返回所有抛光机的横梁间距(beam_between)列表。
-        例如：[1900.0, 1900.0, 2000.0, 2100.0]
         """
         config = self.load_config()
         beam_betweens = []
@@ -168,11 +182,10 @@ class WholeLineConfigManager:
         return beam_betweens
 
 
-# --- 用于独立测试 ---
 if __name__ == '__main__':
-    # 创建一个内容更丰富的示例数据用于测试
+    # 这是一个测试用的示例数据
     sample_data_for_test = {
-        'global': {'machine_count': 3},
+        'global': {'machine_count': 3, 'whole_line_calc_enabled': True},
         'spacings': ['1000.50', '1200.25'],
         'devices': [
             {'type': '单头摆', 'head_count': '14', 'between': '650.5', 'beam_between': '1900.0',
@@ -182,7 +195,6 @@ if __name__ == '__main__':
              'grinding_config': ['180', '180', '180', '180', '180', '180', '320', '320', '320', '320', '800', '800',
                                  '800', '800', '3000', '3000']},
             {'type': '同步摆', 'head_count': '6', 'between': '550.0', 'beam_between': '', 'grinding_config': []}
-            # 测试没有配置磨块的情况
         ],
         'communication': [
             {'ip': '192.168.1.10', 'port': '9600'},
@@ -195,28 +207,13 @@ if __name__ == '__main__':
     print("--- 正在保存测试数据 ---")
     manager.save_config(sample_data_for_test)
 
-    print("\n--- 测试新增的四个方法 ---")
+    print("\n--- 正在加载并验证保存的数据 ---")
+    loaded_data = manager.load_config()
+    import json
 
-    # 1. 磨块目数汇总 (分组)
-    # 预期结果:
-    # Device 1: 180目有4个, 240目有6个, 400目有4个 -> [4, 6, 4]
-    # Device 2: 180目有6个, 320目有4个, 800目有4个, 3000目有2个 -> [6, 4, 4, 2]
-    # Device 3: 没有配置 -> []
-    # 最终返回: [[4, 6, 4], [6, 4, 4, 2], []]
-    grit_counts = manager.get_grinding_counts()
-    print(f"1. 磨块目数汇总 (分组): {grit_counts}")
+    print(json.dumps(loaded_data, indent=4, ensure_ascii=False))
 
-    # 2. 所有抛光机磨头数
-    # 预期结果: [14, 16, 6]
-    head_counts = manager.get_all_head_counts()
-    print(f"2. 所有抛光机磨头数: {head_counts}")
-
-    # 3. 所有抛光机磨头间距
-    # 预期结果: [650.5, 660.0, 550.0]
-    betweens = manager.get_all_betweens()
-    print(f"3. 所有抛光机磨头间距 (between): {betweens}")
-
-    # 4. 所有抛光机横梁间距
-    # 预期结果: [1900.0, 2000.75, 0.0]
-    beam_betweens = manager.get_all_beam_betweens()
-    print(f"4. 所有抛光机横梁间距 (beam_between): {beam_betweens}")
+    # 验证布尔值是否正确加载
+    is_calc_enabled = loaded_data.get('global', {}).get('whole_line_calc_enabled')
+    print(f"\n整线计算是否启用: {is_calc_enabled} (类型: {type(is_calc_enabled)})")
+    assert isinstance(is_calc_enabled, bool)

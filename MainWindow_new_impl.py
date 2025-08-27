@@ -20,6 +20,7 @@ from functools import partial
 from PIL import Image, ImageSequence
 # 函数导入
 from Double_Function import DoubleWorkerThread,double_num_calculate,self_define_calculate
+from OutputReportQWidget import OutputReportWidget
 from Single_Function import SingleWorkerThread,single_num_calculate,single_self_define_calculate
 from Equal_Function import EqualWorkerThread,equal_num_calculate,equal_self_define_calculate
 from WholeLineConfigDialog import WholeLineConfigDialog
@@ -34,6 +35,7 @@ class MainWindow_impl(MainWindow):
         # 2. 调用 load_config() 方法，它会读取 whole_line_config.ini 并返回一个包含所有数据的字典
         self.whole_line_params = self.config_manager.load_config()
 
+        self.output_report = OutputReportWidget(self.data_model, self.config_manager)
         # 获取当前目录下的database.db文件路径
         self.db_path = os.path.join(os.getcwd(), "database.db")
         # 单头摆-参数汇总
@@ -367,7 +369,9 @@ class MainWindow_impl(MainWindow):
         # 获取抛光机总数
         machine_count = self.whole_line_params.get('global', {}).get('machine_count', 0)
         print(f"\n抛光机总数: {machine_count}")
-
+        # 获取整线计算值
+        whole_line_calc_enabled = self.whole_line_params.get('global', {}).get('whole_line_calc_enabled', 0)
+        print(f"\n整线计算值: {whole_line_calc_enabled}")
         # 获取第一台设备的参数
         if machine_count > 0:
             first_device_params = self.whole_line_params.get('devices', [])[0]

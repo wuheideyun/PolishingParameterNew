@@ -2,7 +2,8 @@ import sys
 import re
 from PySide6.QtWidgets import (
     QApplication, QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLayout,
-    QGroupBox, QSpinBox, QScrollArea, QWidget, QTabWidget, QGridLayout, QLineEdit, QMessageBox
+    QGroupBox, QSpinBox, QScrollArea, QWidget, QTabWidget, QGridLayout, QLineEdit, QMessageBox,
+    QCheckBox
 )
 from PySide6.QtGui import QFont, QPainter, QColor, QDoubleValidator
 from PySide6.QtCore import Qt
@@ -49,6 +50,28 @@ class WholeLineConfigDialog(QDialog):
             QLineEdit { color: black; padding: 3px; border-radius: 3px; border: 1px solid #777; }
             QComboBox { color: black; padding: 3px; }
             QSpinBox { color: black; }
+
+            /* --- 核心改动：为 QCheckBox 添加完整的美化样式 --- */
+            QCheckBox {
+                spacing: 5px; /* 复选框和文字之间的间距 */
+                font-family: "Microsoft YaHei"; 
+                font-size: 14px;
+                color: #FFFFFF; /* 文字颜色为白色 */
+            }
+            QCheckBox::indicator {
+                width: 18px; /* 复选框宽度 */
+                height: 18px; /* 复选框高度 */
+                border: 2px solid #1e5dab; /* 边框颜色与主题一致 */
+                border-radius: 5px;
+                background-color: #2c3e50; /* 未选中时的背景色 */
+            }
+            QCheckBox::indicator:hover {
+                border-color: #3d7ccb; /* 悬停时边框变亮 */
+            }
+            QCheckBox::indicator:checked {
+                background-color: #0078d7; /* 选中时的背景色 */
+                image: url(:/icons/checkmark.png); /* 使用您资源文件中的白色对勾图标 */
+            }
         """)
         self.setModal(True)
 
@@ -66,11 +89,12 @@ class WholeLineConfigDialog(QDialog):
         self.create_grinding_block_tab()
 
         button_layout = QHBoxLayout()
-        button_layout.addStretch()
+        self.whole_line_calc_checkbox = QCheckBox("整线计算", self)
         self.save_button = QPushButton("保存配置", self)
         self.save_button.setFixedSize(120, 40)
         self.cancel_button = QPushButton("取消", self)
         self.cancel_button.setFixedSize(120, 40)
+
         button_style = """
             QPushButton { 
                 background-color: #30438c; color: white; border: none; 
@@ -81,6 +105,9 @@ class WholeLineConfigDialog(QDialog):
         """
         self.save_button.setStyleSheet(button_style)
         self.cancel_button.setStyleSheet(button_style)
+
+        button_layout.addWidget(self.whole_line_calc_checkbox)
+        button_layout.addStretch()
         button_layout.addWidget(self.save_button)
         button_layout.addWidget(self.cancel_button)
         main_layout.addLayout(button_layout)
@@ -146,8 +173,12 @@ class WholeLineConfigDialog(QDialog):
 
     def gather_ui_data(self):
         all_configs = {'global': {}, 'spacings': [], 'devices': [], 'communication': []}
+        global_config = {
+            'machine_count': self.machine_count_spinbox.value(),
+            'whole_line_calc_enabled': self.whole_line_calc_checkbox.isChecked()
+        }
+        all_configs['global'] = global_config
         machine_count = self.machine_count_spinbox.value()
-        all_configs['global']['machine_count'] = machine_count
         spacings = []
         if machine_count > 1:
             for i in range(self.spacing_layout.count()):
@@ -173,7 +204,6 @@ class WholeLineConfigDialog(QDialog):
 
             devices.append(device_config)
         all_configs['devices'] = devices
-
         comms = []
         for i in range(self.com_layout.count()):
             com_group = self.com_layout.itemAt(i).widget()
@@ -203,11 +233,13 @@ class WholeLineConfigDialog(QDialog):
         self.update_grinding_tab(config_data)
 
     def populate_ui_with_data(self, data: dict, target_count=None):
-        machine_count = target_count if target_count is not None else data.get('global', {}).get('machine_count', 1)
+        global_config = data.get('global', {})
+        machine_count = target_count if target_count is not None else global_config.get('machine_count', 1)
         self.machine_count_spinbox.blockSignals(True)
         self.machine_count_spinbox.setValue(machine_count)
         self.machine_count_spinbox.blockSignals(False)
-
+        is_checked = global_config.get('whole_line_calc_enabled', False)
+        self.whole_line_calc_checkbox.setChecked(is_checked)
         spacings_data = data.get('spacings', [])
         devices_data = data.get('devices', [])
         comms_data = data.get('communication', [])
@@ -236,7 +268,6 @@ class WholeLineConfigDialog(QDialog):
                 device_widget.between_edit.setText(device_info.get('between', ''))
                 device_widget.beam_between_edit.setText(device_info.get('beam_between', ''))
             self.machines_layout.addWidget(device_widget)
-
             com_group = QGroupBox(f"{i + 1} 号机通讯")
             com_group.setFixedHeight(75)
             com_layout = QHBoxLayout()
@@ -272,17 +303,13 @@ class WholeLineConfigDialog(QDialog):
         return True, ""
 
     def update_grinding_tab(self, source_data=None):
-        # --- 核心修正：如果未提供数据源，则从当前UI收集 ---
         if source_data is None:
             source_data = self.gather_ui_data()
-
         while self.grinding_config_layout.count():
             child = self.grinding_config_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
-
         devices_data = source_data.get('devices', [])
-
         for i in range(self.machines_layout.count()):
             device_widget = self.machines_layout.itemAt(i).widget()
             if isinstance(device_widget, WholeLineDeviceWidget):
@@ -293,14 +320,11 @@ class WholeLineConfigDialog(QDialog):
                     head_count = 0
                 if head_count > 0:
                     grinding_widget = WholeLineGrindingHeadWidget(device_number, head_count)
-
-                    # 优先使用传入的数据源来恢复磨块设置
                     if i < len(devices_data):
                         grinding_data = devices_data[i].get('grinding_config', [])
                         for combo_idx, combo in enumerate(grinding_widget.grit_combos):
                             if combo_idx < len(grinding_data):
                                 combo.setCurrentText(grinding_data[combo_idx])
-
                     self.grinding_config_layout.addWidget(grinding_widget)
 
 

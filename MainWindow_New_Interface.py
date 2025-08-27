@@ -81,8 +81,9 @@ class MainWindow(QWidget):
         self.flag = False
         self.logger = LoggerHelper('param_change')
         self.selectedFunction = 1
+        self.output_report = None
         # 输出报告界面
-        self.output_report = OutputReportWidget(self.data_model)
+        # self.output_report = OutputReportWidget(self.data_model)
         # 创建定时器
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_status)
