@@ -456,8 +456,8 @@ def self_define_calculate_speed_boost(between,beam_between,a,num):
     # 筛选出最佳结果
     sorted_final_params_gather = sorted(final_params_gather, key=lambda x: x["lineEdit_coefficient"],
                                        reverse=False)
-    final_params = sorted_final_params_gather[:1]
-
+    final_params = sorted_final_params_gather[0]
+    '''
     # 增加小砖算法
     if ceramic_width <= 800:
         if v2 <= 200:       # 若横梁摆动速度小于200则判定摆动速度过慢
@@ -501,18 +501,15 @@ def self_define_calculate_speed_boost(between,beam_between,a,num):
                         ,'lineEdit_stay_time_input':t2,'lineEdit_swing': round(a*t_a**2+v2*t1,2), 'lineEdit_ceramic_width': ceramic_width
                         ,'lineEdit_group_count':group, 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R
                         , 'lineEdit_accelerate': a,'self_delay_time':self_delay_time,'lineEdit_grind_length':mo})
-            ''' 
-    result=np.zeros((1,8))
-    result[0 , 0] = v1
-    result[0 , 1] = v2
-    result[0 , 2] = t1
-    result[0 , 3] = t2
-    result[0 , 4] = num*group
-    result[0 , 5] = delay_time
-    result[0 , 6] = self_delay_time
-    result[0 , 7] = round(a*t_a**2+v2*t1,2)
     '''
-    return final_params
+    # 对计算出的结果进行处理（1.方便数据传输到PLC；2.方便数据传输至仿真动画计算端）
+    keys_to_extract = ['lineEdit_belt_speed', 'lineEdit_beam_swing_speed', 'lineEdit_accelerate','lineEdit_stay_time_output'
+                        ,'lineEdit_swing', 'lineEdit_delay_time_list']
+    # 使用字典推导式提取指定键
+    final_params_transmission_PLC = {key: final_params[key] for key in keys_to_extract if key in final_params}
+    final_params_transmission_PLC['mode'] = 'order'
+    # 参数 final_params 用于仿真计算
+    return final_params_transmission_PLC,final_params
 # -----提速计算策略（当磨头数小于等于 2）--计算单组参数----（后续可优化为补抛策略）----------
 def self_define_calculate_new(between,beam_between,a,num):
     # 定义全局变量
@@ -522,10 +519,10 @@ def self_define_calculate_new(between,beam_between,a,num):
     # # 根据磨头间距、皮带速度计算单周期时间
     # period_time = between * num / v1
     # t2 = between * 0.6 / v1
-    v2 = v2_max*0.95
-    t_a = v2/a
-    t_e = (B - a*t_a**2)/v2
-    t2 = 0.2 * (2 * t_a + t_e)
+    v2 = round(v2_max*0.95,2)
+    t_a = round(v2/a,2)
+    t_e = round((B - a*t_a**2)/v2,2)
+    t2 = round(0.2 * (2 * t_a + t_e),2)
     period_time = (2 * t_a + t_e + t2) * 2
 
     group = 1
@@ -533,10 +530,12 @@ def self_define_calculate_new(between,beam_between,a,num):
     self_delay_time = 0
     delay_time_self_list = [0]
 
-    params = {'lineEdit_belt_speed': v1, 'lineEdit_beam_swing_speed': v2, 'lineEdit_beam_constant_time': t_e,'lineEdit_stay_time_output': t2
-        , 'lineEdit_num_input': num, 'lineEdit_num_output': num * group, 'lineEdit_delay_time': delay_time,'lineEdit_delay_time_list': delay_time_self_list
-        , 'lineEdit_stay_time_input': t2, 'lineEdit_swing': round(a * t_a ** 2 + v2 * t_e, 2),'lineEdit_ceramic_width': ceramic_width, 'lineEdit_group_count': group
-        , 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R, 'lineEdit_accelerate': a, 'self_delay_time': self_delay_time, 'lineEdit_grind_length': mo}
+    # params = {'lineEdit_belt_speed': v1, 'lineEdit_beam_swing_speed': v2, 'lineEdit_beam_constant_time': t_e,'lineEdit_stay_time_output': t2
+    #     , 'lineEdit_num_input': num, 'lineEdit_num_output': num * group, 'lineEdit_delay_time': delay_time,'lineEdit_delay_time_list': delay_time_self_list
+    #     , 'lineEdit_stay_time_input': t2, 'lineEdit_swing': round(a * t_a ** 2 + v2 * t_e, 2),'lineEdit_ceramic_width': ceramic_width, 'lineEdit_group_count': group
+    #     , 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R, 'lineEdit_accelerate': a, 'self_delay_time': self_delay_time, 'lineEdit_grind_length': mo}
+    params = {'lineEdit_belt_speed': v1, 'lineEdit_beam_swing_speed': v2,'lineEdit_stay_time_output': t2
+         ,'lineEdit_delay_time_list': delay_time_self_list, 'lineEdit_swing': round(a * t_a ** 2 + v2 * t_e, 2), 'lineEdit_accelerate': a}
 
     return params
 # 整线优化策略计算
@@ -545,6 +544,8 @@ def self_define_calculate_whole_line(between,beam_between,machine_count,head_cou
     global v1,R,ceramic_width,mo
     # 为了单次传入多个参数，传入的参数为整线的参数集合（列表）
     all_params_gather = []
+    # 用于存储仿真计算的参数
+    unique_items_gather_simulation_calculate = []
     for i in range(0,machine_count):    # 第一台机至第四台机 进行循环迭代
         single_machine_params_gather = []
         # 存放第一台机 同粒度磨头数排布（eg.[4,6,4]）
@@ -563,20 +564,23 @@ def self_define_calculate_whole_line(between,beam_between,machine_count,head_cou
         # 计算单台机 不同 同粒度磨头数目 的运动参数
         machine_between = between[i]
         machine_beam_between = beam_between[i]
-        unique_items_gather = {}
+        # 用于存储传输至PLC的数据
+        unique_items_gather_transmission_PLC = {}
+        params_2 = []
         for j in range(0,unique_count):
             num = unique_items[j]
             if num == 2:
-                params = self_define_calculate_new(machine_between, machine_beam_between,a,num)
+                params_1 = self_define_calculate_new(machine_between, machine_beam_between,a,num)
             else:
-                params = self_define_calculate_speed_boost(machine_between, machine_beam_between, a, num)
-            unique_items_gather[num] = params
+                params_1,params_2 = self_define_calculate_speed_boost(machine_between, machine_beam_between, a, num)
+            unique_items_gather_transmission_PLC[num] = params_1
+            unique_items_gather_simulation_calculate.append(params_2)
         # 参数匹配
         for j in range(0,len(single_machine_head_gather)):
             current_num = single_machine_head_gather[j]
-            single_machine_params_gather.append(unique_items_gather[current_num])
+            single_machine_params_gather.append(unique_items_gather_transmission_PLC[current_num])
         all_params_gather.append(single_machine_params_gather)
-    return all_params_gather
+    return all_params_gather,unique_items_gather_simulation_calculate
 # 整线优化策略备选方案一（磨头输入个数为偶数个）
 def self_define_calculate_whole_line_option_1(between,beam_between,machine_count,head_count,a):
     # 全局变量
@@ -617,29 +621,32 @@ def self_define_calculate_whole_line_option_1(between,beam_between,machine_count
         all_params_gather.append(single_machine_params_gather)
     return all_params_gather
 
+if __name__ == '__main__':
+    # 全局变量
+    v1=500
+    ceramic_width=1200
+    R = 270
+    a = 1000
+    mo = 140
+    # 方法传参
+    between = [650,600,650]
+    beam_between = [1906,1906,1906]
+    machine_count = 3
+    head_count = [[4,6,4],[5,7,4],[7,5,2]]
+    # B = ceramic_width + 200 - 2 * R
+    # v2_max = (B/a)**0.5 * a
+    # print(v2_max)
 
+    start_time = te.time()  # 记录开始时间
+    # params_1 : PLC接收参数 ; params_2 : 仿真计算接收参数
+    params_1,params_2= self_define_calculate_whole_line(between, beam_between, machine_count, head_count, a)
+    end_time = te.time()  # 记录结束时间
+    duration = end_time - start_time  # 计算执行时间
+    print(f"程序运行时间：{duration}秒")
 
-# if __name__ == '__main__':
-#     # 全局变量
-#     v1=500
-#     ceramic_width=1200
-#     R = 270
-#     a = 1000
-#     mo = 140
-#     # 方法传参
-#     between = [650,600,650]
-#     beam_between = [1906,1906,1906]
-#     machine_count = 3
-#     head_count = [[4,6,4],[5,7,4],[7,5,2]]
-#     # B = ceramic_width + 200 - 2 * R
-#     # v2_max = (B/a)**0.5 * a
-#     # print(v2_max)
-#
-#     start_time = te.time()  # 记录开始时间
-#     params= self_define_calculate_whole_line_option_1(between, beam_between, machine_count, head_count, a)
-#     end_time = te.time()  # 记录结束时间
-#     duration = end_time - start_time  # 计算执行时间
-#     print(f"程序运行时间：{duration}秒")
-#     print(params)
-#     # params_3 = self_define_calculate_new(v1,ceramic_width,between,beam_between,R,a,num,mo)
-#     # print(params_3)
+    import json
+    print(json.dumps(params_1, indent=4, ensure_ascii=False))
+    print(json.dumps(params_2, indent=4, ensure_ascii=False))
+
+    # params_3 = self_define_calculate_new(v1,ceramic_width,between,beam_between,R,a,num,mo)
+    # print(params_3)
