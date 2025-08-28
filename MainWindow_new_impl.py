@@ -1451,7 +1451,9 @@ class MainWindow_impl(MainWindow):
             self.motion_input_out_param_manual_frame.content_bottom_layout.set_line_edit_value(i,self.double_parameter_manual[i])
     # 双头摆-自定义整线计算-子进程信号接收函数
     def double_whole_line_calculate_signal(self,result_PLC,result_simulation,animation_name):
-        params_transmit_PLC = result_PLC
+        params_transmit_PLC = result_PLC   # PLC 传参
+        # PLC传参打印
+        print(params_transmit_PLC)
         params_simulation_calculate = result_simulation
         # 筛选出磨抛效果最好的一组
         params_simulation_16 = {}
@@ -1485,7 +1487,6 @@ class MainWindow_impl(MainWindow):
         # 静态动画参数输入
         # params.update({'mode': 'self_order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
         # 动态动画参数输入
-        print(params_simulation)
         params_simulation.update({'mode': 'self_order', 'fig': self.canvas.fig, 'animation_name': animation_name})
         self.worker_thread_plot = DoubleWorkerThread(**params_simulation)
         self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
