@@ -25,6 +25,7 @@ from Single_Function import SingleWorkerThread,single_num_calculate,single_self_
 from Equal_Function import EqualWorkerThread,equal_num_calculate,equal_self_define_calculate
 from WholeLineConfigDialog import WholeLineConfigDialog
 from WholeLineConfigManager import WholeLineConfigManager
+from Whole_line_calculate_Double import Double_self_whole_line_Thread
 
 class MainWindow_impl(MainWindow):
     def __init__(self):
@@ -401,7 +402,10 @@ class MainWindow_impl(MainWindow):
         if self.current_device == 1:     # 单头摆
             self.single_enerage_project(animation_name=self.MatchAnimationName(single_parameter_intelligent,11,"SingleEnergyProject"),**single_parameter_intelligent)
         elif self.current_device == 2:   # 双头摆
-            self.double_enerage_project(animation_name=self.MatchAnimationName(double_parameter_intelligent,12,"DoubleEnergyProject"),**double_parameter_intelligent)
+            if whole_line_calc_enabled == True:
+                return
+            else:
+                self.double_enerage_project(animation_name=self.MatchAnimationName(double_parameter_intelligent,12,"DoubleEnergyProject"),**double_parameter_intelligent)
         elif self.current_device == 3:   # 同步摆
             self.equal_enerage_project(animation_name=self.MatchAnimationName(equal_parameter_intelligent,11,"EqualEnergyProject"),**equal_parameter_intelligent)
             return
@@ -464,10 +468,17 @@ class MainWindow_impl(MainWindow):
         double_parameter_intelligent = dict_value_to_float(self.double_parameter_intelligent)
         print(f'double_parameter_intelligent = {double_parameter_intelligent}')
         equal_parameter_intelligent = dict_value_to_float(self.equal_parameter_intelligent)
+
         if self.current_device == 1:
             self.single_self_project(animation_name=self.MatchAnimationName(single_parameter_intelligent,11,"SingleSelfProject"),**single_parameter_intelligent)
         elif self.current_device == 2:
-            self.double_self_project(animation_name=self.MatchAnimationName(double_parameter_intelligent,12,"DoubleSelfProject"),**double_parameter_intelligent)
+            # 整线计算判断位
+            whole_line_calc_enabled = self.whole_line_params.get('global', {}).get('whole_line_calc_enabled', 0)
+            if whole_line_calc_enabled == True:
+                # 整线计算函数
+                self.double_self_whole_calculate(animation_name=self.MatchAnimationName(double_parameter_intelligent,12,"DoubleSelfProject"),**double_parameter_intelligent)
+            else:
+                self.double_self_project(animation_name=self.MatchAnimationName(double_parameter_intelligent,12,"DoubleSelfProject"),**double_parameter_intelligent)
         elif self.current_device == 3:
             self.equal_self_project(animation_name=self.MatchAnimationName(equal_parameter_intelligent,11,"EqualSelfProject"),**equal_parameter_intelligent)
             return
@@ -525,6 +536,7 @@ class MainWindow_impl(MainWindow):
             return
 
     # -------------------------单头摆-智能计算逻辑函数---------------------------------
+    # 智能计算
     def single_enerage_project(self,animation_name,**kwargs):
         v1 = kwargs.get('lineEdit_belt_speed')
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
@@ -546,7 +558,7 @@ class MainWindow_impl(MainWindow):
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
-
+    # 高效计算
     def single_efficient_project(self,animation_name,**kwargs):
         # 参数赋值
         v1 = kwargs.get('lineEdit_belt_speed')
@@ -569,7 +581,7 @@ class MainWindow_impl(MainWindow):
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
-
+    # 自定义计算
     def single_self_project(self,animation_name,**kwargs):
         v1 = kwargs.get('lineEdit_belt_speed')
         ceramic_width = kwargs.get('lineEdit_ceramic_width')
@@ -594,7 +606,6 @@ class MainWindow_impl(MainWindow):
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
-
     # -------------------------单头摆-方案验证逻辑函数--------------------------------
     def single_synchronization_project(self,animation_name,**kwargs):
         v1 = kwargs.get('lineEdit_belt_speed')
@@ -792,8 +803,7 @@ class MainWindow_impl(MainWindow):
         self.worker_thread_plot = SingleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.single_manual_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
-
-#--------------------------------------双头摆智能计算------------------------------------------------------------------------------
+#--------------------------------------双头摆智能计算----------------------------------------------------------------------
     # 双头摆-节能计算-子进程启动函数
     def double_enerage_project(self,animation_name,**kwargs):
         # 绘图、动画模块子线程
@@ -817,7 +827,6 @@ class MainWindow_impl(MainWindow):
         self.worker_thread_plot = DoubleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
-
     # 双头摆-高效计算-子进程启动函数
     def double_efficient_project(self,animation_name,**kwargs):
         v1 = kwargs.get('lineEdit_belt_speed')
@@ -840,7 +849,6 @@ class MainWindow_impl(MainWindow):
         self.worker_thread_plot = DoubleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
-
     # 双头摆-自定义修正计算-子进程启动函数
     def double_self_project(self,animation_name,**kwargs):
         v1 = kwargs.get('lineEdit_belt_speed')
@@ -867,7 +875,24 @@ class MainWindow_impl(MainWindow):
         self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
 
-    # ------------------------------------双头摆方案验证------------------------------------------------------------------------------
+    # 双头摆-自定义整线计算
+    def double_self_whole_calculate(self,animation_name,**kwargs):
+        self.current_animation_name = animation_name
+        # 界面参数获取（全局变量）
+        v1 = kwargs.get('lineEdit_belt_speed')
+        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        R = kwargs.get('lineEdit_diameter') / 2
+        a = kwargs.get('lineEdit_accelerate')
+        mo = kwargs.get('lineEdit_grind_length')
+        # 整线计算参数获取
+        grind_summary = WholeLineConfigManager().get_grit_counts()  # 整线磨块目数汇总
+        between_summary = WholeLineConfigManager().get_all_betweens()  # 整线抛光机磨头间距
+        beam_between_summary = WholeLineConfigManager().get_all_beam_betweens()  # 整线抛光机横梁间距
+        # 整线参数计算
+        self.worker_thread = Double_self_whole_line_Thread(v1,R,ceramic_width,mo,between_summary,beam_between_summary,grind_summary,a)
+        self.worker_thread.result_signal.connect(lambda result_1,result_2: self.double_whole_line_calculate_signal(result_1,result_2,self.current_animation_name))  # 连接子线程的信号
+        self.worker_thread.start()  # 启动子线程
+    # ------------------------------------双头摆方案验证-------------------------------------------------------------------
     # 双头摆-同步摆模式-子进程启动函数
     def double_synchronization_project(self,animation_name,**kwargs):
         v1 = kwargs.get('lineEdit_belt_speed')
@@ -1071,6 +1096,8 @@ class MainWindow_impl(MainWindow):
         self.worker_thread_plot = DoubleWorkerThread(**params)
         self.worker_thread_plot.result_signal.connect(self.double_manual_thread_signal)  # 连接子线程的信号
         self.worker_thread_plot.start()  # 启动子线程
+    #------------双头-----------------------摆整线计算方案-----------------------------------------------------------------
+    #
 
     # --------------------------------------同步摆智能计算------------------------------------------------------------------------------
     # 同步摆-节能计算-子进程启动函数
@@ -1422,6 +1449,47 @@ class MainWindow_impl(MainWindow):
             self.motion_input_out_param_manual_frame.content_middle_layout.set_line_edit_value(i,self.double_parameter_manual[i])
         for i in self.motion_out_param_param_manual_line_edit_names_3:
             self.motion_input_out_param_manual_frame.content_bottom_layout.set_line_edit_value(i,self.double_parameter_manual[i])
+    # 双头摆-自定义整线计算-子进程信号接收函数
+    def double_whole_line_calculate_signal(self,result_PLC,result_simulation,animation_name):
+        params_transmit_PLC = result_PLC
+        params_simulation_calculate = result_simulation
+        # 筛选出磨抛效果最好的一组
+        params_simulation_16 = {}
+        params_simulation_12 = {}
+        params_simulation_8 = {}
+        params_simulation_4 = {}
+        for i in params_simulation_calculate:
+            if i['lineEdit_num_output'] == 16:
+                params_simulation_16 = i
+                break
+            elif i['lineEdit_num_output'] == 12:
+                params_simulation_12 = i
+                break
+            elif i['lineEdit_num_output'] == 8:
+                params_simulation_8 = i
+                break
+            elif i['lineEdit_num_output'] == 4:
+                params_simulation_4 = i
+        if len(params_simulation_16) != 0:
+            params_simulation = params_simulation_16
+        elif len(params_simulation_12) != 0:
+            params_simulation = params_simulation_12
+        elif len(params_simulation_8) != 0:
+            params_simulation = params_simulation_8
+        elif len(params_simulation_4) != 0:
+            params_simulation = params_simulation_4
+        else:
+            params_simulation = params_simulation_calculate[0]
+        # 计算结果-数据集更新(界面参数与展示的动画仿真同步)
+        self.double_parameter_intelligent.update(params_simulation)
+        # 静态动画参数输入
+        # params.update({'mode': 'self_order', 'fig': self.canvas.fig,'fig_2': self.canvas_animation.fig,'animation_name':animation_name})
+        # 动态动画参数输入
+        print(params_simulation)
+        params_simulation.update({'mode': 'self_order', 'fig': self.canvas.fig, 'animation_name': animation_name})
+        self.worker_thread_plot = DoubleWorkerThread(**params_simulation)
+        self.worker_thread_plot.result_signal.connect(self.double_intelligent_thread_signal)  # 连接子线程的信号
+        self.worker_thread_plot.start()  # 启动子线程
 
     # 同步摆-智能计算-子进程信号接收函数
     def equal_intelligent_thread_signal(self, result):

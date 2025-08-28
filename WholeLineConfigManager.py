@@ -217,3 +217,6 @@ if __name__ == '__main__':
     is_calc_enabled = loaded_data.get('global', {}).get('whole_line_calc_enabled')
     print(f"\n整线计算是否启用: {is_calc_enabled} (类型: {type(is_calc_enabled)})")
     assert isinstance(is_calc_enabled, bool)
+
+    print('测试------------------')
+    print(manager.get_grit_counts())
