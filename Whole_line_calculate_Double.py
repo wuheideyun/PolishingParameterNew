@@ -58,7 +58,8 @@ class Double_self_whole_line_Thread(QThread):
                 else:
                     params_1, params_2 = self.self_define_calculate_speed_boost(machine_between, machine_beam_between, num)
                 unique_items_gather_transmission_PLC[num] = params_1
-                unique_items_gather_simulation_calculate.append(params_2)
+                if len(params_2) != 0:
+                    unique_items_gather_simulation_calculate.append(params_2)
             # 参数匹配
             for j in range(0, len(single_machine_head_gather)):
                 current_num = single_machine_head_gather[j]
