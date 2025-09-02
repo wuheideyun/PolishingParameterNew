@@ -13,10 +13,11 @@ from WholeLinePLCInterface import WholeLinePLCInterface
 
 
 class WholeLineTransferDialog(QDialog):
-    def __init__(self, line_solution_params, config_manager, parent=None):
+    def __init__(self, whole_line_param_json: str, config_manager, parent=None):
         super().__init__(parent)
 
-        self.line_solution_params = line_solution_params
+        # 将传入的JSON字符串暂存起来
+        self.params_to_send_json = whole_line_param_json
         self.config_manager = config_manager
 
         self.connection_threads = {}
@@ -165,7 +166,7 @@ class WholeLineTransferDialog(QDialog):
         #     QMessageBox.warning(self, "提示", "没有已连接的PLC设备！")
         #     return
 
-        dialog = WholeLinePLCInterface(self.plc_instances, self.line_solution_params, self)
+        dialog = WholeLinePLCInterface(self.plc_instances, self.params_to_send_json, self)
         dialog.exec()
 
     def closeEvent(self, event):

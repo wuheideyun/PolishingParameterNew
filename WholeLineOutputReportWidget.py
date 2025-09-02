@@ -17,10 +17,10 @@ from TransferDataDialog import TransferDataDialog
 from WholeLineTransferDialog import WholeLineTransferDialog
 
 
-class OutputReportWidget(QWidget):
+class WholeLineOutputReportWidget(QWidget):
     def __init__(self, data_model, config_manager):
         super().__init__()
-        self.setWindowTitle("输出报告")
+        self.setWindowTitle("整线输出报告")
         self.setGeometry(400, 100, 1280, 800)
         self.setFixedSize(1280, 800)
 
@@ -42,7 +42,7 @@ class OutputReportWidget(QWidget):
             QCheckBox::indicator:checked { background-color: #0078d7; image: url(:/icons/checkmark.png); }
             """
 
-        self.title_label = QLabel("抛光参数选择", self)
+        self.title_label = QLabel("整线抛光参数选择", self)
         self.title_label.setFont(QFont("Microsoft YaHei", 25))
         self.title_label.setStyleSheet("color: white;")
         layout.addWidget(self.title_label)
@@ -112,7 +112,7 @@ class OutputReportWidget(QWidget):
         # DataModel.fetch_data() 返回的列顺序:
         # rowid(0), mode(1), swing_mode(2), belt_speed(3), ceramic_width(4),
         # beam_swing_speed(5), stay_time(6), device_name(7), full_motion_param(8)
-        rows = self.data_model.fetch_data()
+        rows = self.data_model.fetch_whole_line_data()
         self.table_widget.setRowCount(len(rows))
 
         for row_idx, row_data in enumerate(rows):
@@ -187,51 +187,28 @@ class OutputReportWidget(QWidget):
         selected_row = selected_row_indexes[0]
         row_id = self.table_widget.item(selected_row, 0).text()
 
-        full_params = self.data_model.query_full_by_id(row_id)
-        if not full_params:
-            QMessageBox.critical(self, "错误", "无法从数据库获取方案详情。")
+
+        whole_line_param_json = self.data_model.query_whole_line_param_by_id(row_id)
+        if not whole_line_param_json:
+            QMessageBox.critical(self, "错误",
+                                 f"无法从数据库中找到ID为 {row_id} 的整线参数详情(whole_line_param字段为空或不存在)。")
             return
 
-        # --- 核心修正：从配置文件中获取“整线计算”的勾选状态 ---
-        line_config = self.config_manager.load_config()
-        # .get('whole_line_calc_enabled', False) 确保如果键不存在，默认为 False (单机模式)
-        is_whole_line_mode = line_config.get('global', {}).get('whole_line_calc_enabled', False)
+        # full_params = self.data_model.query_whole_line_full_by_id(row_id)
+        # if not full_params:
+        #     QMessageBox.critical(self, "错误", "无法从数据库获取方案详情。")
+        #     return
 
-        # 根据 is_whole_line_mode 的布尔值来决定打开哪个窗口
-        if is_whole_line_mode:
-            print(f"检测到“整线计算”已启用，打开整线通讯中心...")
-            try:
-                from WholeLineTransferDialog import WholeLineTransferDialog
-                dialog = WholeLineTransferDialog(full_params, self.config_manager)
-                dialog.exec()
-            except Exception as e:
-                QMessageBox.critical(self, "错误", f"无法加载整线传输模块: {e}")
-        else:
-            print("检测到“整线计算”未启用，打开单机数据传输界面...")
-
-            # 确保我们有 TransferDataDialog 可用
-            try:
-                from TransferDataDialog import TransferDataDialog
-            except ImportError as e:
-                QMessageBox.critical(self, "错误", f"无法加载单机传输模块: {e}")
-                return
-
-            # 整理数据以匹配旧版 TransferDataDialog 的 fill_data 方法
-            selected_data_for_old_dialog = [
-                full_params.get('mode', ''),
-                full_params.get('swing_mode', ''),
-                full_params.get('device_name', ''),
-                str(full_params.get('lineEdit_belt_speed', '')),
-                str(full_params.get('lineEdit_beam_swing_speed', '')),
-                str(full_params.get('lineEdit_accelerate', '')),
-                str(full_params.get('lineEdit_num_output', '')),
-                str(full_params.get('lineEdit_swing', '')),
-                str(full_params.get('lineEdit_delay_time', '')),
-                str(full_params.get('lineEdit_stay_time', ''))
-            ]
-
-            dialog = TransferDataDialog(selected_data_for_old_dialog, self)
+        # 在整线报告界面，我们总是打开整线通讯中心
+        print("正在打开整线通讯中心...")
+        try:
+            from WholeLineTransferDialog import WholeLineTransferDialog
+            # --- 将获取到的JSON字符串作为新参数传递 ---
+            dialog = WholeLineTransferDialog(whole_line_param_json, self.config_manager)
             dialog.exec()
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"无法加载整线传输模块: {e}")
+
 
     def update_status(self):
         self.status_texts = ["正在生成方案对比图表，请稍后", "正在生成方案对比图表，请稍后。",
@@ -255,5 +232,5 @@ class OutputReportWidget(QWidget):
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
-            self.data_model.delete_multiple_data(selected_rowids)
+            self.data_model.delete_whole_line_multiple_data(selected_rowids)
             QMessageBox.information(self, "成功", "选中的行已成功删除！")

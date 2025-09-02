@@ -78,6 +78,20 @@ class DataModel(QObject):
         self.cursor.execute("SELECT rowid,  mode, swing_mode,belt_speed,ceramic_width,beam_swing_speed,stay_time,stay_time,device_name,full_motion_param FROM param")
         return self.cursor.fetchall()
 
+    def fetch_whole_line_data(self):
+        """从 param_whole_line 表获取整线方案的数据"""
+        try:
+            # 查询的字段和顺序与 fetch_data 保持一致，以确保UI兼容性
+            self.cursor.execute("""
+                SELECT rowid, mode, swing_mode, belt_speed, ceramic_width, 
+                       beam_swing_speed, stay_time, device_name, full_motion_param 
+                FROM param_whole_line
+            """)
+            return self.cursor.fetchall()
+        except sqlite3.Error as e:
+            print(f"查询 param_whole_line 表时出错: {e}")
+            return []
+
     def add_data(self, params, current_mode, values, swing_mode,device_name):
         """向数据库新增数据"""
         try:
@@ -111,6 +125,48 @@ class DataModel(QObject):
             print(f"Error inserting data: {e}")
             return False
 
+    def add_whole_line_data(self, params, current_mode, values, swing_mode, device_name, whole_line_params_json: str):
+        """
+        向 param_whole_line 表新增数据，其结构与 param 表基本一致，额外增加 whole_line_param 字段。
+        """
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+
+                # 数据元组现在包含所有公共字段，最后再加上 whole_line_param
+                data = (
+                    params.get('lineEdit_production_volume', ''),
+                    params.get('lineEdit_num_input', 0),
+                    current_mode,
+                    values,
+                    swing_mode,
+                    device_name,
+                    json.dumps(params),  # full_motion_param 字段也照常保存
+                    params.get('lineEdit_belt_speed', 0),
+                    params.get('lineEdit_ceramic_width', 0),
+                    params.get('lineEdit_beam_swing_speed', 0),
+                    params.get('lineEdit_stay_time_output', 0),
+                    whole_line_params_json  # 新增的字段
+                )
+
+                cursor.execute(
+                    '''
+                    INSERT INTO param_whole_line (
+                        production, num, mode, motion_param, swing_mode, device_name, 
+                        full_motion_param, belt_speed, ceramic_width, beam_swing_speed, 
+                        stay_time, whole_line_param
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ''',
+                    data
+                )
+                conn.commit()
+                print("整线方案数据已成功插入到 param_whole_line 表。")
+                self.dataChanged.emit()
+                return True
+        except sqlite3.Error as e:
+            print(f"插入整线数据到 param_whole_line 表时出错: {e}")
+            return False
+
     def delete_data(self, row_id):
         """从数据库删除数据"""
         try:
@@ -130,6 +186,18 @@ class DataModel(QObject):
                 cursor = conn.cursor()
                 # 使用 executemany 批量删除
                 cursor.executemany("DELETE FROM param WHERE rowid=?", [(row_id,) for row_id in row_ids])
+                conn.commit()  # 确保事务提交
+                print(f"Deleted {len(row_ids)} rows successfully.")
+                self.dataChanged.emit()  # 发出数据变化信号
+        except sqlite3.Error as e:
+            print(f"Error deleting multiple data: {e}")
+    def delete_whole_line_multiple_data(self, row_ids):
+        """批量删除数据"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                # 使用 executemany 批量删除
+                cursor.executemany("DELETE FROM param_whole_line WHERE rowid=?", [(row_id,) for row_id in row_ids])
                 conn.commit()  # 确保事务提交
                 print(f"Deleted {len(row_ids)} rows successfully.")
                 self.dataChanged.emit()  # 发出数据变化信号
@@ -201,6 +269,44 @@ class DataModel(QObject):
                 cursor = conn.cursor()
                 cursor.execute(
                     "SELECT full_motion_param FROM param WHERE rowid=?",
+                    (row_id,)
+                )
+                result = cursor.fetchone()
+                if result and result[0]:
+                    # 将 full_motion_param (JSON字符串) 反序列化为字典
+                    return json.loads(result[0])
+                else:
+                    print(f"在数据库中未找到 rowid={row_id} 的记录或参数为空。")
+                    return {}
+        except Exception as e:
+            print(f"根据ID查询数据时出错: {e}")
+            return {}
+    # (在 DataModel.py 中)
+    def query_whole_line_param_by_id(self, row_id: str) -> str:
+        """根据单个 rowid 查询数据，并只返回 whole_line_param 字段的原始JSON字符串"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "SELECT whole_line_param FROM param_whole_line WHERE rowid=?",
+                    (row_id,)
+                )
+                result = cursor.fetchone()
+                if result and result[0]:
+                    return result[0] # 直接返回原始的字符串
+                else:
+                    print(f"在数据库中未找到 rowid={row_id} 的记录或 whole_line_param 字段为空。")
+                    return None
+        except Exception as e:
+            print(f"根据ID查询 whole_line_param 时出错: {e}")
+            return None
+    def query_whole_line_full_by_id(self, row_id: str) -> dict:
+        """根据单个 rowid 查询数据，并将 full_motion_param 反序列化为字典"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "SELECT full_motion_param FROM param_whole_line WHERE rowid=?",
                     (row_id,)
                 )
                 result = cursor.fetchone()

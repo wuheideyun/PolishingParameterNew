@@ -3,6 +3,7 @@ import os
 import stat
 import sys
 import time
+from functools import partial
 
 from PySide6.QtCore import QTranslator, QLocale, QEvent
 from PySide6.QtGui import QPainter, QPixmap, QColor, QPalette, QBrush, QFont
@@ -82,11 +83,12 @@ class MainWindow(QWidget):
         self.logger = LoggerHelper('param_change')
         self.selectedFunction = 1
         self.output_report = None
+        self.whole_line_output_report = None
         # 输出报告界面
         # self.output_report = OutputReportWidget(self.data_model)
         # 创建定时器
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.update_status)
+        # self.timer = QTimer()
+        # self.timer.timeout.connect(self.update_status)
 
         self.host_param_single_changed_flag = False
         self.host_param_double_changed_flag = False
@@ -605,14 +607,14 @@ class MainWindow(QWidget):
         # 定义状态文本列表
         self.current_text_index = 0
 
-        self.button_energy_project.clicked.connect(self.start_calculation)
-        self.button_efficient_project.clicked.connect(self.start_calculation)
-        self.button_selfdefine_project.clicked.connect(self.start_calculation)
+        # self.button_energy_project.clicked.connect(partial(self.start_calculation, "节能方案"))
+        # self.button_efficient_project.clicked.connect(partial(self.start_calculation, "高品质方案"))
+        # self.button_selfdefine_project.clicked.connect(partial(self.start_calculation, "自定义修正方案"))
         # -------------------------按钮逻辑部分-------------------------
 
-        self.button_synchronization_mode.clicked.connect(self.start_calculation)
-        self.button_cross_mode.clicked.connect(self.start_calculation)
-        self.button_order_mode.clicked.connect(self.start_calculation)
+        # self.button_synchronization_mode.clicked.connect(partial(self.start_calculation, "同步摆动模式"))
+        # self.button_cross_mode.clicked.connect(partial(self.start_calculation, "交叉摆动模式"))
+        # self.button_order_mode.clicked.connect(partial(self.start_calculation, "顺序摆动模式"))
 
         self.setInitButtonClicked()
 
@@ -797,10 +799,27 @@ class MainWindow(QWidget):
 
     # 打开新窗口（输出报告）
     def open_new_window(self):
-        # 动态传入过滤条件
-        filter_condition = self.device_mapping.get(self.current_device)  # 这里可以根据需要动态获取过滤条件
-        self.output_report.set_filter_condition(filter_condition)
-        self.output_report.show()
+        """
+        “输出报告”按钮的槽函数。
+        根据“整线计算”的开关状态，决定打开哪个报告窗口。
+        """
+        # --- 核心逻辑：从配置文件中获取“整线计算”的勾选状态 ---
+        line_config = self.config_manager.load_config()
+        is_whole_line_mode = line_config.get('global', {}).get('whole_line_calc_enabled', False)
+
+        if is_whole_line_mode:
+            # --- 场景一：“整线计算”已启用 ---
+            print("检测到“整线计算”已启用，打开整线输出报告界面...")
+            # 注意：整线报告可能不需要按设备类型过滤，所以我们传递一个通用条件或None
+            self.whole_line_output_report.set_filter_condition("整线方案")
+            self.whole_line_output_report.show()
+        else:
+            # --- 场景二：“整线计算”未启用 ---
+            print("检测到“整线计算”未启用，打开原始的单机输出报告界面...")
+            # 沿用旧的逻辑，根据当前主界面选择的设备类型进行过滤
+            filter_condition = self.device_mapping.get(self.current_device)
+            self.output_report.set_filter_condition(filter_condition)
+            self.output_report.show()
 
     # 设置初始值
     def setInitValues(self):
@@ -1070,15 +1089,17 @@ class MainWindow(QWidget):
         self.motion_in_param_frame.setVisible(visible)
 
     # 更新状态栏
-    def update_status(self):
-        # self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
-
-        self.status_label.setText(self.status_texts[self.current_text_index])
-        self.current_text_index = (self.current_text_index + 1) % len(self.status_texts)
+    # def update_status(self):
+    #     # self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
+    #
+    #     self.status_label.setText(self.status_texts[self.current_text_index])
+    #     self.current_text_index = (self.current_text_index + 1) % len(self.status_texts)
 
     # 开始计算
-    def start_calculation(self):
-        self.timer.start(500)  # 每秒触发一次
+    # def start_calculation(self, button_name):
+    #     # if self.check_whole_line_mode_compatibility(button_name):
+    #     self.timer.start(500)  # 每秒触发一次
+
 
     # 显示消息框
     def show_message(self, text):

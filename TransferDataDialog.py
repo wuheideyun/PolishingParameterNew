@@ -7,7 +7,7 @@ from PySide6.QtGui import QFont
 from PySide6.QtCore import Qt, QSettings, QTimer
 from omron_plc_gui import PLCCommunicator
 from ImageChangeButton import ImageChangeButton
-from datetime import datetime
+from datetime import datetime, time
 
 
 class PLCInterface(QDialog):
@@ -338,7 +338,7 @@ class TransferDataDialog(QDialog):
             "background-color: #444; border: 1px solid #666; border-radius: 3px; padding: 5px;")
 
         self.settings = QSettings("config.ini", QSettings.IniFormat)
-        self.plc_ip_edit.setText(self.settings.value("PLCIP", "192.168.2.1"))
+        self.plc_ip_edit.setText(self.settings.value("PLCIP", "192.168.2.10"))
         self.port_edit.setText(self.settings.value("Port", "9600"))
 
         self.save_button = ImageChangeButton("保存配置", ":SmallFrame", ":SmallFrameClicked", 114, 37, True)

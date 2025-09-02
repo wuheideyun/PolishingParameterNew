@@ -1,7 +1,7 @@
 import os
 import sqlite3
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import QMessageBox, QDialog
 
 from MainWindow_New_Interface import MainWindow
@@ -21,22 +21,30 @@ from PIL import Image, ImageSequence
 # 函数导入
 from Double_Function import DoubleWorkerThread,double_num_calculate,self_define_calculate
 from OutputReportQWidget import OutputReportWidget
+from WholeLineOutputReportWidget import WholeLineOutputReportWidget
 from Single_Function import SingleWorkerThread,single_num_calculate,single_self_define_calculate
 from Equal_Function import EqualWorkerThread,equal_num_calculate,equal_self_define_calculate
 from WholeLineConfigDialog import WholeLineConfigDialog
 from WholeLineConfigManager import WholeLineConfigManager
 from Whole_line_calculate_Double import Double_self_whole_line_Thread
 
+import json
+
+
 class MainWindow_impl(MainWindow):
     def __init__(self):
         super().__init__()
 
+        # 创建定时器
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_status)
         # 1. 创建配置管理器的实例
         self.config_manager = WholeLineConfigManager()
         # 2. 调用 load_config() 方法，它会读取 whole_line_config.ini 并返回一个包含所有数据的字典
         self.whole_line_params = self.config_manager.load_config()
 
         self.output_report = OutputReportWidget(self.data_model, self.config_manager)
+        self.whole_line_output_report = WholeLineOutputReportWidget(self.data_model, self.config_manager)
         # 获取当前目录下的database.db文件路径
         self.db_path = os.path.join(os.getcwd(), "database.db")
         # 单头摆-参数汇总
@@ -50,6 +58,9 @@ class MainWindow_impl(MainWindow):
         # 同步摆-参数汇总
         self.equal_parameter_intelligent = {}  # 字典-用于储存输入参数
         self.equal_parameter_manual = {}  # 字典-用于储存输出参数（包括输入参数）
+
+        # --- 新增：用于临时存储整线计算结果的实例变量 ---
+        self.latest_whole_line_result = None
 
         # 主机参数-同步摆-self.host_param_equal_frame
         self.host_param_equal_line_edit_names = [
@@ -275,18 +286,7 @@ class MainWindow_impl(MainWindow):
         return concatenated_string
     def on_save_btn(self):
         if not self.ifcalcflag:
-            nodata_box = QMessageBox()
-            nodata_box.setWindowTitle(self.tr("警告"))
-            nodata_box.setText("请先进行方案选择操作，计算出【运动输出参数】后再进行保存参数操作！")
-            nodata_box.setStandardButtons(QMessageBox.Ok)
-
-
-            # 将删除成功对话框显示在列表界面的水平和垂直居中位置
-            nodata_box.setWindowModality(Qt.ApplicationModal)
-            nodata_box.move(self.mapToGlobal(self.rect().center()))
-
-            nodata_box.exec()
-            # QMessageBox.warning(self, "警告", "请先选择要删除的行！")
+            QMessageBox.warning(self, "警告", "请先进行方案选择操作，计算出【运动输出参数】后再进行保存参数操作！")
             return
         params = {}
         swing_mode = ''
@@ -351,39 +351,96 @@ class MainWindow_impl(MainWindow):
         elif self.current_mode == 1:
             params['lineEdit_stay_time'] = params['lineEdit_stay_time_output']#智能寻优的【边部停留时间】取output
             current_mode = '智能寻优'
-
+        device_name = self.device_mapping.get(self.current_device)
         # params['mode'] = self.solution_selection
 
         values = self.concatenate_values(params)
 
-        if self.data_model.add_data(params, current_mode, values, swing_mode,self.device_mapping.get(self.current_device)):
-            self.status_label.setText('                  参数已保存至数据库！')
-        else:
-            self.status_label.setText('                  参数保存失败，请重试！')
+        # --- 步骤 3: 根据“整线计算”开关，决定调用哪个保存方法 ---
+        line_config = self.config_manager.load_config()
+        is_whole_line_mode = line_config.get('global', {}).get('whole_line_calc_enabled', False)
+        if is_whole_line_mode:
+            # --- 整线保存逻辑 ---
+            print("[DEBUG] 执行整线参数保存...")
 
+            if self.latest_whole_line_result is None:
+                QMessageBox.warning(self, "操作失败", "没有可供保存的整线计算结果，请先执行一次计算。")
+                return
+
+            try:
+                whole_line_params_json = json.dumps(self.latest_whole_line_result, indent=4, ensure_ascii=False)
+            except TypeError as e:
+                QMessageBox.critical(self, "错误", f"无法序列化整线参数: {e}")
+                return
+
+            # 调用新的保存方法，传入所有公共参数 和 新的整线参数
+            if self.data_model.add_whole_line_data(params, current_mode, values, swing_mode, device_name,
+                                                   whole_line_params_json):
+                self.status_label.setText('整线方案参数已成功保存至数据库！')
+                self.latest_whole_line_result = None  # 保存后清空
+            else:
+                self.status_label.setText('整线方案参数保存失败，请重试！')
+        else:
+            # --- 单机保存逻辑 (完全复用旧逻辑) ---
+            print("[DEBUG] 执行单机参数保存...")
+
+            if self.data_model.add_data(params, current_mode, values, swing_mode,self.device_mapping.get(self.current_device)):
+                self.status_label.setText('                  参数已保存至数据库！')
+            else:
+                self.status_label.setText('                  参数保存失败，请重试！')
+
+    # 检查是否满足运行按钮的条件
+    def check_whole_line_mode_compatibility(self, button_name):
+        # 1. 从配置文件加载最新的整线计算开关状态
+        line_config = self.config_manager.load_config()
+        is_whole_line_mode = line_config.get('global', {}).get('whole_line_calc_enabled', False)
+
+        # 2. 如果不是整线模式，则直接通过，执行原始的单机逻辑
+        if not is_whole_line_mode:
+            return True
+        # 3. 如果是整线模式，则进行兼容性检查
+        if self.current_device == 2 and button_name == "自定义修正方案":
+            return True
+        else:
+            QMessageBox.warning(self, "模式不兼容",
+                                "当前处于整线计算模式，该模式下仅支持【双头摆】机型的【自定义修正方案】计算，请检查您的选择！")
+            return False
+
+    # 更新底部状态栏
+    def update_status_label(self):
+        self.timer.start(500)  # 每秒触发一次
+
+        # 更新状态栏
+    def update_status(self):
+        # self.status_texts = ["正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。", "正在进行【"+self.device_mapping.get(self.current_device)+"-"+self.mode_mapping.get(self.current_mode)+"-"+self.selection_mapping.get(self.solution_selection)+"】计算，请稍后。。。"]
+
+        self.status_label.setText(self.status_texts[self.current_text_index])
+        self.current_text_index = (self.current_text_index + 1) % len(self.status_texts)
 
     # 按钮点击槽函数(计算)
     def enerage_project_clicked(self):
+        if not self.check_whole_line_mode_compatibility('节能方案'):
+            return
+        self.update_status_label()
         print("--- 已成功获取整线配置参数 ---")
-        import json
-        print(json.dumps(self.whole_line_params, indent=4, ensure_ascii=False))
+        # print(json.dumps(self.whole_line_params, indent=4, ensure_ascii=False))
         # 获取抛光机总数
-        machine_count = self.whole_line_params.get('global', {}).get('machine_count', 0)
-        print(f"\n抛光机总数: {machine_count}")
+        # machine_count = self.whole_line_params.get('global', {}).get('machine_count', 0)
+        # print(f"\n抛光机总数: {machine_count}")
         # 获取整线计算值
-        whole_line_calc_enabled = self.whole_line_params.get('global', {}).get('whole_line_calc_enabled', 0)
-        print(f"\n整线计算值: {whole_line_calc_enabled}")
+        # whole_line_calc_enabled = self.whole_line_params.get('global', {}).get('whole_line_calc_enabled', 0)
+        # print(f"\n整线计算值: {whole_line_calc_enabled}")
         # 获取第一台设备的参数
-        if machine_count > 0:
-            first_device_params = self.whole_line_params.get('devices', [])[0]
-            print(f"1号机机型: {first_device_params.get('type')}")
-            print(f"1号机磨头数: {first_device_params.get('head_count')}")
-            print(f"1号机磨块配比: {first_device_params.get('grinding_config')}")
+        # if machine_count > 0:
+        #     first_device_params = self.whole_line_params.get('devices', [])[0]
+        #     print(f"1号机机型: {first_device_params.get('type')}")
+        #     print(f"1号机磨头数: {first_device_params.get('head_count')}")
+        #     print(f"1号机磨块配比: {first_device_params.get('grinding_config')}")
 
         # 获取第一个设备间距
-        if machine_count > 1:
-            first_spacing = self.whole_line_params.get('spacings', [])[0]
-            print(f"1-2号机间距: {first_spacing}")
+        # if machine_count > 1:
+        #     first_spacing = self.whole_line_params.get('spacings', [])[0]
+        #     print(f"1-2号机间距: {first_spacing}")
 
         self.update_values()
         self.ifcalcflag = True
@@ -421,6 +478,9 @@ class MainWindow_impl(MainWindow):
         return "_".join(map(str, result))
 
     def efficient_project_clicked(self):
+        if not self.check_whole_line_mode_compatibility('高品质方案'):
+            return
+        self.update_status_label()
         self.update_values()
         self.ifcalcflag = True
         self.solution_selection = 2
@@ -457,6 +517,9 @@ class MainWindow_impl(MainWindow):
                 return False
         return True
     def self_define_project_clicked(self):
+        if not self.check_whole_line_mode_compatibility('自定义修正方案'):
+            return
+        self.update_status_label()
         self.update_values()
         self.ifcalcflag = True
         self.solution_selection = 3
@@ -485,6 +548,9 @@ class MainWindow_impl(MainWindow):
 
     # 按钮点击槽函数(仿真)
     def syn_project(self):
+        if not self.check_whole_line_mode_compatibility('同步摆动模式'):
+            return
+        self.update_status_label()
         self.update_values()
         self.solution_selection = 4
         self.ifcalcflag = True
@@ -504,6 +570,9 @@ class MainWindow_impl(MainWindow):
             return
 
     def cross_project(self):
+        if not self.check_whole_line_mode_compatibility('交叉摆动模式'):
+            return
+        self.update_status_label()
         self.update_values()
         self.ifcalcflag = True
         self.solution_selection = 5
@@ -520,6 +589,9 @@ class MainWindow_impl(MainWindow):
             return
 
     def order_project(self):
+        if not self.check_whole_line_mode_compatibility('顺序摆动模式'):
+            return
+        self.update_status_label()
         self.update_values()
         self.ifcalcflag = True
         self.solution_selection = 6
@@ -1452,7 +1524,10 @@ class MainWindow_impl(MainWindow):
     # 双头摆-自定义整线计算-子进程信号接收函数
     def double_whole_line_calculate_signal(self,result_PLC,result_simulation,animation_name):
         params_transmit_PLC = result_PLC   # PLC 传参
+        self.latest_whole_line_result = params_transmit_PLC
+        print("[DEBUG] 整线计算的PLC参数结果已暂存到 self.latest_whole_line_result")
         # PLC传参打印
+        print(json.dumps(params_transmit_PLC,indent=4,ensure_ascii=False))
         print(params_transmit_PLC)
         params_simulation_calculate = result_simulation
         # 筛选出磨抛效果最好的一组
@@ -1623,8 +1698,7 @@ class MainWindow_impl(MainWindow):
             # 现在，self.whole_line_params 已经是最新版本了
             # 我们可以安全地使用它
             print("\n--- 主窗口的 self.whole_line_params 已刷新为最新值 ---")
-            import json
-            print(json.dumps(self.whole_line_params, indent=4, ensure_ascii=False))
+            # print(json.dumps(self.whole_line_params, indent=4, ensure_ascii=False))
 
             # 例如，更新状态栏以示反馈
             machine_count = self.whole_line_params.get('global', {}).get('machine_count', 0)
