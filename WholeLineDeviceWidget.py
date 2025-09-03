@@ -31,34 +31,65 @@ class WholeLineDeviceWidget(QGroupBox):
         self.head_count_edit.setFont(font)
         self.head_count_edit.setStyleSheet("color: black; padding: 2px;")
         self.head_count_edit.setValidator(QIntValidator(0, 100, self))
+        self.head_count_edit.setFixedWidth(50)
 
-        between_label = QLabel("磨头间距(mm):", self) # 更新标签文本
+        between_label = QLabel("磨头间距(mm):", self)
         between_label.setFont(font)
-        self.between_edit = QLineEdit(self) # 彻底替换变量名
+        self.between_edit = QLineEdit(self)
         self.between_edit.setFont(font)
         self.between_edit.setStyleSheet("color: black; padding: 2px;")
         double_validator = QDoubleValidator()
         double_validator.setDecimals(2)
         self.between_edit.setValidator(double_validator)
+        self.between_edit.setFixedWidth(55)
 
-        beam_between_label = QLabel("横梁间距(mm):", self) # 更新标签文本
+        beam_between_label = QLabel("横梁间距(mm):", self)
         beam_between_label.setFont(font)
-        self.beam_between_edit = QLineEdit(self) # 彻底替换变量名
+        self.beam_between_edit = QLineEdit(self)
         self.beam_between_edit.setFont(font)
         self.beam_between_edit.setStyleSheet("color: black; padding: 2px;")
         self.beam_between_edit.setValidator(QDoubleValidator(0, 99999, 2, self))
+        self.beam_between_edit.setFixedWidth(55)
 
-        # --- 添加到布局 ---
+        conversion_label = QLabel("换算:", self)
+        conversion_label.setFont(font)
+
+        self.conversion_combo = QComboBox(self)
+        self.conversion_combo.setFont(font)
+        self.conversion_combo.setStyleSheet("color: black; padding: 2px;")
+        self.conversion_combo.setFixedWidth(100)
         main_layout.addWidget(type_label)
         main_layout.addWidget(self.type_combo)
         main_layout.addWidget(head_count_label)
         main_layout.addWidget(self.head_count_edit)
         main_layout.addWidget(between_label)
-        main_layout.addWidget(self.between_edit) # 使用新变量
+        main_layout.addWidget(self.between_edit)
         main_layout.addWidget(beam_between_label)
-        main_layout.addWidget(self.beam_between_edit) # 使用新变量
+        main_layout.addWidget(self.beam_between_edit)
+        main_layout.addWidget(conversion_label)
+        main_layout.addWidget(self.conversion_combo)
         main_layout.addStretch()
 
         # 信号连接
         if main_dialog and hasattr(main_dialog, 'update_grinding_tab'):
             self.head_count_edit.editingFinished.connect(main_dialog.update_grinding_tab)
+
+    def update_conversion_options(self, options: list):
+        """
+        新增方法：用于更新换算下拉框的选项，同时尽量保留当前的选择。
+        """
+        # 记录当前选中的文本
+        current_selection = self.conversion_combo.currentText()
+
+        # 更新前先阻塞信号，防止触发不必要的逻辑
+        self.conversion_combo.blockSignals(True)
+        self.conversion_combo.clear()
+        self.conversion_combo.addItems(options)
+
+        # 尝试恢复之前的选择
+        index = self.conversion_combo.findText(current_selection)
+        if index != -1:
+            self.conversion_combo.setCurrentIndex(index)
+
+        # 更新后再解除阻塞
+        self.conversion_combo.blockSignals(False)

@@ -46,7 +46,7 @@ class PLCInterface(QDialog):
 
     def __init__(self, plc, line_edits, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("欧姆龙PLC通讯")
+        self.setWindowTitle("单机PLC参数读写")
         self.setGeometry(300, 100, 800, 600)  # 增加高度以容纳所有变量
         self.setStyleSheet("background-color: rgb(31, 55, 96); color: white;")
 

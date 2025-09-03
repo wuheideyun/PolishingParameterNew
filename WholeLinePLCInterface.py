@@ -61,15 +61,18 @@ class PLCReadWriteWorker(QThread):
 
 
 class WholeLinePLCInterface(QDialog):
-    def __init__(self, plc_instances: dict, solution_params: dict, parent=None):
+    def __init__(self, plc_instances: dict, solution_params: str, config_data: dict, parent=None):
         super().__init__(parent)
         self.plc_instances = plc_instances
         self.whole_line_param_json = solution_params
         self.solution_params = solution_params
+        self.config_data = config_data
         self.static_variables = []
         self.dynamic_templates = []
         self.query_task_queue = []
         self.query_workers = []
+        self.write_task_queue = []
+        self.write_workers = []
         self.setWindowTitle("整线PLC参数批量读写")
         self.setFixedSize(1400, 800)
         self.setStyleSheet("background-color: rgb(31, 55, 96); color: white;")
@@ -240,10 +243,13 @@ class WholeLinePLCInterface(QDialog):
         except Exception as e:
             QMessageBox.critical(self, "错误", f"自动加载数据库参数时出错: {e}")
 
+
     def populate_all_devices_write_values(self, all_devices_params: list):
         print(f"[DEBUG] 开始为所有设备填充数据: {all_devices_params}")
 
-        # 1. 确定动态迭代的总次数
+        speed_conversions = self.config_data.get('speed_conversions', {})
+        devices_config = self.config_data.get('devices', [])
+
         num_dynamic_iterations = 0
         if all_devices_params:
             max_iterations = 0
@@ -256,17 +262,16 @@ class WholeLinePLCInterface(QDialog):
                 max_iterations = max(max_iterations, current_device_iterations)
             num_dynamic_iterations = max_iterations
 
-        # 2. 计算并设置总行数
         total_dynamic_rows = sum(len(group) * num_dynamic_iterations for group in self.dynamic_templates)
         total_rows = len(self.static_variables) + total_dynamic_rows
         self.param_table.setRowCount(total_rows)
 
-        # 3. 填充静态行
         for row, var_info in enumerate(self.static_variables):
-            self.param_table.setItem(row, 0, QTableWidgetItem(var_info["plc_name"]))
+            item = QTableWidgetItem(var_info["plc_name"])
+            item.setData(Qt.UserRole, var_info.get("type", "float"))
+            self.param_table.setItem(row, 0, item)
             self.param_table.setItem(row, 1, QTableWidgetItem(var_info["ui_name"]))
 
-        # 4. 智能混合排序逻辑
         self.dynamic_row_map = {}
         current_row_offset = 0
         for template_group in self.dynamic_templates:
@@ -294,21 +299,36 @@ class WholeLinePLCInterface(QDialog):
                         self.dynamic_row_map[plc_name] = current_row
                         current_row_offset += 1
 
-        # 5. 填充数据的逻辑
         for device_idx, param_groups in enumerate(all_devices_params):
             if not isinstance(param_groups, list) or not param_groups: continue
             write_col = 3 + device_idx * 2
             if write_col >= self.param_table.columnCount(): continue
 
-            # 5.1 填充静态行的值
+            profile_name = None
+            factors = None
+            if device_idx < len(devices_config):
+                profile_name = devices_config[device_idx].get('conversion_profile')
+            if profile_name and profile_name in speed_conversions:
+                factors = speed_conversions[profile_name]
+
             base_params = param_groups[0]
             for row, var_info in enumerate(self.static_variables):
                 param_key = var_info["param_key"]
                 if not param_key: continue
-                value_to_write = str(base_params.get(param_key, ""))
+
+                original_value = base_params.get(param_key, "")
+                value_to_write = str(original_value)
+                ui_name = var_info["ui_name"]
+
+                try:
+                    if ui_name == "主皮带速度" and factors and len(factors) >= 1 and float(factors[0]) != 0:
+                        value_to_write = f"{float(original_value) / float(factors[0]):.4f}"
+                except (ValueError, TypeError, ZeroDivisionError) as e:
+                    print(f"[WARN] 静态参数换算失败 for {ui_name}: {e}")
+                    value_to_write = str(original_value)
+
                 self.param_table.setItem(row, write_col, QTableWidgetItem(value_to_write))
 
-            # 5.2 填充动态行的值
             total_iterations_for_this_device = 0
             if isinstance(param_groups, list):
                 for pg in param_groups:
@@ -332,7 +352,7 @@ class WholeLinePLCInterface(QDialog):
                                 param_key = template["param_key"]
                                 ui_name = template["ui_name"]
                                 value_to_write = ""
-                                # 1. 特殊结构处理 (摆幅)
+
                                 if param_key == 'lineEdit_swing':
                                     swing = float(source_params.get(param_key, 0.0))
                                     if "操作面" in template["plc_name_template"] and "非" not in template[
@@ -341,27 +361,28 @@ class WholeLinePLCInterface(QDialog):
                                     elif "非操作面" in template["plc_name_template"]:
                                         value_to_write = str(-swing / 2)
                                 else:
-                                    # 2. 通用值获取
                                     original_value = None
                                     if param_key == 'lineEdit_delay_time_list':
                                         original_value = source_params.get(param_key, [])[i - temp_count]
                                     else:
                                         original_value = source_params.get(param_key, "")
 
-                                    # 3. 特殊值处理 (乘以100)
-                                    if "延时启动时间" in ui_name or "边部停留时间" in ui_name:
-                                        try:
-                                            processed_value = int(float(original_value) * 100)
+                                    try:
+                                        if ui_name == "横梁摆动速度" and factors and len(factors) >= 2 and float(
+                                                factors[1]) != 0:
+                                            value_to_write = f"{float(original_value) / float(factors[1]):.4f}"
+                                        elif "延时启动时间" in ui_name or "边部停留时间" in ui_name:
+                                            # --- 核心修正：使用 round() 进行四舍五入 ---
+                                            processed_value = int(round(float(original_value) * 100))
                                             value_to_write = str(processed_value)
-                                        except (ValueError, TypeError):
+                                        else:
                                             value_to_write = str(original_value)
-                                    else:
-                                        # 4. 默认处理
+                                    except (ValueError, TypeError, ZeroDivisionError) as e:
+                                        print(f"[WARN] 动态参数处理失败 for {ui_name}: {e}")
                                         value_to_write = str(original_value)
 
                                 self.param_table.setItem(target_row, write_col, QTableWidgetItem(value_to_write))
 
-        # 6. 为所有单元格设置对齐等属性
         for r in range(self.param_table.rowCount()):
             for c in range(2, self.param_table.columnCount()):
                 item = self.param_table.item(r, c)
@@ -487,4 +508,107 @@ class WholeLinePLCInterface(QDialog):
         item.setTextAlignment(Qt.AlignCenter)
 
     def write_all(self):
-        pass
+        """
+        将“待写入值”写入所有已连接的PLC设备。
+        当前版本为测试版，仅写入“加速度大小”和“减速度大小”。
+        """
+        if not self.plc_instances:
+            QMessageBox.warning(self, "提示", "没有已连接的PLC设备，无法写入！")
+            return
+
+        # 步骤 1: 弹窗确认
+        reply = QMessageBox.question(self, '确认操作',
+                                     "即将批量写入参数到所有已连接的设备。\n"
+                                     "此操作不可逆，是否继续？",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.No:
+            return
+
+        # 步骤 2: 构建写入任务队列
+        self.write_task_queue.clear()
+        self.write_workers.clear()
+
+        for device_idx, plc_instance in self.plc_instances.items():
+            write_col = 3 + device_idx * 2
+            if write_col >= self.param_table.columnCount():
+                continue
+
+            for row in range(self.param_table.rowCount()):
+                # 获取软件参数名以进行筛选
+                ui_name_item = self.param_table.item(row, 1)
+                if not ui_name_item:
+                    continue
+
+                # **核心筛选逻辑**
+                # if ui_name_item.text() not in ["延时启动时间"]:
+                if ui_name_item.text() not in ["加速度大小", "减速度大小","边部停留时间(+)","边部停留时间(-)","摆幅(+)","摆幅(-)","延时启动时间"]:
+                    continue
+
+                # 获取待写入的值
+                write_item = self.param_table.item(row, write_col)
+                if not write_item or not write_item.text().strip() or write_item.text().strip() == "---":
+                    continue
+
+                write_value = write_item.text().strip()
+
+                # 获取变量信息
+                plc_name_item = self.param_table.item(row, 0)
+                var_name = plc_name_item.text()
+                var_type = plc_name_item.data(Qt.UserRole)
+                if not var_type: var_type = "float"  # 安全默认值
+
+                # 创建任务并入队
+                task = {
+                    "device_idx": device_idx,
+                    "plc_instance": plc_instance,
+                    "row": row,
+                    "var_name": var_name,
+                    "var_type": var_type,
+                    "write_value": write_value
+                }
+                self.write_task_queue.append(task)
+
+        # 步骤 3: 启动队列处理
+        if self.write_task_queue:
+            self.write_all_button.setEnabled(False)  # 禁用按钮，防止重复点击
+            self.process_next_write()
+        else:
+            QMessageBox.information(self, "提示", "没有需要写入的“加速度大小”或“减速度大小”参数。")
+
+    def process_next_write(self):
+        """
+        处理队列中的下一个写入任务，并设置定时器以在200ms后调用自身。
+        """
+        if not self.write_task_queue:
+            QMessageBox.information(self, "完成", "所有写入任务已派发。")
+            self.write_all_button.setEnabled(True)  # 重新启用按钮
+            return
+
+        task = self.write_task_queue.pop(0)
+
+        device_idx = task["device_idx"]
+        plc_instance = task["plc_instance"]
+        row = task["row"]
+        var_name = task["var_name"]
+        var_type = task["var_type"]
+        write_value = task["write_value"]
+
+        # 写入后需要更新的是“当前值”列，所以 col 应该是 read_col
+        read_col = 2 + device_idx * 2
+
+        variable_info = {"name": var_name, "type": var_type}
+
+        worker = PLCReadWriteWorker(
+            row=row,
+            col=read_col,  # 关键：传入read_col，让worker更新“当前值”
+            plc_instance=plc_instance,
+            variable=variable_info,
+            action='write',
+            write_value=write_value
+        )
+        # 写入后更新“当前值”，复用 update_cell_value 方法
+        worker.task_finished.connect(self.update_cell_value)
+        worker.start()
+        self.write_workers.append(worker)
+
+        QTimer.singleShot(200, self.process_next_write)

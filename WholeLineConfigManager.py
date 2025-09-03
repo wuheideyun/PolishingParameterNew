@@ -1,7 +1,7 @@
 import os
 from collections import Counter
 from PySide6.QtCore import QSettings
-
+import json
 
 class WholeLineConfigManager:
     """
@@ -26,7 +26,13 @@ class WholeLineConfigManager:
             for key, value in config_data['global'].items():
                 self.settings.setValue(key, value)
             self.settings.endGroup()
-
+        if 'speed_conversions' in config_data:
+            self.settings.beginGroup('SpeedConversions')
+            # 将字典转换为 JSON 字符串
+            # ensure_ascii=False 确保中文字符不会被转义
+            json_string = json.dumps(config_data['speed_conversions'], ensure_ascii=False)
+            self.settings.setValue('data', json_string)
+            self.settings.endGroup()
         # --- 保存设备间距 ---
         if 'spacings' in config_data:
             self.settings.beginGroup('Spacing')
@@ -79,6 +85,15 @@ class WholeLineConfigManager:
         )
         self.settings.endGroup()
 
+        self.settings.beginGroup('SpeedConversions')
+        json_string = self.settings.value('data', '{}')
+        try:
+            # 将 JSON 字符串解析回 Python 字典
+            config_data['speed_conversions'] = json.loads(json_string)
+        except json.JSONDecodeError:
+            # 如果解析失败（例如文件内容损坏），则返回一个安全的空字典
+            config_data['speed_conversions'] = {}
+        self.settings.endGroup()
         machine_count = config_data['global']['machine_count']
 
         self.settings.beginGroup('Spacing')

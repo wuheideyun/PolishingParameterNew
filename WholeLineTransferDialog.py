@@ -166,7 +166,16 @@ class WholeLineTransferDialog(QDialog):
         #     QMessageBox.warning(self, "提示", "没有已连接的PLC设备！")
         #     return
 
-        dialog = WholeLinePLCInterface(self.plc_instances, self.params_to_send_json, self)
+        # 1. 加载完整的配置文件数据
+        full_config_data = self.config_manager.load_config()
+
+        # 2. 将暂存的JSON字符串和完整的配置数据都传递给 WholeLinePLCInterface
+        dialog = WholeLinePLCInterface(
+            self.plc_instances,
+            self.params_to_send_json,
+            full_config_data,  # <-- 新增的参数
+            self
+        )
         dialog.exec()
 
     def closeEvent(self, event):

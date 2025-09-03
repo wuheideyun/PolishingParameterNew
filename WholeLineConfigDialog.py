@@ -3,7 +3,7 @@ import re
 from PySide6.QtWidgets import (
     QApplication, QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLayout,
     QGroupBox, QSpinBox, QScrollArea, QWidget, QTabWidget, QGridLayout, QLineEdit, QMessageBox,
-    QCheckBox
+    QCheckBox, QComboBox
 )
 from PySide6.QtGui import QFont, QPainter, QColor, QDoubleValidator
 from PySide6.QtCore import Qt
@@ -24,6 +24,7 @@ class WholeLineConfigDialog(QDialog):
         super().__init__(parent)
 
         self.config_manager = WholeLineConfigManager()
+        self.device_widgets = []
 
         self.setWindowTitle("整线参数配置")
         self.setFixedSize(1000, 720)
@@ -49,29 +50,23 @@ class WholeLineConfigDialog(QDialog):
             QScrollArea { border: none; background-color: transparent; }
             QLineEdit { color: black; padding: 3px; border-radius: 3px; border: 1px solid #777; }
             QComboBox { color: black; padding: 3px; }
+            QComboBox QLineEdit { color: black; padding: 3px; }
+            QComboBox QAbstractItemView {
+                color: black; background-color: white;
+                selection-background-color: #3d7ccb;
+            }
             QSpinBox { color: black; }
-
-            /* --- 核心改动：为 QCheckBox 添加完整的美化样式 --- */
             QCheckBox {
-                spacing: 5px; /* 复选框和文字之间的间距 */
-                font-family: "Microsoft YaHei"; 
-                font-size: 14px;
-                color: #FFFFFF; /* 文字颜色为白色 */
+                spacing: 5px; font-family: "Microsoft YaHei"; 
+                font-size: 14px; color: #FFFFFF;
             }
             QCheckBox::indicator {
-                width: 18px; /* 复选框宽度 */
-                height: 18px; /* 复选框高度 */
-                border: 2px solid #1e5dab; /* 边框颜色与主题一致 */
-                border-radius: 5px;
-                background-color: #2c3e50; /* 未选中时的背景色 */
+                width: 18px; height: 18px;
+                border: 2px solid #1e5dab; border-radius: 5px;
+                background-color: #2c3e50;
             }
-            QCheckBox::indicator:hover {
-                border-color: #3d7ccb; /* 悬停时边框变亮 */
-            }
-            QCheckBox::indicator:checked {
-                background-color: #0078d7; /* 选中时的背景色 */
-                image: url(:/icons/checkmark.png); /* 使用您资源文件中的白色对勾图标 */
-            }
+            QCheckBox::indicator:hover { border-color: #3d7ccb; }
+            QCheckBox::indicator:checked { background-color: #0078d7; }
         """)
         self.setModal(True)
 
@@ -82,6 +77,7 @@ class WholeLineConfigDialog(QDialog):
         title_label.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(title_label)
 
+        # --- 步骤 1: 创建所有UI控件 ---
         self.tab_widget = QTabWidget(self)
         main_layout.addWidget(self.tab_widget)
 
@@ -112,10 +108,15 @@ class WholeLineConfigDialog(QDialog):
         button_layout.addWidget(self.cancel_button)
         main_layout.addLayout(button_layout)
 
+        # --- 步骤 2: 连接所有信号 ---
         self.cancel_button.clicked.connect(self.reject)
         self.save_button.clicked.connect(self.on_save_button_clicked)
         self.machine_count_spinbox.valueChanged.connect(self.on_machine_count_changed)
+        self.save_conv_button.clicked.connect(self.on_save_speed_conversion)
+        self.speed_conv_combo.currentTextChanged.connect(self.on_speed_conv_changed)
+        self.delete_conv_button.clicked.connect(self.on_delete_speed_conversion)
 
+        # --- 步骤 3: 加载数据到UI ---
         self.load_configuration_to_ui()
 
     def create_device_and_com_tab(self):
@@ -149,6 +150,76 @@ class WholeLineConfigDialog(QDialog):
         self.machine_count_spinbox.setFont(QFont("Microsoft YaHei", 12))
         global_layout.addWidget(machine_count_label)
         global_layout.addWidget(self.machine_count_spinbox)
+
+        global_layout.addSpacing(40)
+        font_12 = QFont("Microsoft YaHei", 12)
+        speed_conv_label = QLabel("速度换算：", self)
+        speed_conv_label.setFont(font_12)
+        self.speed_conv_combo = QComboBox(self)
+        self.speed_conv_combo.setFont(font_12)
+        self.speed_conv_combo.addItems(["主皮带", "横梁", "其他"]) # 添加示例选项
+        self.speed_conv_combo.setFixedWidth(120)
+        self.speed_conv_combo.setEditable(True)
+        self.speed_conv_combo.lineEdit().setPlaceholderText("选择或输入")
+        self.speed_conv_combo.setStyleSheet("""
+                    QComboBox { 
+                        color: black; 
+                        padding: 3px; 
+                    }
+                    QComboBox QAbstractItemView {
+                        color: black; /* 将下拉项的文字颜色设置为黑色 */
+                        background-color: white; /* 将下拉列表的背景设置为白色 */
+                        selection-background-color: #3d7ccb; /* 设置选中项的背景色 */
+                    }
+                """)
+        hz_label = QLabel("1HZ=", self)
+        hz_label.setFont(font_12)
+
+        # 第一个输入框 (皮带速度)
+        self.hz_value_edit_belt = QLineEdit(self)
+        self.hz_value_edit_belt.setFont(font_12)
+        self.hz_value_edit_belt.setFixedWidth(120)  # 调整宽度
+        self.hz_value_edit_belt.setValidator(QDoubleValidator(0.0, 9999.99, 4, self))
+        self.hz_value_edit_belt.setPlaceholderText("皮带速度")  # 添加提示信息
+
+        # 第二个输入框 (横梁摆动速度)
+        self.hz_value_edit_beam = QLineEdit(self)
+        self.hz_value_edit_beam.setFont(font_12)
+        self.hz_value_edit_beam.setFixedWidth(120)  # 调整宽度
+        self.hz_value_edit_beam.setValidator(QDoubleValidator(0.0, 9999.99, 4, self))
+        self.hz_value_edit_beam.setPlaceholderText("横梁摆动速度")  # 添加提示信息
+
+
+        unit_label = QLabel("mm/s", self)
+        unit_label.setFont(font_12)
+        self.save_conv_button = QPushButton("保存", self)
+        self.save_conv_button.setFont(QFont("Microsoft YaHei", 10))
+        button_style = """
+                    QPushButton { 
+                        background-color: #30438c; color: white; border: none; 
+                        padding: 5px 15px; font-size: 14px; border-radius: 5px;
+                    }
+                    QPushButton:hover { background-color: #40539c; }
+                    QPushButton:pressed { background-color: #7986b5; }
+                """
+
+        self.save_conv_button.setStyleSheet(button_style)
+        # 创建删除按钮
+        self.delete_conv_button = QPushButton("删除", self)
+        self.delete_conv_button.setFont(QFont("Microsoft YaHei", 10))
+        self.delete_conv_button.setStyleSheet(button_style)  # 复用样式
+        # 将新控件添加到布局中
+        global_layout.addWidget(speed_conv_label)
+        global_layout.addWidget(self.speed_conv_combo)
+        global_layout.addWidget(hz_label)
+        global_layout.addWidget(self.hz_value_edit_belt) # 添加第一个输入框
+        global_layout.addWidget(self.hz_value_edit_beam) # 添加第二个输入框
+        global_layout.addWidget(unit_label)
+        global_layout.addSpacing(10)
+        global_layout.addWidget(self.save_conv_button)
+        global_layout.addWidget(self.delete_conv_button) # 添加删除按钮到布局
+
+
         global_layout.addStretch()
         count_group.setLayout(global_layout)
         count_group.setFixedHeight(80)
@@ -172,12 +243,19 @@ class WholeLineConfigDialog(QDialog):
         self.tab_widget.addTab(tab2_widget, "磨块配比")
 
     def gather_ui_data(self):
-        all_configs = {'global': {}, 'spacings': [], 'devices': [], 'communication': []}
+        all_configs = {'global': {}, 'spacings': [], 'devices': [], 'communication': [], 'speed_conversions': {}}
+
+        # 1. 收集全局配置
         global_config = {
             'machine_count': self.machine_count_spinbox.value(),
             'whole_line_calc_enabled': self.whole_line_calc_checkbox.isChecked()
         }
         all_configs['global'] = global_config
+
+        # 2. 收集速度换算方案列表
+        all_configs['speed_conversions'] = self.speed_conv_data
+
+        # 3. 收集设备间距
         machine_count = self.machine_count_spinbox.value()
         spacings = []
         if machine_count > 1:
@@ -186,6 +264,8 @@ class WholeLineConfigDialog(QDialog):
                 if isinstance(widget, QLineEdit):
                     spacings.append(widget.text())
         all_configs['spacings'] = spacings
+
+        # 4. 收集每个设备的详细配置
         devices = []
         for i in range(self.machines_layout.count()):
             device_config = {}
@@ -195,15 +275,18 @@ class WholeLineConfigDialog(QDialog):
                 device_config['head_count'] = device_widget.head_count_edit.text()
                 device_config['between'] = device_widget.between_edit.text()
                 device_config['beam_between'] = device_widget.beam_between_edit.text()
+                # 收集当前设备选择的换算方案
+                device_config['conversion_profile'] = device_widget.conversion_combo.currentText()
 
             if i < self.grinding_config_layout.count():
                 grinding_widget = self.grinding_config_layout.itemAt(i).widget()
                 if isinstance(grinding_widget, WholeLineGrindingHeadWidget):
                     grinding_selections = [combo.currentText() for combo in grinding_widget.grit_combos]
                     device_config['grinding_config'] = grinding_selections
-
             devices.append(device_config)
         all_configs['devices'] = devices
+
+        # 5. 收集通讯配置
         comms = []
         for i in range(self.com_layout.count()):
             com_group = self.com_layout.itemAt(i).widget()
@@ -213,6 +296,7 @@ class WholeLineConfigDialog(QDialog):
                               'port': edits[1].text() if len(edits) > 1 else ''}
                 comms.append(com_config)
         all_configs['communication'] = comms
+
         return all_configs
 
     def on_machine_count_changed(self, count):
@@ -228,9 +312,30 @@ class WholeLineConfigDialog(QDialog):
     def load_configuration_to_ui(self):
         self.machine_count_spinbox.blockSignals(True)
         config_data = self.config_manager.load_config()
+
+        #1：将加载速度方案的逻辑提前
+        # 必须先将 speed_conv_data 加载到内存中，后续的 populate 方法才能使用它
+        self.speed_conv_data = config_data.get('speed_conversions', {})
+
+        # 现在可以安全地填充UI了
         self.populate_ui_with_data(config_data)
+
         self.machine_count_spinbox.blockSignals(False)
         self.update_grinding_tab(config_data)
+
+        #填充全局速度换算UI
+        self.speed_conv_combo.blockSignals(True)
+        self.speed_conv_combo.clear()
+        if self.speed_conv_data:
+            self.speed_conv_combo.addItems(self.speed_conv_data.keys())
+        self.speed_conv_combo.blockSignals(False)
+
+        if self.speed_conv_combo.count() > 0:
+            self.on_speed_conv_changed(self.speed_conv_combo.currentText())
+        else:
+            self.hz_value_edit_belt.clear()
+            self.hz_value_edit_beam.clear()
+
 
     def populate_ui_with_data(self, data: dict, target_count=None):
         global_config = data.get('global', {})
@@ -259,15 +364,25 @@ class WholeLineConfigDialog(QDialog):
         else:
             self.spacing_group.setVisible(False)
 
+        conversion_options = list(self.speed_conv_data.keys())
+        self.device_widgets.clear()
         for i in range(machine_count):
             device_widget = WholeLineDeviceWidget(i + 1, self)
+            device_widget.conversion_combo.addItems(conversion_options)
             if i < len(devices_data):
                 device_info = devices_data[i]
                 device_widget.type_combo.setCurrentText(device_info.get('type', '单头摆'))
                 device_widget.head_count_edit.setText(device_info.get('head_count', ''))
                 device_widget.between_edit.setText(device_info.get('between', ''))
                 device_widget.beam_between_edit.setText(device_info.get('beam_between', ''))
+                #新增：加载并设置当前设备选择的换算方案
+                # 使用 .get() 提供一个默认空字符串，以兼容没有此配置的旧文件
+                saved_profile = device_info.get('conversion_profile', '')
+                device_widget.conversion_combo.setCurrentText(saved_profile)
+
             self.machines_layout.addWidget(device_widget)
+            self.device_widgets.append(device_widget)
+
             com_group = QGroupBox(f"{i + 1} 号机通讯")
             com_group.setFixedHeight(75)
             com_layout = QHBoxLayout()
@@ -288,7 +403,14 @@ class WholeLineConfigDialog(QDialog):
         if not is_valid:
             QMessageBox.warning(self, "输入错误", error_message)
             return
+
+        # 1. 从UI收集基础数据
         config_data = self.gather_ui_data()
+
+        # 2. 将内存中的 speed_conv_data 添加到要保存的数据的顶层
+        config_data['speed_conversions'] = self.speed_conv_data
+
+        # 3. 保存
         self.config_manager.save_config(config_data)
         QMessageBox.information(self, "成功", "整线配置已成功保存！")
         self.accept()
@@ -327,6 +449,106 @@ class WholeLineConfigDialog(QDialog):
                                 combo.setCurrentText(grinding_data[combo_idx])
                     self.grinding_config_layout.addWidget(grinding_widget)
 
+
+    def on_save_speed_conversion(self):
+        """
+        修正后的方法：“保存”按钮逻辑，用于处理两个输入框。
+        """
+        key = self.speed_conv_combo.currentText().strip()
+        belt_value = self.hz_value_edit_belt.text().strip()
+        beam_value = self.hz_value_edit_beam.text().strip()
+
+        if not key:
+            QMessageBox.warning(self, "输入错误", "换算名称不能为空！")
+            return
+
+        # 将两个值存为一个列表
+        self.speed_conv_data[key] = [belt_value, beam_value]
+
+        config = self.config_manager.load_config()
+        config['speed_conversions'] = self.speed_conv_data
+        self.config_manager.save_config(config)
+
+        if self.speed_conv_combo.findText(key) == -1:
+            self.speed_conv_combo.addItem(key)
+
+        QMessageBox.information(self, "成功", f"速度换算配置 '{key}' 已保存！")
+
+        self.update_all_conversion_combos()
+
+    def on_speed_conv_changed(self, text):
+        """
+        当速度换算下拉框的内容改变时触发。
+        现在会加载两个速度值到对应的输入框。
+        """
+        # 从内存中查找对应的值，现在应该是一个列表
+        values = self.speed_conv_data.get(text, ["", ""])  # 默认值是一个包含两个空字符串的列表
+
+        # 安全性检查：确保values是一个有两个元素的列表
+        if not isinstance(values, list) or len(values) < 2:
+            values = ["", ""]  # 如果格式不對，提供安全的默认值
+
+        self.hz_value_edit_belt.setText(values[0])
+        self.hz_value_edit_beam.setText(values[1])
+
+    def on_speed_conv_changed(self, text):
+        """
+        修正后的方法：下拉框切换逻辑，用于更新两个输入框。
+        """
+        # 从内存数据中获取值列表，默认值为包含两个空字符串的列表
+        values = self.speed_conv_data.get(text, ["", ""])
+
+        # 安全性检查，确保获取到的是一个至少有两个元素的列表
+        if not isinstance(values, list) or len(values) < 2:
+            values = ["", ""] # 如果数据格式损坏，则提供安全默认值
+
+        # 将列表中的值分别设置到两个输入框中
+        self.hz_value_edit_belt.setText(values[0])
+        self.hz_value_edit_beam.setText(values[1])
+
+    def on_delete_speed_conversion(self):
+        """
+        “速度换算”旁边的“删除”按钮被点击时触发。
+        """
+        # 1. 获取当前选中的项
+        key_to_delete = self.speed_conv_combo.currentText()
+        current_index = self.speed_conv_combo.currentIndex()
+
+        # 2. 检查是否有可删除的项
+        if not key_to_delete or current_index == -1:
+            QMessageBox.warning(self, "操作无效", "没有可删除的配置项。")
+            return
+
+        # 3. 弹窗确认，防止误删
+        reply = QMessageBox.question(self, '确认删除',
+                                     f"您确定要删除速度换算配置 '{key_to_delete}' 吗？",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.No:
+            return
+
+        # 4. 从内存数据中删除
+        if key_to_delete in self.speed_conv_data:
+            del self.speed_conv_data[key_to_delete]
+
+        # 5. 更新并保存配置文件
+        config = self.config_manager.load_config()
+        config['speed_conversions'] = self.speed_conv_data
+        self.config_manager.save_config(config)
+
+        # 6. 从UI的下拉框中移除该项
+        self.speed_conv_combo.removeItem(current_index)
+
+        QMessageBox.information(self, "成功", f"配置 '{key_to_delete}' 已被删除。")
+        self.update_all_conversion_combos()
+
+    def update_all_conversion_combos(self):
+        """
+        更新所有设备控件的“换算”下拉框选项。
+        """
+        options = list(self.speed_conv_data.keys())  # 获取所有全局换算选项的名称
+        for widget in self.device_widgets:
+            widget.update_conversion_options(options)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

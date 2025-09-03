@@ -264,7 +264,7 @@ class PLCInterface:
             return
 
         try:
-            value = self.communicator.read_bool(variable_name)[0]  # 默认读取布尔值
+            value = self.communicator.read_float(variable_name)[0]  # 默认读取布尔值
             self.display_var.set(str(value))
         except Exception as e:
             messagebox.showerror("错误", str(e))
