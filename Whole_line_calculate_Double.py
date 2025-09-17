@@ -1,8 +1,14 @@
 # 双头摆争先优化函数
+import json
+
 import numpy as np
 import math
 import time as te
 from PySide6.QtCore import Qt, Signal, QThread
+
+from DataModel import DataModel
+
+
 # 构建子线程计算
 class Double_self_whole_line_Thread(QThread):
     result_signal = Signal(list,list)  # 创建一个信号用于传递结果
@@ -16,9 +22,35 @@ class Double_self_whole_line_Thread(QThread):
         self.beam_between = beam_between
         self.a = a
         self.head_count = head_count
+        self.data_model = DataModel('database.db')
     def run(self):
-        all_params_gather, unique_items_gather_simulation_calculate = self.self_define_calculate_whole_line()
-        self.result_signal.emit(all_params_gather,unique_items_gather_simulation_calculate)
+        # 校验此次计算输入参数是否已存在，如果存在，则跳过计算过程
+        input_data = {
+            'v1': self.v1, 'R': self.R, 'ceramic_width': self.ceramic_width, 'mo': self.mo,
+            'a': self.a, 'between': tuple(self.between), 'beam_between': tuple(self.beam_between),
+            'head_count': tuple(tuple(item) for item in self.head_count)
+        }
+        input_fingerprint = json.dumps(input_data, sort_keys=True)
+        print(f"[缓存检查] 正在为指纹 {input_fingerprint[:30]}... 查询数据库缓存...")
+        cached_plc, cached_sim = self.data_model.get_cached_result(input_fingerprint)
+        if cached_plc is not None and cached_sim is not None:
+            # 3. 如果计算参数已经存在，则直接使用数据库中的结果
+            print("[缓存命中] 使用数据库中的缓存结果。")
+            all_params_gather = cached_plc
+            unique_items_gather_simulation_calculate = cached_sim
+        else:
+             # 如果不存在，则进行计算，并将输入参数（v1/R/ceramic_width/mo/between/beam_between/a/head_count）和输出参数：(all_params_gather, unique_items_gather_simulation_calculate)一并保存起来
+             # 4. 如果不存在，则进行计算
+            print("[缓存未命中] 数据库中无记录，开始执行新的计算...")
+            all_params_gather, unique_items_gather_simulation_calculate = self.self_define_calculate_whole_line()
+             # 5. 并将输入参数和输出参数一并保存到缓存数据库中
+            self.data_model.cache_result(input_fingerprint, all_params_gather, unique_items_gather_simulation_calculate)
+
+        # 6. 发射信号，将最终结果（无论是来自缓存还是新计算）传递给主界面
+        #如果计算参数已经存在，则取数据库中的(all_params_gather, unique_items_gather_simulation_calculate)出来作为下面方法的参数，如果计算参数不存在，则取all_params_gather, unique_items_gather_simulation_calculate = self.self_define_calculate_whole_line()方法的参数
+        self.result_signal.emit(all_params_gather, unique_items_gather_simulation_calculate)
+
+
     # 整线计算策略
     def self_define_calculate_whole_line(self):
         # 为了单次传入多个参数，传入的参数为整线的参数集合（列表）

@@ -70,7 +70,16 @@ class DataModel(QObject):
                 role TEXT DEFAULT 'user'
             );
         """)
-
+        # --- 新增：检查并创建 calculation_cache 表 ---
+        self.cursor.execute("""
+                CREATE TABLE IF NOT EXISTS calculation_cache (
+                    cache_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    input_fingerprint TEXT NOT NULL UNIQUE,
+                    params_plc_json TEXT(512),
+                    params_sim_json TEXT(512),
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
         # 提交事务
         self.connection.commit()
     def fetch_data(self):
@@ -322,3 +331,49 @@ class DataModel(QObject):
     def close(self):
         """关闭数据库连接"""
         self.connection.close()
+    def get_cached_result(self, fingerprint: str):
+        """根据输入参数的指纹，从缓存表中查找计算结果。"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "SELECT params_plc_json, params_sim_json FROM calculation_cache WHERE input_fingerprint=?",
+                    (fingerprint,)
+                )
+                result = cursor.fetchone()
+                if result and result[0] and result[1]:
+                    # 如果找到了，就将JSON字符串反序列化回Python对象
+                    params_plc = json.loads(result[0])
+                    params_sim = json.loads(result[1])
+                    print(f"[缓存命中] 成功从数据库为指纹 {fingerprint[:30]}... 读取缓存结果。")
+                    return params_plc, params_sim
+                else:
+                    return None, None # 没有找到缓存
+        except Exception as e:
+            print(f"查询计算缓存时出错: {e}")
+            return None, None
+
+    def cache_result(self, fingerprint: str, params_plc: list, params_sim: list):
+        """将新的计算结果存入缓存表。"""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                params_plc_json = json.dumps(params_plc)
+                params_sim_json = json.dumps(params_sim)
+                cursor.execute(
+                    """
+                    INSERT INTO calculation_cache (input_fingerprint, params_plc_json, params_sim_json)
+                    VALUES (?, ?, ?)
+                    """,
+                    (fingerprint, params_plc_json, params_sim_json)
+                )
+                conn.commit()
+                print(f"[缓存写入] 成功将指纹 {fingerprint[:30]}... 的计算结果写入数据库。")
+                return True
+        except sqlite3.Error as e:
+            # UNIQUE constraint failed: calculation_cache.input_fingerprint
+            if "UNIQUE constraint failed" in str(e):
+                 print(f"[缓存警告] 指纹 {fingerprint[:30]}... 已存在，跳过重复写入。")
+                 return True # 这种情况也认为是成功的
+            print(f"写入计算缓存时出错: {e}")
+            return False
