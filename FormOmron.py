@@ -1,8 +1,5 @@
-import sys
-
-from PyQt5 import QtWidgets
-from PyQt5.uic.properties import QtCore
-from PySide6.QtWidgets import QWidget, QApplication, QMainWindow
+from PySide6 import QtWidgets
+from PySide6.QtWidgets import QWidget
 
 
 class FormOmron(QtWidgets.QMainWindow):

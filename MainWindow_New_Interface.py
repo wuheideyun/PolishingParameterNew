@@ -194,11 +194,11 @@ class MainWindow(QWidget):
         self.equal_button.clicked.connect(self.switch_motion_param_equal_clicked)
 
         button_layout.setAlignment(Qt.AlignCenter)
-        button_layout.addWidget(self.single_button)
+        # button_layout.addWidget(self.single_button)
         button_layout.addSpacerItem(QSpacerItem(315, 10, QSizePolicy.Fixed, QSizePolicy.Fixed))
         button_layout.addWidget(self.double_button)
         button_layout.addSpacerItem(QSpacerItem(315, 10, QSizePolicy.Fixed, QSizePolicy.Fixed))
-        button_layout.addWidget(self.equal_button)
+        # button_layout.addWidget(self.equal_button)
 
         left_layout.addWidget(self.button_frame)
 
@@ -830,10 +830,9 @@ class MainWindow(QWidget):
     def setInitButtonClicked(self):
         self.intelligent_search_mode.init_clicked_background()
         self.intelligent_search_mode.is_clicked = True
-        self.single_button.init_clicked_background()
-        self.single_button.is_clicked = True
-        # 初始化显示单头摆图片
-        self.update_device_image()
+        self.switch_motion_param_double_clicked()
+        self.double_button.init_clicked_background()
+        self.double_button.is_clicked = True
 
     def set_frame_image(self, image_path):
         # 加载图片
@@ -870,92 +869,6 @@ class MainWindow(QWidget):
         self.setPalette(palette)
         self.setAutoFillBackground(True)  # 确保背景填充
 
-        # 单头摆/双头摆/同步摆设备选择
-        # 设置背景图片路径
-        # self.button_frame_image_path = ":SwingAndHostParameter"
-        # self.button_frame_image = QPixmap(self.button_frame_image_path)
-        # # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
-        # button_frame_size = self.button_frame.size()
-        # scaled_image = self.button_frame_image.scaled(button_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-        # # 设置为窗口背景
-        # palette1 = QPalette()
-        # palette1.setBrush(QPalette.Window, QBrush(scaled_image))
-        # self.button_frame.setPalette(palette1)
-        # self.button_frame.setAutoFillBackground(True)
-
-        # 机型图
-        # 设置背景图片路径
-        # self.image_frame_image_path = ":Machine"
-        # self.image_frame_image = QPixmap(self.image_frame_image_path)
-        # # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
-        # image_frame_size = self.image_frame.size()
-        # scaled_image = self.image_frame_image.scaled(image_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-        # # 设置为窗口背景
-        # palette2 = QPalette()
-        # palette2.setBrush(QPalette.Window, QBrush(scaled_image))
-        # self.image_frame.setPalette(palette2)
-        # self.image_frame.setAutoFillBackground(True)
-
-        # 主机参数-双头摆
-        # 设置背景图片路径
-        # self.host_param_frame_image = QPixmap(":SwingAndHostParameter")
-        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
-        # scaled_image = self.host_param_frame_image.scaled(self.host_param_double_frame.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-        # # 设置为窗口背景
-        # host_palette = QPalette()
-        # host_palette.setBrush(QPalette.Window, QBrush(scaled_image))
-
-        # self.host_param_double_frame.setPalette(host_palette)
-        # self.host_param_double_frame.setAutoFillBackground(True)
-
-        # 主机参数-单头摆
-        # 设置为窗口背景
-        # self.host_param_single_frame.setPalette(host_palette)
-        # self.host_param_single_frame.setAutoFillBackground(True)
-
-        # 主机参数-同步摆
-        # 设置为窗口背景
-        # self.host_param_equal_frame.setPalette(host_palette)
-        # self.host_param_equal_frame.setAutoFillBackground(True)
-
-        # 轨迹分布
-        # 设置背景图片路径
-        # self.sim_image_path = ":Line"
-        # self.sim_image = QPixmap(self.sim_image_path)
-        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
-        # sim_frame_size = self.chart_frame1.size()
-        # scaled_image = self.sim_image.scaled(sim_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-        # 设置为窗口背景
-        # palette4 = QPalette()
-        # palette4.setBrush(QPalette.Window, QBrush(scaled_image))
-        # self.chart_frame1.setPalette(palette4)
-        # self.chart_frame1.setAutoFillBackground(True)
-        # self.chart_frame1.setStyleSheet(frameStyleSheet)
-        # 轨迹动画
-        # 设置背景图片路径
-        # self.animation_image_path = ":Line"
-        # self.animation_image = QPixmap(self.animation_image_path)
-        # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
-        # animation_frame_size = self.chart_frame2.size()
-        # scaled_image = self.animation_image.scaled(animation_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-        # 设置为窗口背景
-        # palette5 = QPalette()
-        # palette5.setBrush(QPalette.Window, QBrush(scaled_image))
-        # self.chart_frame2.setPalette(palette5)
-        # self.chart_frame2.setAutoFillBackground(True)
-
-        # 模式选择
-        # 设置背景图片路径
-        # self.animation_image_path = ":Select"
-        # self.animation_image = QPixmap(self.animation_image_path)
-        # # 将图片缩放至窗口大小，不保持纵横比，填充满整个窗口
-        # animation_frame_size = self.calc_button_frame.size()
-        # scaled_image = self.animation_image.scaled(animation_frame_size, Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
-        # # 设置为窗口背景
-        # palette6 = QPalette()
-        # palette6.setBrush(QPalette.Window, QBrush(scaled_image))
-        # self.calc_button_frame.setPalette(palette6)
-        # self.calc_button_frame.setAutoFillBackground(True)
 
         # 运动输入参数
         # 设置背景图片路径

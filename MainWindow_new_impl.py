@@ -6,16 +6,6 @@ from PySide6.QtWidgets import QMessageBox, QDialog
 
 from MainWindow_New_Interface import MainWindow
 from PySide6.QtGui import QMovie
-from decorator import append
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-import numpy as np
-import math
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import colorbar
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-import multiprocessing
-from matplotlib.patches import Rectangle  # 导入 Rectangle
 from functools import partial
 from PIL import Image, ImageSequence
 # 函数导入
@@ -428,7 +418,7 @@ class MainWindow_impl(MainWindow):
         # machine_count = self.whole_line_params.get('global', {}).get('machine_count', 0)
         # print(f"\n抛光机总数: {machine_count}")
         # 获取整线计算值
-        # whole_line_calc_enabled = self.whole_line_params.get('global', {}).get('whole_line_calc_enabled', 0)
+        whole_line_calc_enabled = self.whole_line_params.get('global', {}).get('whole_line_calc_enabled', 0)
         # print(f"\n整线计算值: {whole_line_calc_enabled}")
         # 获取第一台设备的参数
         # if machine_count > 0:
