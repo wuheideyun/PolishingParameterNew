@@ -27,7 +27,7 @@ class WholeLineConfigDialog(QDialog):
         self.device_widgets = []
 
         self.setWindowTitle("整线参数配置")
-        self.setFixedSize(1000, 720)
+        self.setFixedSize(1400, 720)
         self.setStyleSheet("""
             QDialog { background-color: rgb(31, 55, 96); color: white; }
             QLabel { color: white; font-family: "Microsoft YaHei"; }
@@ -275,6 +275,8 @@ class WholeLineConfigDialog(QDialog):
                 device_config['head_count'] = device_widget.head_count_edit.text()
                 device_config['between'] = device_widget.between_edit.text()
                 device_config['beam_between'] = device_widget.beam_between_edit.text()
+                device_config['ceramic_width'] = device_widget.ceramic_width_edit.text()
+                device_config['belt_speed'] = device_widget.belt_speed_edit.text()
                 # 收集当前设备选择的换算方案
                 device_config['conversion_profile'] = device_widget.conversion_combo.currentText()
 
@@ -375,6 +377,8 @@ class WholeLineConfigDialog(QDialog):
                 device_widget.head_count_edit.setText(device_info.get('head_count', ''))
                 device_widget.between_edit.setText(device_info.get('between', ''))
                 device_widget.beam_between_edit.setText(device_info.get('beam_between', ''))
+                device_widget.ceramic_width_edit.setText(device_info.get('ceramic_width', ''))
+                device_widget.belt_speed_edit.setText(device_info.get('belt_speed', ''))
                 #新增：加载并设置当前设备选择的换算方案
                 # 使用 .get() 提供一个默认空字符串，以兼容没有此配置的旧文件
                 saved_profile = device_info.get('conversion_profile', '')
@@ -385,6 +389,7 @@ class WholeLineConfigDialog(QDialog):
 
             com_group = QGroupBox(f"{i + 1} 号机通讯")
             com_group.setFixedHeight(75)
+            com_group.setFixedWidth(200)
             com_layout = QHBoxLayout()
             ip_edit = QLineEdit(comms_data[i].get('ip', '') if i < len(comms_data) else "")
             ip_edit.setPlaceholderText("IP 地址")

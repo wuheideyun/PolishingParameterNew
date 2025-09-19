@@ -12,7 +12,7 @@ from DataModel import DataModel
 # 构建子线程计算
 class Double_self_whole_line_Thread(QThread):
     result_signal = Signal(list,list)  # 创建一个信号用于传递结果
-    def __init__(self, v1,R,ceramic_width,mo,between,beam_between,head_count,a):
+    def __init__(self, v1,R,ceramic_width,mo,between,beam_between,ceramic_widths,belt_speed,head_count,a):
         super().__init__()
         self.v1 = v1
         self.R = R
@@ -20,6 +20,8 @@ class Double_self_whole_line_Thread(QThread):
         self.mo = mo
         self.between = between
         self.beam_between = beam_between
+        self.ceramic_widths = ceramic_widths
+        self.belt_speed = belt_speed
         self.a = a
         self.head_count = head_count
         self.data_model = DataModel('database.db')
@@ -27,7 +29,7 @@ class Double_self_whole_line_Thread(QThread):
         # 校验此次计算输入参数是否已存在，如果存在，则跳过计算过程
         input_data = {
             'v1': self.v1, 'R': self.R, 'ceramic_width': self.ceramic_width, 'mo': self.mo,
-            'a': self.a, 'between': tuple(self.between), 'beam_between': tuple(self.beam_between),
+            'a': self.a, 'between': tuple(self.between), 'beam_between': tuple(self.beam_between),'ceramic_widths': tuple(self.ceramic_widths),'belt_speed': tuple(self.belt_speed),
             'head_count': tuple(tuple(item) for item in self.head_count)
         }
         input_fingerprint = json.dumps(input_data, sort_keys=True)

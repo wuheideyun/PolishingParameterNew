@@ -41,7 +41,9 @@ class WholeLineDeviceWidget(QGroupBox):
         double_validator = QDoubleValidator()
         double_validator.setDecimals(2)
         self.between_edit.setValidator(double_validator)
-        self.between_edit.setFixedWidth(55)
+        self.between_edit.setFixedWidth(50)
+
+
 
         beam_between_label = QLabel("横梁间距(mm):", self)
         beam_between_label.setFont(font)
@@ -49,7 +51,24 @@ class WholeLineDeviceWidget(QGroupBox):
         self.beam_between_edit.setFont(font)
         self.beam_between_edit.setStyleSheet("color: black; padding: 2px;")
         self.beam_between_edit.setValidator(QDoubleValidator(0, 99999, 2, self))
-        self.beam_between_edit.setFixedWidth(55)
+        self.beam_between_edit.setFixedWidth(50)
+
+        ceramic_width_label = QLabel("进砖宽度(mm):", self)
+        ceramic_width_label.setFont(font)
+        self.ceramic_width_edit = QLineEdit(self)
+        self.ceramic_width_edit.setFont(font)
+        self.ceramic_width_edit.setStyleSheet("color: black; padding: 2px;")
+        self.ceramic_width_edit.setValidator(QDoubleValidator(0, 99999, 2, self))
+        self.ceramic_width_edit.setFixedWidth(50)
+
+        belt_speed_label = QLabel("主皮带速度(mm/s):", self)
+        belt_speed_label.setFont(font)
+        self.belt_speed_edit = QLineEdit(self)
+        self.belt_speed_edit.setFont(font)
+        self.belt_speed_edit.setStyleSheet("color: black; padding: 2px;")
+        self.belt_speed_edit.setValidator(QDoubleValidator(0, 99999, 2, self))
+        self.belt_speed_edit.setFixedWidth(50)
+
 
         conversion_label = QLabel("换算:", self)
         conversion_label.setFont(font)
@@ -57,7 +76,7 @@ class WholeLineDeviceWidget(QGroupBox):
         self.conversion_combo = QComboBox(self)
         self.conversion_combo.setFont(font)
         self.conversion_combo.setStyleSheet("color: black; padding: 2px;")
-        self.conversion_combo.setFixedWidth(100)
+        self.conversion_combo.setFixedWidth(90)
         main_layout.addWidget(type_label)
         main_layout.addWidget(self.type_combo)
         main_layout.addWidget(head_count_label)
@@ -66,6 +85,10 @@ class WholeLineDeviceWidget(QGroupBox):
         main_layout.addWidget(self.between_edit)
         main_layout.addWidget(beam_between_label)
         main_layout.addWidget(self.beam_between_edit)
+        main_layout.addWidget(ceramic_width_label)
+        main_layout.addWidget(self.ceramic_width_edit)
+        main_layout.addWidget(belt_speed_label)
+        main_layout.addWidget(self.belt_speed_edit)
         main_layout.addWidget(conversion_label)
         main_layout.addWidget(self.conversion_combo)
         main_layout.addStretch()
