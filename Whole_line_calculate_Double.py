@@ -90,8 +90,12 @@ class Double_self_whole_line_Thread(QThread):
                 num = unique_items[j]
                 if num == 2:
                     params_1 = self.self_define_calculate_new(belt_speed,ceramic_width)
+                # 高速计算模式
+                elif self.beam_swing_tempo[i] == 1:
+                    params_1, params_2 = self.self_define_calculate_speed_boost(machine_between, machine_beam_between,num,belt_speed,ceramic_width)
+                # 低速计算模式
                 else:
-                    params_1, params_2 = self.self_define_calculate_speed_boost(machine_between, machine_beam_between, num,belt_speed,ceramic_width)
+                    params_1, params_2 = self.self_define_calculate_speed_nomal(machine_between, machine_beam_between,num,belt_speed,ceramic_width)
                 unique_items_gather_transmission_PLC[num] = params_1
                 if len(params_2) != 0:
                     unique_items_gather_simulation_calculate.append(params_2)
@@ -343,6 +347,176 @@ class Double_self_whole_line_Thread(QThread):
         final_params_transmission_PLC['mode'] = 'order'
         # 参数 final_params 用于仿真计算
         return final_params_transmission_PLC, final_params
+    # 自定义计算（普通摆动速度）
+    def self_define_calculate_speed_nomal(self, between, beam_between, num, belt_speed, ceramic_width):
+            # 定义全局变量
+            # global v1,ceramic_width,R,mo
+            B = ceramic_width + 200 - 2 * self.R
+            v1 = belt_speed
+            # 赋默认值
+            delay_time = 0
+            self_delay_time = 0
+            # 自动将磨头数进行划分
+            if num % 4 == 0 and num / 4 != 1:
+                group = num / 4
+                num = 4
+            else:
+                group = 1
+            params_gather = []  # 存放参数集
+            for i in np.arange(0.1, 2.1, 0.1):  # 新增循环迭代，通过调整边部停留时间来寻得 横梁摆动速度分布
+                t2 = round(float(i), 2)
+                # -------------------常规计算--间距为单倍磨头间距-----------------------------
+                distance_period = between * num
+                t_all = round(distance_period / v1, 2)
+                # 边部停留时间设定
+                t_a_in = (t_all - 2 * t2) / 2
+                # t_a 加速时间
+                # t_e 匀速时间
+                # H 摆幅
+                # t_总=2*t_a+t_e
+                # f=a*t_a^2-a*t_a*t_总+H
+                par_a = self.a
+                par_b = -self.a * t_a_in
+                par_c = B
+                if par_b ** 2 - 4 * par_a * par_c >= 0:
+                    t_a = (-par_b - (par_b ** 2 - 4 * par_a * par_c) ** 0.5) / (2 * self.a)
+                    delay_time = round((beam_between - 2 * between) / v1, 2)
+                    if group > 1:
+                        self_delay_time = round(0.5 * between / group / v1, 2)
+                    else:
+                        self_delay_time = 0
+                else:
+                    # t_a=t_a_in/2
+                    t_a = 0
+                    ValueError('The swing cannot reach the set value!')
+                # ------------------------------------------------------------------------
+
+                # ------------------------均匀分布策略--------------------------------------
+                '''
+                if t_a == 0:   # 说明常规策略也无解
+                    t2 = 0 # 减小边部停留时间，此时应为有解
+                    distance_period = between * num
+                    t_all = round(distance_period / v1, 2)
+                    # 边部停留时间设定
+                    t_a_in = (t_all - 2 * t2) / 2
+                    # t_a 加速时间
+                    # t_e 匀速时间
+                    # H 摆幅
+                    # t_总=2*t_a+t_e
+                    # f=a*t_a^2-a*t_a*t_总+H
+                    par_a = a
+                    par_b = -a * t_a_in
+                    par_c = B
+                    if par_b ** 2 - 4 * par_a * par_c >= 0:
+                        t_a = (-par_b - (par_b ** 2 - 4 * par_a * par_c) ** 0.5) / (2 * a)
+                        delay_time = round((beam_between - 2 * between) / v1, 2)
+                        self_delay_time = round(between / group / v1, 2)
+                    else:
+                        # t_a=t_a_in/2
+                        t_a = 0
+                        ValueError('The swing cannot reach the set value!')
+                '''
+                # -------------（此刻再无解，说明用户输入参数不合理）--------------------------
+                # t1 = t_a  # 加速时间
+                t1 = round(t_a_in - 2 * t_a, 2)
+                v2 = round(self.a * t_a, 2)
+                # delay_time=round((beam_between-2*between)/v1,2)
+                # self_delay_time=round(between/group/v1,2)
+                # 多组磨头叠加延时时间计算
+                delay_time_self_list = []
+                for i in range(0, round(num / 2 * group)):
+                    current_delay_time = round(i * delay_time, 2)
+                    if (i * 2 / num) >= 1:
+                        current_delay_time += math.floor(i * 2 / num) * self_delay_time
+                    delay_time_self_list.append(round(current_delay_time, 2))
+                # 参数集
+                params = {}
+                params.update(
+                    {'lineEdit_belt_speed': v1, 'lineEdit_beam_swing_speed': v2, 'lineEdit_beam_constant_time': t1,
+                     'lineEdit_stay_time_output': t2
+                        , 'lineEdit_num_input': num, 'lineEdit_num_output': num * group,
+                     'lineEdit_delay_time': delay_time,
+                     'lineEdit_delay_time_list': delay_time_self_list
+                        , 'lineEdit_stay_time_input': t2, 'lineEdit_swing': round(self.a * t_a ** 2 + v2 * t1, 2),
+                     'lineEdit_ceramic_width': ceramic_width, 'lineEdit_group_count': group
+                        , 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': self.R,
+                     'lineEdit_accelerate': self.a, 'self_delay_time': self_delay_time,
+                     'lineEdit_grind_length': self.mo})
+                params_gather.append(params)
+
+            # ---------------------计算完毕，进行数据处理与筛选---------------------
+            # 筛选出摆动速度值大于0的字典
+            filtered_params_gather = [item for item in params_gather if item["lineEdit_beam_swing_speed"] > 0]
+            # 按值降序排序
+            sorted_data_params_gather = sorted(filtered_params_gather, key=lambda x: x["lineEdit_beam_swing_speed"],
+                                               reverse=True)
+            # 为降低计算时间，仅筛选前四组数据进行计算比较
+            # final_params_gather = sorted_data_params_gather[:5]
+            # 针对抛釉砖，要求磨削均匀性最优
+            final_params_gather = sorted_data_params_gather
+            # 计算均匀系数，将均匀系数最优的参数集筛选出来
+            for i in final_params_gather:
+                PDT = PolishingDistributionThread(**i)
+                object_matrix, result = PDT.emit()
+                i.update({'lineEdit_coefficient': result})
+            # 筛选出最佳结果
+            sorted_final_params_gather = sorted(final_params_gather, key=lambda x: x["lineEdit_coefficient"],
+                                                reverse=False)
+            final_params = sorted_final_params_gather[0]
+            '''
+            # 增加小砖算法
+            if ceramic_width <= 800:
+                if v2 <= 200:       # 若横梁摆动速度小于200则判定摆动速度过慢
+                    num_small = 2  # 针对小砖缩短单周期长度
+                    group_small  = num / 2  # 针对小砖增多叠加次数
+                    B = ceramic_width + 200 - 2 * R
+                    distance_period = between * num_small
+                    t_all = round(distance_period / v1, 2)
+                    # 边部停留时间设定
+                    t_a_in = (t_all - 2 * t2) / 2
+                    # t_a 加速时间
+                    # t_e 匀速时间
+                    # H 摆幅
+                    # t_总=2*t_a+t_e
+                    # f=a*t_a^2-a*t_a*t_总+H
+                    par_a = a
+                    par_b = -a * t_a_in
+                    par_c = B
+                    if par_b ** 2 - 4 * par_a * par_c >= 0:
+                        t_a = (-par_b - (par_b ** 2 - 4 * par_a * par_c) ** 0.5) / (2 * a)
+                    else:
+                        t_a = t_a_in / 2
+                        ValueError('The swing cannot reach the set value!')
+                    # t1 = t_a  # 加速时间
+                    t1 = round(t_a_in - 2 * t_a, 2)
+                    v2 = round(a * t_a, 2)
+                    delay_time = round((beam_between - 2 * between) / v1, 2)
+                    self_delay_time = round(between / group_small*2 / v1, 2)
+                    # 多组磨头叠加延时时间计算
+                    delay_time_self_list = []
+                    for i in range(0, round(num_small / 2 * group_small)):
+                        current_delay_time = round(i * delay_time, 2)
+                        if (i * 2 / num_small) >= 1:
+                            current_delay_time += math.floor(i * 2 / num_small) * self_delay_time
+                        delay_time_self_list.append(round(current_delay_time, 2))
+                    # 参数集
+                    params = {}
+                    params.update(
+                                {'lineEdit_belt_speed': v1, 'lineEdit_beam_swing_speed': v2, 'lineEdit_beam_constant_time': t1, 'lineEdit_stay_time_output': t2
+                                ,'lineEdit_num_input':num, 'lineEdit_num_output': num_small*group_small, 'lineEdit_delay_time': delay_time, 'lineEdit_delay_time_list': delay_time_self_list
+                                ,'lineEdit_stay_time_input':t2,'lineEdit_swing': round(a*t_a**2+v2*t1,2), 'lineEdit_ceramic_width': ceramic_width
+                                ,'lineEdit_group_count':group, 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R
+                                , 'lineEdit_accelerate': a,'self_delay_time':self_delay_time,'lineEdit_grind_length':mo})
+            '''
+            # 对计算出的结果进行处理（1.方便数据传输到PLC；2.方便数据传输至仿真动画计算端）
+            keys_to_extract = ['lineEdit_belt_speed', 'lineEdit_beam_swing_speed', 'lineEdit_accelerate',
+                               'lineEdit_stay_time_output'
+                , 'lineEdit_swing', 'lineEdit_delay_time_list']
+            # 使用字典推导式提取指定键
+            final_params_transmission_PLC = {key: final_params[key] for key in keys_to_extract if key in final_params}
+            final_params_transmission_PLC['mode'] = 'order'
+            # 参数 final_params 用于仿真计算
+            return final_params_transmission_PLC, final_params
     # 当磨头数小于等于 2 -计算单组参数
     def self_define_calculate_new(self,belt_speed,ceramic_width):
         # 定义全局变量
