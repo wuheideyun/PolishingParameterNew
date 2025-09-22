@@ -197,7 +197,7 @@ class WholeLineConfigManager:
         return beam_betweens
     def get_all_ceramic_widths(self) -> list:
         """
-        4. 返回所有抛光机的进砖宽度(ceramic_width)列表。
+        5. 返回所有抛光机的进砖宽度(ceramic_width)列表。
         """
         config = self.load_config()
         ceramic_width = []
@@ -211,7 +211,7 @@ class WholeLineConfigManager:
 
     def get_all_belt_speeds(self) -> list:
         """
-        4. 返回所有抛光机的主皮带速度(belt_speed)列表。
+        6. 返回所有抛光机的主皮带速度(belt_speed)列表。
         """
         config = self.load_config()
         belt_speed = []
@@ -222,7 +222,19 @@ class WholeLineConfigManager:
             except (ValueError, TypeError):
                 belt_speed.append(0.0)
         return belt_speed
-
+    def get_all_beam_swing_tempos(self) -> list:
+        """
+        7. 返回所有抛光机的横梁摆动快慢(beam_swing_tempo)列表。
+        """
+        config = self.load_config()
+        beam_swing_tempo = []
+        for device in config.get('devices', []):
+            try:
+                value = int(device.get('beam_swing_tempo', 0))
+                beam_swing_tempo.append(value)
+            except (ValueError, TypeError):
+                beam_swing_tempo.append(0)
+        return beam_swing_tempo
 if __name__ == '__main__':
     # 这是一个测试用的示例数据
     sample_data_for_test = {

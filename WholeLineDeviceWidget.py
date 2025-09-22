@@ -69,10 +69,17 @@ class WholeLineDeviceWidget(QGroupBox):
         self.belt_speed_edit.setValidator(QDoubleValidator(0, 99999, 2, self))
         self.belt_speed_edit.setFixedWidth(50)
 
+        beam_swing_tempo_label = QLabel("横梁摆动快慢:", self)
+        beam_swing_tempo_label.setFont(font)
+        self.beam_swing_tempo_combo = QComboBox(self)
+        self.beam_swing_tempo_combo.setFont(font)
+        self.beam_swing_tempo_combo.setStyleSheet("color: black; padding: 2px;")
+        self.beam_swing_tempo_combo.setFixedWidth(64)
+        self.beam_swing_tempo_combo.addItem("慢速", 0)
+        self.beam_swing_tempo_combo.addItem("快速", 1)
 
         conversion_label = QLabel("换算:", self)
         conversion_label.setFont(font)
-
         self.conversion_combo = QComboBox(self)
         self.conversion_combo.setFont(font)
         self.conversion_combo.setStyleSheet("color: black; padding: 2px;")
@@ -89,6 +96,8 @@ class WholeLineDeviceWidget(QGroupBox):
         main_layout.addWidget(self.ceramic_width_edit)
         main_layout.addWidget(belt_speed_label)
         main_layout.addWidget(self.belt_speed_edit)
+        main_layout.addWidget(beam_swing_tempo_label)
+        main_layout.addWidget(self.beam_swing_tempo_combo)
         main_layout.addWidget(conversion_label)
         main_layout.addWidget(self.conversion_combo)
         main_layout.addStretch()

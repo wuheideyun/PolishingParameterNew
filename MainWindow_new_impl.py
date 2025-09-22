@@ -952,8 +952,9 @@ class MainWindow_impl(MainWindow):
         beam_between_summary = WholeLineConfigManager().get_all_beam_betweens()  # 整线抛光机横梁间距
         ceramic_width_summary = WholeLineConfigManager().get_all_ceramic_widths()  # 整线抛光机进砖宽度
         belt_speed_summary = WholeLineConfigManager().get_all_belt_speeds()  # 整线抛光机主皮带速度
+        beam_swing_tempo_summary = WholeLineConfigManager().get_all_beam_swing_tempos()  # 整线抛光机横梁摆动快慢
         # 整线参数计算
-        self.worker_thread = Double_self_whole_line_Thread(R,mo,between_summary,beam_between_summary,ceramic_width_summary,belt_speed_summary,grind_summary,a)
+        self.worker_thread = Double_self_whole_line_Thread(R,mo,between_summary,beam_between_summary,ceramic_width_summary,belt_speed_summary,beam_swing_tempo_summary,grind_summary,a)
         self.worker_thread.result_signal.connect(lambda result_1,result_2: self.double_whole_line_calculate_signal(result_1,result_2,self.current_animation_name))  # 连接子线程的信号
         self.worker_thread.start()  # 启动子线程
     # ------------------------------------双头摆方案验证-------------------------------------------------------------------

@@ -27,7 +27,7 @@ class WholeLineConfigDialog(QDialog):
         self.device_widgets = []
 
         self.setWindowTitle("整线参数配置")
-        self.setFixedSize(1400, 720)
+        self.setFixedSize(1530, 720)
         self.setStyleSheet("""
             QDialog { background-color: rgb(31, 55, 96); color: white; }
             QLabel { color: white; font-family: "Microsoft YaHei"; }
@@ -277,6 +277,7 @@ class WholeLineConfigDialog(QDialog):
                 device_config['beam_between'] = device_widget.beam_between_edit.text()
                 device_config['ceramic_width'] = device_widget.ceramic_width_edit.text()
                 device_config['belt_speed'] = device_widget.belt_speed_edit.text()
+                device_config['beam_swing_tempo'] = device_widget.beam_swing_tempo_combo.currentData()
                 # 收集当前设备选择的换算方案
                 device_config['conversion_profile'] = device_widget.conversion_combo.currentText()
 
@@ -379,6 +380,14 @@ class WholeLineConfigDialog(QDialog):
                 device_widget.beam_between_edit.setText(device_info.get('beam_between', ''))
                 device_widget.ceramic_width_edit.setText(device_info.get('ceramic_width', ''))
                 device_widget.belt_speed_edit.setText(device_info.get('belt_speed', ''))
+
+                index_to_set = device_info.get('beam_swing_tempo', '')
+
+                # 3. 如果找到了，就设置 QComboBox 的当前选项
+                if index_to_set != -1 and index_to_set != '':
+                    device_widget.beam_swing_tempo_combo.setCurrentIndex(int(index_to_set))
+                else:
+                    device_widget.beam_swing_tempo_combo.setCurrentIndex(0)
                 #新增：加载并设置当前设备选择的换算方案
                 # 使用 .get() 提供一个默认空字符串，以兼容没有此配置的旧文件
                 saved_profile = device_info.get('conversion_profile', '')
