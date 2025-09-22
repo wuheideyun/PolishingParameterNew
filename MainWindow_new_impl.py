@@ -941,8 +941,8 @@ class MainWindow_impl(MainWindow):
     def double_self_whole_calculate(self,animation_name,**kwargs):
         self.current_animation_name = animation_name
         # 界面参数获取（全局变量）
-        v1 = kwargs.get('lineEdit_belt_speed')
-        ceramic_width = kwargs.get('lineEdit_ceramic_width')
+        # v1 = kwargs.get('lineEdit_belt_speed')
+        # ceramic_width = kwargs.get('lineEdit_ceramic_width')
         R = kwargs.get('lineEdit_diameter') / 2
         a = kwargs.get('lineEdit_accelerate')
         mo = kwargs.get('lineEdit_grind_length')
@@ -953,7 +953,7 @@ class MainWindow_impl(MainWindow):
         ceramic_width_summary = WholeLineConfigManager().get_all_ceramic_widths()  # 整线抛光机进砖宽度
         belt_speed_summary = WholeLineConfigManager().get_all_belt_speeds()  # 整线抛光机主皮带速度
         # 整线参数计算
-        self.worker_thread = Double_self_whole_line_Thread(v1,R,ceramic_width,mo,between_summary,beam_between_summary,ceramic_width_summary,belt_speed_summary,grind_summary,a)
+        self.worker_thread = Double_self_whole_line_Thread(R,mo,between_summary,beam_between_summary,ceramic_width_summary,belt_speed_summary,grind_summary,a)
         self.worker_thread.result_signal.connect(lambda result_1,result_2: self.double_whole_line_calculate_signal(result_1,result_2,self.current_animation_name))  # 连接子线程的信号
         self.worker_thread.start()  # 启动子线程
     # ------------------------------------双头摆方案验证-------------------------------------------------------------------

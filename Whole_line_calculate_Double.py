@@ -12,11 +12,10 @@ from DataModel import DataModel
 # 构建子线程计算
 class Double_self_whole_line_Thread(QThread):
     result_signal = Signal(list,list)  # 创建一个信号用于传递结果
-    def __init__(self, v1,R,ceramic_width,mo,between,beam_between,ceramic_widths,belt_speed,head_count,a):
+    def __init__(self, R,mo,between,beam_between,ceramic_widths,belt_speed,head_count,a):
         super().__init__()
-        self.v1 = v1
+        # self.v1 = v1
         self.R = R
-        self.ceramic_width = ceramic_width
         self.mo = mo
         self.between = between
         self.beam_between = beam_between
@@ -28,7 +27,7 @@ class Double_self_whole_line_Thread(QThread):
     def run(self):
         # 校验此次计算输入参数是否已存在，如果存在，则跳过计算过程
         input_data = {
-            'v1': self.v1, 'R': self.R, 'ceramic_width': self.ceramic_width, 'mo': self.mo,
+            'v': self.belt_speed, 'R': self.R, 'mo': self.mo,
             'a': self.a, 'between': tuple(self.between), 'beam_between': tuple(self.beam_between),'ceramic_widths': tuple(self.ceramic_widths),'belt_speed': tuple(self.belt_speed),
             'head_count': tuple(tuple(item) for item in self.head_count)
         }
@@ -51,8 +50,6 @@ class Double_self_whole_line_Thread(QThread):
         # 6. 发射信号，将最终结果（无论是来自缓存还是新计算）传递给主界面
         #如果计算参数已经存在，则取数据库中的(all_params_gather, unique_items_gather_simulation_calculate)出来作为下面方法的参数，如果计算参数不存在，则取all_params_gather, unique_items_gather_simulation_calculate = self.self_define_calculate_whole_line()方法的参数
         self.result_signal.emit(all_params_gather, unique_items_gather_simulation_calculate)
-
-
     # 整线计算策略
     def self_define_calculate_whole_line(self):
         # 为了单次传入多个参数，传入的参数为整线的参数集合（列表）
@@ -82,15 +79,18 @@ class Double_self_whole_line_Thread(QThread):
             # 计算单台机 不同 同粒度磨头数目 的运动参数
             machine_between = self.between[i]
             machine_beam_between = self.beam_between[i]
+            # 新增 皮带速度、进砖宽度
+            belt_speed = self.belt_speed[i]
+            ceramic_width = self.ceramic_widths[i]
             # 用于存储传输至PLC的数据
             unique_items_gather_transmission_PLC = {}
             params_2 = []
             for j in range(0, unique_count):
                 num = unique_items[j]
                 if num == 2:
-                    params_1 = self.self_define_calculate_new()
+                    params_1 = self.self_define_calculate_new(belt_speed,ceramic_width)
                 else:
-                    params_1, params_2 = self.self_define_calculate_speed_boost(machine_between, machine_beam_between, num)
+                    params_1, params_2 = self.self_define_calculate_speed_boost(machine_between, machine_beam_between, num,belt_speed,ceramic_width)
                 unique_items_gather_transmission_PLC[num] = params_1
                 if len(params_2) != 0:
                     unique_items_gather_simulation_calculate.append(params_2)
@@ -113,7 +113,10 @@ class Double_self_whole_line_Thread(QThread):
             single_machine_params_gather = []
             # 存放第一台机 同粒度磨头数排布（eg.[4,6,4]）
             single_machine_head_gather = self.head_count[i]
-            # 按照双头摆抛光机的加工特性 ， 直接给出最优磨头摆布
+            # 新增 皮带速度 进砖宽度
+            belt_speed = self.belt_speed[i]
+            ceramic_width = self.ceramic_widths[i]
+            # 按照双头摆抛光机的加工特性，直接给出最优磨头排布
             single_machine_head_gather_sum = sum(single_machine_head_gather)
             if single_machine_head_gather_sum == 16:
                 single_machine_head_gather = [16]
@@ -134,10 +137,9 @@ class Double_self_whole_line_Thread(QThread):
             for j in range(0, unique_count):
                 num = unique_items[j]
                 if num == 2:
-                    params_1 = self.self_define_calculate_new()
+                    params_1 = self.self_define_calculate_new(belt_speed,ceramic_width)
                 else:
-                    params_1, params_2 = self.self_define_calculate_speed_boost(machine_between, machine_beam_between,
-                                                                                num)
+                    params_1, params_2 = self.self_define_calculate_speed_boost(machine_between, machine_beam_between,num,belt_speed,ceramic_width)
                 unique_items_gather_transmission_PLC[num] = params_1
                 if len(params_2) != 0:
                     unique_items_gather_simulation_calculate.append(params_2)
@@ -148,10 +150,11 @@ class Double_self_whole_line_Thread(QThread):
             all_params_gather.append(single_machine_params_gather)
         return all_params_gather, unique_items_gather_simulation_calculate
     # 自定义计算（提升摆动速度）
-    def self_define_calculate_speed_boost(self,between, beam_between, num):
+    def self_define_calculate_speed_boost(self,between, beam_between, num,belt_speed,ceramic_width):
         # 定义全局变量
         # global v1,ceramic_width,R,mo
-        B = self.ceramic_width + 200 - 2 * self.R
+        B = ceramic_width + 200 - 2 * self.R
+        v1 = belt_speed
         # 赋默认值
         delay_time = 0
         self_delay_time = 0
@@ -161,13 +164,12 @@ class Double_self_whole_line_Thread(QThread):
             num = 4
         else:
             group = 1
-
         params_gather = []  # 存放参数集
         for i in np.arange(0.1, 2.1, 0.1):  # 新增循环迭代，通过调整边部停留时间来寻得 横梁摆动速度分布
             t2 = round(float(i), 2)
             # --------------------横梁摆动提速策略--间距为 0.5*磨头间距------------------------
             distance_period = 2 * between  # between/(num/2) * num
-            t_all = round(distance_period / self.v1, 2)
+            t_all = round(distance_period / v1, 2)
             # 边部停留时间设定
             t_a_in = (t_all - 2 * t2) / 2
             # t_a 加速时间
@@ -180,9 +182,9 @@ class Double_self_whole_line_Thread(QThread):
             par_c = B
             if par_b ** 2 - 4 * par_a * par_c >= 0:
                 t_a = (-par_b - (par_b ** 2 - 4 * par_a * par_c) ** 0.5) / (2 * self.a)
-                delay_time = round((beam_between - 1 / (num / 2) * between) / self.v1, 2)
+                delay_time = round((beam_between - 1 / (num / 2) * between) / v1, 2)
                 if group > 1:
-                    self_delay_time = round(1 / (num / 2) * between / group / self.v1, 2)
+                    self_delay_time = round(1 / (num / 2) * between / group / v1, 2)
                 else:
                     self_delay_time = 0
             else:
@@ -192,7 +194,7 @@ class Double_self_whole_line_Thread(QThread):
             # -------------------常规计算--间距为单倍磨头间距-----------------------------
             if t_a == 0:  # 说明高速策略无解
                 distance_period = between * num
-                t_all = round(distance_period / self.v1, 2)
+                t_all = round(distance_period / v1, 2)
                 # 边部停留时间设定
                 t_a_in = (t_all - 2 * t2) / 2
                 # t_a 加速时间
@@ -205,9 +207,9 @@ class Double_self_whole_line_Thread(QThread):
                 par_c = B
                 if par_b ** 2 - 4 * par_a * par_c >= 0:
                     t_a = (-par_b - (par_b ** 2 - 4 * par_a * par_c) ** 0.5) / (2 * self.a)
-                    delay_time = round((beam_between - 2 * between) / self.v1, 2)
+                    delay_time = round((beam_between - 2 * between) / v1, 2)
                     if group > 1:
-                        self_delay_time = round(0.5 * between / group / self.v1, 2)
+                        self_delay_time = round(0.5 * between / group / v1, 2)
                     else:
                         self_delay_time = 0
                 else:
@@ -257,12 +259,12 @@ class Double_self_whole_line_Thread(QThread):
             # 参数集
             params = {}
             params.update(
-                {'lineEdit_belt_speed': self.v1, 'lineEdit_beam_swing_speed': v2, 'lineEdit_beam_constant_time': t1,
+                {'lineEdit_belt_speed': v1, 'lineEdit_beam_swing_speed': v2, 'lineEdit_beam_constant_time': t1,
                  'lineEdit_stay_time_output': t2
                     , 'lineEdit_num_input': num, 'lineEdit_num_output': num * group, 'lineEdit_delay_time': delay_time,
                  'lineEdit_delay_time_list': delay_time_self_list
                     , 'lineEdit_stay_time_input': t2, 'lineEdit_swing': round(self.a * t_a ** 2 + v2 * t1, 2),
-                 'lineEdit_ceramic_width': self.ceramic_width, 'lineEdit_group_count': group
+                 'lineEdit_ceramic_width': ceramic_width, 'lineEdit_group_count': group
                     , 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': self.R,
                  'lineEdit_accelerate': self.a, 'self_delay_time': self_delay_time, 'lineEdit_grind_length': self.mo})
             params_gather.append(params)
@@ -274,7 +276,9 @@ class Double_self_whole_line_Thread(QThread):
         sorted_data_params_gather = sorted(filtered_params_gather, key=lambda x: x["lineEdit_beam_swing_speed"],
                                            reverse=True)
         # 为降低计算时间，仅筛选前四组数据进行计算比较
-        final_params_gather = sorted_data_params_gather[:5]
+        # final_params_gather = sorted_data_params_gather[:5]
+        # 针对抛釉砖，要求磨削均匀性最优
+        final_params_gather = sorted_data_params_gather
         # 计算均匀系数，将均匀系数最优的参数集筛选出来
         for i in final_params_gather:
             PDT = PolishingDistributionThread(**i)
@@ -339,10 +343,10 @@ class Double_self_whole_line_Thread(QThread):
         # 参数 final_params 用于仿真计算
         return final_params_transmission_PLC, final_params
     # 当磨头数小于等于 2 -计算单组参数
-    def self_define_calculate_new(self):
+    def self_define_calculate_new(self,belt_speed,ceramic_width):
         # 定义全局变量
         # global v1, ceramic_width, R, mo
-        B = self.ceramic_width + 200 - 2 * self.R
+        B = ceramic_width + 200 - 2 * self.R
         v2_max = (B / self.a) ** 0.5 * self.a
         # # 根据磨头间距、皮带速度计算单周期时间
         # period_time = between * num / v1
@@ -362,7 +366,7 @@ class Double_self_whole_line_Thread(QThread):
         #     , 'lineEdit_num_input': num, 'lineEdit_num_output': num * group, 'lineEdit_delay_time': delay_time,'lineEdit_delay_time_list': delay_time_self_list
         #     , 'lineEdit_stay_time_input': t2, 'lineEdit_swing': round(a * t_a ** 2 + v2 * t_e, 2),'lineEdit_ceramic_width': ceramic_width, 'lineEdit_group_count': group
         #     , 'lineEdit_between': between, 'lineEdit_beam_between': beam_between, 'R': R, 'lineEdit_accelerate': a, 'self_delay_time': self_delay_time, 'lineEdit_grind_length': mo}
-        params = {'lineEdit_belt_speed': self.v1, 'lineEdit_beam_swing_speed': v2, 'lineEdit_stay_time_output': t2
+        params = {'lineEdit_belt_speed': belt_speed, 'lineEdit_beam_swing_speed': v2, 'lineEdit_stay_time_output': t2
             , 'lineEdit_delay_time_list': delay_time_self_list, 'lineEdit_swing': round(self.a * t_a ** 2 + v2 * t_e, 2),
                   'lineEdit_accelerate': self.a}
 
