@@ -63,6 +63,8 @@ class PLCReadWriteWorker(QThread):
 class WholeLinePLCInterface(QDialog):
     def __init__(self, plc_instances: dict, solution_params: str, config_data: dict, parent=None):
         super().__init__(parent)
+
+        self.line_config = self.parent().config_manager.load_config()
         self.plc_instances = plc_instances
         self.whole_line_param_json = solution_params
         self.solution_params = solution_params
@@ -177,8 +179,7 @@ class WholeLinePLCInterface(QDialog):
 
     def setup_table(self):
         print("[DEBUG] setup_table: 开始构建基础表格...")
-        line_config = self.parent().config_manager.load_config()
-        num_devices = line_config.get('global',{}).get('machine_count',1)
+        num_devices = self.line_config.get('global',{}).get('machine_count',1)
         # num_devices = len(self.plc_instances)
         if num_devices == 0: num_devices = 1
 
@@ -355,11 +356,12 @@ class WholeLinePLCInterface(QDialog):
 
                                 if param_key == 'lineEdit_swing':
                                     swing = float(source_params.get(param_key, 0.0))
+                                    origin_location = self.line_config['devices'][0]['origin_location']
                                     if "操作面" in template["plc_name_template"] and "非" not in template[
                                         "plc_name_template"]:
-                                        value_to_write = str(swing / 2)
+                                        value_to_write = str( round(swing / 2 + float(origin_location),3))
                                     elif "非操作面" in template["plc_name_template"]:
-                                        value_to_write = str(-swing / 2)
+                                        value_to_write = str(round(-swing / 2 + float(origin_location),3))
                                 else:
                                     original_value = None
                                     if param_key == 'lineEdit_delay_time_list':

@@ -27,7 +27,7 @@ class WholeLineConfigDialog(QDialog):
         self.device_widgets = []
 
         self.setWindowTitle("整线参数配置")
-        self.setFixedSize(1530, 720)
+        self.setFixedSize(1300, 720)
         self.setStyleSheet("""
             QDialog { background-color: rgb(31, 55, 96); color: white; }
             QLabel { color: white; font-family: "Microsoft YaHei"; }
@@ -277,9 +277,10 @@ class WholeLineConfigDialog(QDialog):
                 device_config['beam_between'] = device_widget.beam_between_edit.text()
                 device_config['ceramic_width'] = device_widget.ceramic_width_edit.text()
                 device_config['belt_speed'] = device_widget.belt_speed_edit.text()
-                device_config['beam_swing_tempo'] = device_widget.beam_swing_tempo_combo.currentData()
+                device_config['beam_swing_tempo'] = device_widget.beam_swing_tempo_combo.currentIndex()
                 # 收集当前设备选择的换算方案
                 device_config['conversion_profile'] = device_widget.conversion_combo.currentText()
+                device_config['origin_location'] = device_widget.origin_location_edit.text()
 
             if i < self.grinding_config_layout.count():
                 grinding_widget = self.grinding_config_layout.itemAt(i).widget()
@@ -380,6 +381,7 @@ class WholeLineConfigDialog(QDialog):
                 device_widget.beam_between_edit.setText(device_info.get('beam_between', ''))
                 device_widget.ceramic_width_edit.setText(device_info.get('ceramic_width', ''))
                 device_widget.belt_speed_edit.setText(device_info.get('belt_speed', ''))
+                device_widget.origin_location_edit.setText(device_info.get('origin_location', ''))
 
                 index_to_set = device_info.get('beam_swing_tempo', '')
 
@@ -397,7 +399,7 @@ class WholeLineConfigDialog(QDialog):
             self.device_widgets.append(device_widget)
 
             com_group = QGroupBox(f"{i + 1} 号机通讯")
-            com_group.setFixedHeight(75)
+            com_group.setFixedHeight(134)
             com_group.setFixedWidth(200)
             com_layout = QHBoxLayout()
             ip_edit = QLineEdit(comms_data[i].get('ip', '') if i < len(comms_data) else "")

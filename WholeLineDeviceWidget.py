@@ -1,5 +1,7 @@
+# 文件名: WholeLineDeviceWidget.py (已增加“原点位置”并优化布局)
+
 from PySide6.QtWidgets import (
-    QWidget, QGroupBox, QHBoxLayout, QLabel, QComboBox, QLineEdit
+    QWidget, QGroupBox, QHBoxLayout, QVBoxLayout, QGridLayout, QLabel, QComboBox, QLineEdit
 )
 from PySide6.QtGui import QFont, QIntValidator, QDoubleValidator
 from PySide6.QtCore import Qt
@@ -9,119 +11,101 @@ class WholeLineDeviceWidget(QGroupBox):
     def __init__(self, device_number, main_dialog, parent=None):
         super().__init__(f"{device_number} 号抛光机配置", parent)
 
-        self.setFixedHeight(75)
+        self.setStyleSheet("QGroupBox { padding-top: 20px; }")
 
-        main_layout = QHBoxLayout(self)
-        main_layout.setContentsMargins(10, 20, 10, 10)
-        main_layout.setSpacing(8)
+        # --- 主布局使用 QGridLayout ---
+        main_layout = QGridLayout(self)
+        main_layout.setContentsMargins(15, 15, 15, 15)
+        main_layout.setHorizontalSpacing(15)  # 列间距
+        main_layout.setVerticalSpacing(12)  # 行间距
 
-        font = QFont("Microsoft YaHei", 11)
+        font = QFont("Microsoft YaHei", 10)
 
-        # --- 创建控件 ---
+        # --- 创建所有控件 ---
         type_label = QLabel("机型:", self)
-        type_label.setFont(font)
         self.type_combo = QComboBox(self)
         self.type_combo.addItems(["单头摆", "双头摆", "同步摆"])
-        self.type_combo.setFont(font)
-        self.type_combo.setStyleSheet("color: black; padding: 2px;")
 
         head_count_label = QLabel("磨头数:", self)
-        head_count_label.setFont(font)
         self.head_count_edit = QLineEdit(self)
-        self.head_count_edit.setFont(font)
-        self.head_count_edit.setStyleSheet("color: black; padding: 2px;")
         self.head_count_edit.setValidator(QIntValidator(0, 100, self))
-        self.head_count_edit.setFixedWidth(50)
 
         between_label = QLabel("磨头间距(mm):", self)
-        between_label.setFont(font)
         self.between_edit = QLineEdit(self)
-        self.between_edit.setFont(font)
-        self.between_edit.setStyleSheet("color: black; padding: 2px;")
-        double_validator = QDoubleValidator()
-        double_validator.setDecimals(2)
-        self.between_edit.setValidator(double_validator)
-        self.between_edit.setFixedWidth(50)
-
-
+        self.between_edit.setValidator(QDoubleValidator(0, 99999, 2, self))
 
         beam_between_label = QLabel("横梁间距(mm):", self)
-        beam_between_label.setFont(font)
         self.beam_between_edit = QLineEdit(self)
-        self.beam_between_edit.setFont(font)
-        self.beam_between_edit.setStyleSheet("color: black; padding: 2px;")
         self.beam_between_edit.setValidator(QDoubleValidator(0, 99999, 2, self))
-        self.beam_between_edit.setFixedWidth(50)
 
         ceramic_width_label = QLabel("进砖宽度(mm):", self)
-        ceramic_width_label.setFont(font)
         self.ceramic_width_edit = QLineEdit(self)
-        self.ceramic_width_edit.setFont(font)
-        self.ceramic_width_edit.setStyleSheet("color: black; padding: 2px;")
         self.ceramic_width_edit.setValidator(QDoubleValidator(0, 99999, 2, self))
-        self.ceramic_width_edit.setFixedWidth(50)
 
-        belt_speed_label = QLabel("主皮带速度(mm/s):", self)
-        belt_speed_label.setFont(font)
+        belt_speed_label = QLabel("主皮带速度(m/min):", self)
         self.belt_speed_edit = QLineEdit(self)
-        self.belt_speed_edit.setFont(font)
-        self.belt_speed_edit.setStyleSheet("color: black; padding: 2px;")
         self.belt_speed_edit.setValidator(QDoubleValidator(0, 99999, 2, self))
-        self.belt_speed_edit.setFixedWidth(50)
 
         beam_swing_tempo_label = QLabel("横梁摆动快慢:", self)
-        beam_swing_tempo_label.setFont(font)
         self.beam_swing_tempo_combo = QComboBox(self)
-        self.beam_swing_tempo_combo.setFont(font)
-        self.beam_swing_tempo_combo.setStyleSheet("color: black; padding: 2px;")
-        self.beam_swing_tempo_combo.setFixedWidth(64)
-        self.beam_swing_tempo_combo.addItem("慢速", 0)
-        self.beam_swing_tempo_combo.addItem("快速", 1)
+        self.beam_swing_tempo_combo.addItems(["慢速", "中速", "快速"])
 
         conversion_label = QLabel("换算:", self)
-        conversion_label.setFont(font)
         self.conversion_combo = QComboBox(self)
-        self.conversion_combo.setFont(font)
-        self.conversion_combo.setStyleSheet("color: black; padding: 2px;")
-        self.conversion_combo.setFixedWidth(90)
-        main_layout.addWidget(type_label)
-        main_layout.addWidget(self.type_combo)
-        main_layout.addWidget(head_count_label)
-        main_layout.addWidget(self.head_count_edit)
-        main_layout.addWidget(between_label)
-        main_layout.addWidget(self.between_edit)
-        main_layout.addWidget(beam_between_label)
-        main_layout.addWidget(self.beam_between_edit)
-        main_layout.addWidget(ceramic_width_label)
-        main_layout.addWidget(self.ceramic_width_edit)
-        main_layout.addWidget(belt_speed_label)
-        main_layout.addWidget(self.belt_speed_edit)
-        main_layout.addWidget(beam_swing_tempo_label)
-        main_layout.addWidget(self.beam_swing_tempo_combo)
-        main_layout.addWidget(conversion_label)
-        main_layout.addWidget(self.conversion_combo)
-        main_layout.addStretch()
+
+        origin_location_label = QLabel("原点位置(mm):", self)
+        self.origin_location_edit = QLineEdit(self)
+        self.origin_location_edit.setValidator(QDoubleValidator(0, 99999, 2, self))
+        all_widgets = self.findChildren(QWidget)
+        for widget in all_widgets:
+            if isinstance(widget, (QLabel, QLineEdit, QComboBox)):
+                widget.setFont(font)
+                if isinstance(widget, (QLineEdit, QComboBox)):
+                    widget.setStyleSheet("padding: 4px;")
+
+        def create_widget_pair(label, widget):
+            container = QWidget()
+            layout = QHBoxLayout(container)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.addWidget(label)
+            layout.addWidget(widget)
+            return container
+
+        type_group = create_widget_pair(type_label, self.type_combo)
+        head_count_group = create_widget_pair(head_count_label, self.head_count_edit)
+        between_group = create_widget_pair(between_label, self.between_edit)
+        beam_between_group = create_widget_pair(beam_between_label, self.beam_between_edit)
+        ceramic_width_group = create_widget_pair(ceramic_width_label, self.ceramic_width_edit)
+        belt_speed_group = create_widget_pair(belt_speed_label, self.belt_speed_edit)
+        beam_swing_tempo_group = create_widget_pair(beam_swing_tempo_label, self.beam_swing_tempo_combo)
+        conversion_group = create_widget_pair(conversion_label, self.conversion_combo)
+        origin_location_group = create_widget_pair(origin_location_label, self.origin_location_edit)
+
+        # addWidget(widget, row, column, rowSpan, columnSpan)
+        # --- 第 0 行 ---
+        main_layout.addWidget(type_group, 0, 0, 1, 2)
+        main_layout.addWidget(ceramic_width_group, 0, 2, 1, 2)
+        main_layout.addWidget(between_group, 0, 4, 1, 2)
+        main_layout.addWidget(beam_between_group, 0, 6, 1, 2)
+        main_layout.addWidget(origin_location_group, 0, 8, 1, 2)
+        # --- 第 1 行 ---
+        main_layout.addWidget(beam_swing_tempo_group, 1, 0, 1, 2)
+        main_layout.addWidget(belt_speed_group, 1, 2, 1, 2)
+        main_layout.addWidget(head_count_group, 1, 4, 1, 2)
+        main_layout.addWidget(conversion_group, 1, 6, 1, 2)
+
+        main_layout.setColumnStretch(10, 1) 
 
         # 信号连接
         if main_dialog and hasattr(main_dialog, 'update_grinding_tab'):
             self.head_count_edit.editingFinished.connect(main_dialog.update_grinding_tab)
 
     def update_conversion_options(self, options: list):
-        """
-        新增方法：用于更新换算下拉框的选项，同时尽量保留当前的选择。
-        """
-        # 记录当前选中的文本
         current_selection = self.conversion_combo.currentText()
-
-        # 更新前先阻塞信号，防止触发不必要的逻辑
         self.conversion_combo.blockSignals(True)
         self.conversion_combo.clear()
         self.conversion_combo.addItems(options)
-
-        # 尝试恢复之前的选择
         index = self.conversion_combo.findText(current_selection)
         if index != -1:
             self.conversion_combo.setCurrentIndex(index)
-
-        # 更新后再解除阻塞
         self.conversion_combo.blockSignals(False)
