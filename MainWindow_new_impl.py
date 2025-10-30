@@ -1521,7 +1521,8 @@ class MainWindow_impl(MainWindow):
         print("[DEBUG] 整线计算的PLC参数结果已暂存到 self.latest_whole_line_result")
         # PLC传参打印
         print(json.dumps(params_transmit_PLC,indent=4,ensure_ascii=False))
-        print(params_transmit_PLC)
+        print(json.dumps(result_simulation,indent=4,ensure_ascii=False))
+        # print(params_transmit_PLC)
         params_simulation_calculate = result_simulation
         # 筛选出磨抛效果最好的一组
         params_simulation_16 = {}

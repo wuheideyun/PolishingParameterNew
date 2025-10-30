@@ -42,13 +42,13 @@ class WholeLineDeviceWidget(QGroupBox):
         self.ceramic_width_edit = QLineEdit(self)
         self.ceramic_width_edit.setValidator(QDoubleValidator(0, 99999, 2, self))
 
-        belt_speed_label = QLabel("主皮带速度(m/min):", self)
+        belt_speed_label = QLabel("主皮带速度(m/s):", self)
         self.belt_speed_edit = QLineEdit(self)
         self.belt_speed_edit.setValidator(QDoubleValidator(0, 99999, 2, self))
 
         beam_swing_tempo_label = QLabel("横梁摆动快慢:", self)
         self.beam_swing_tempo_combo = QComboBox(self)
-        self.beam_swing_tempo_combo.addItems(["慢速", "中速", "快速"])
+        self.beam_swing_tempo_combo.addItems(["慢速", "快速"])
 
         conversion_label = QLabel("换算:", self)
         self.conversion_combo = QComboBox(self)

@@ -1,4 +1,6 @@
 # 双头摆争先优化函数
+
+from datetime import datetime
 import json
 
 import numpy as np
@@ -44,7 +46,11 @@ class Double_self_whole_line_Thread(QThread):
              # 如果不存在，则进行计算，并将输入参数（v1/R/ceramic_width/mo/between/beam_between/a/head_count）和输出参数：(all_params_gather, unique_items_gather_simulation_calculate)一并保存起来
              # 4. 如果不存在，则进行计算
             print("[缓存未命中] 数据库中无记录，开始执行新的计算...")
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(f"[{current_time}] [计算线程] 开始执行新的计算...")
             all_params_gather, unique_items_gather_simulation_calculate = self.self_define_calculate_whole_line()
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(f"[{current_time}] [计算线程] 计算完成。")
              # 5. 并将输入参数和输出参数一并保存到缓存数据库中
             self.data_model.cache_result(input_fingerprint, all_params_gather, unique_items_gather_simulation_calculate)
 
@@ -605,7 +611,7 @@ class PolishingDistributionThread():
     # 输出端口
     def emit(self):
         self.mod_rho, self.mod_theta = self.mod_information_calculate()
-        matrix_results = self.polishing_cal()
+        matrix_results = self.polishing_cal2()
 
         if self.mode == 'order':
             object_matrix, result = self.order_matrix_cal(matrix_results)
@@ -742,6 +748,154 @@ class PolishingDistributionThread():
         variance_matrix = np.mean(middle_matrix)  # 子样方差
         result = format(variance_matrix ** 0.5 / equal_subsample, '.4f')  # 抛磨变异系数
         return object_matrix, result
+
+    def polishing_cal2(self):
+        # ===== 赋值操作（原样保留） =====
+        v1 = self.v1
+        v2 = self.v2
+        constant_t = self.constant_time
+        stay_t = self.stay_time
+        a = self.a
+        R = self.R
+        mod_rho = self.mod_rho
+        mod_theta = self.mod_theta
+        mo = self.mo
+
+        accelerate_t = round(v2 / a, 2)
+        t1 = accelerate_t
+        t2 = constant_t
+        t3 = accelerate_t
+        t4 = stay_t
+        t5 = accelerate_t
+        t6 = constant_t
+        t7 = accelerate_t
+        t8 = stay_t
+        period = 4 * accelerate_t + 2 * stay_t + 2 * constant_t
+
+        w = 600  # 转速
+        size = 0.01  # 时间步长
+        n = 6
+        mod_width_cell = 5  # 磨块单元（宽度）
+        mod_length_cell = 4  # 磨块单元（长度）
+
+        c_length_cell = 10  # 统计区域长度最小单位
+        c_width_cell = 10  # 统计区域宽度最小单位
+
+        mod_length = 64  # 磨块长度
+        mod_width = mo  # 磨块宽度
+
+        c_width = math.ceil(v2 * t2 + a * t1 ** 2 + 2 * R + 100)  # 统计区域宽度
+
+        c_length_percell = round(math.ceil(v1 * period + 2 * R + 100) / c_length_cell)
+        c_width_mulcell = round(c_width / c_width_cell)
+
+        mod_width_mulcell = math.floor(mod_width / mod_width_cell)
+        mod_length_mulcell = math.floor(mod_length / mod_length_cell)
+
+        H = np.zeros((c_width_mulcell, c_length_percell))  # 存放速度和
+        time = np.arange(0, period, size)
+        end_time = math.floor(period / size)
+
+        # ====== 🌟 新增：预计算固定的几何矩阵（向量化准备） ======
+        # 原理：原本 i_width 和 i_length 循环中，每次都访问 mod_rho 和 mod_theta。
+        # 在 NumPy 中，我们一次性读取整个矩阵并进行广播运算，加速计算。
+        r = mod_rho[:mod_width_mulcell, :mod_length_mulcell]  # 半径矩阵
+        theta_base = mod_theta[:mod_width_mulcell, :mod_length_mulcell]  # 初始角矩阵
+        r = np.asarray(r, dtype=np.float64)
+        theta_base = np.asarray(theta_base, dtype=np.float64)
+
+        theta_mod = np.arange(6).reshape(6, 1, 1) * (np.pi / 3)  # 六个磨块角度基准（用于广播）
+
+        for k in range(0, end_time):
+            t = time[k]
+
+            if t >= 0 and t < t1:
+                x_0 = v1 * t + R + 50
+                y_0 = 0.5 * a * t ** 2 + R + 50
+            elif t >= t1 and t < t1 + t2:
+                x_0 = v1 * t + R + 50
+                y_0 = 0.5 * a * t1 ** 2 + v2 * (t - t1) + R + 50
+            elif t >= (t1 + t2) and t < (t1 + t2 + t3):
+                x_0 = v1 * t + R + 50
+                y_0 = 0.5 * a * t1 ** 2 + v2 * t2 + v2 * (t - t1 - t2) - 0.5 * a * (t - t1 - t2) ** 2 + R + 50
+            elif t >= (t1 + t2 + t3) and t < (t1 + t2 + t3 + t4):
+                x_0 = v1 * t + R + 50
+                y_0 = 0.5 * a * t1 ** 2 + v2 * t2 + v2 * t3 - 0.5 * a * t3 ** 2 + R + 50
+            elif t >= (t1 + t2 + t3 + t4) and t < (t1 + t2 + t3 + t4 + t5):
+                x_0 = v1 * t + R + 50
+                y_0 = (0.5 * a * t1 ** 2 + v2 * t2 + v2 * t3 -
+                       0.5 * a * t3 ** 2 - 0.5 * a * (t - t1 - t2 - t3 - t4) ** 2 + R + 50)
+            elif t >= (t1 + t2 + t3 + t4 + t5) and t < (t1 + t2 + t3 + t4 + t5 + t6):
+                x_0 = v1 * t + R + 50
+                y_0 = (0.5 * a * t1 ** 2 + v2 * t2 + v2 * t3 -
+                       0.5 * a * t3 ** 2 - 0.5 * a * t5 ** 2 -
+                       v2 * (t - t1 - t2 - t3 - t4 - t5) + R + 50)
+            elif t >= (t1 + t2 + t3 + t4 + t5 + t6) and t < (t1 + t2 + t3 + t4 + t5 + t6 + t7):
+                x_0 = v1 * t + R + 50
+                y_0 = (0.5 * a * t1 ** 2 + v2 * t2 + v2 * t3 -
+                       0.5 * a * t3 ** 2 - 0.5 * a * t5 ** 2 -
+                       v2 * t6 - v2 * (t - t1 - t2 - t3 - t4 - t5 - t6) +
+                       0.5 * a * (t - t1 - t2 - t3 - t4 - t5 - t6) ** 2 + R + 50)
+            else:
+                x_0 = v1 * t + R + 50
+                y_0 = R + 50
+
+            v_x_0 = v1
+            if t >= 0 and t < t1:
+                v_y_0 = a * t
+            elif t >= t1 and t < t1 + t2:
+                v_y_0 = a * t1
+            elif t >= t1 + t2 and t < t1 + t2 + t3:
+                v_y_0 = a * t1 - a * (t - t1 - t2)
+            elif t >= (t1 + t2 + t3) and t < (t1 + t2 + t3 + t4):
+                v_y_0 = 0
+            elif t >= (t1 + t2 + t3 + t4) and t < (t1 + t2 + t3 + t4 + t5):
+                v_y_0 = -a * (t - t1 - t2 - t3 - t4)
+            elif t >= (t1 + t2 + t3 + t4 + t5) and t < (t1 + t2 + t3 + t4 + t5 + t6):
+                v_y_0 = -a * t5
+            elif t >= (t1 + t2 + t3 + t4 + t5 + t6) and t < (t1 + t2 + t3 + t4 + t5 + t6 + t7):
+                v_y_0 = -a * t5 + a * (t - t1 - t2 - t3 - t4 - t5 - t6)
+            else:
+                v_y_0 = 0
+
+            # === 新实现说明 ===
+            # 原理：r、theta_base 作为二维矩阵，theta_mod 作为6×1×1广播，
+            # 一次生成6组磨块坐标。每组结果对应原6次循环。
+            theta_t = w * np.pi / 30 * t  # 当前时刻旋转角
+            cos_t = np.cos(theta_t)
+            sin_t = np.sin(theta_t)
+
+            theta_1 = theta_base[None, :, :] + theta_mod  # shape (6, mw, ml)
+            cos_t1 = np.cos(theta_1)
+            sin_t1 = np.sin(theta_1)
+
+            # === 向量化轨迹计算 ===
+            x = r[None, :, :] * (cos_t * cos_t1 + sin_t * sin_t1) + x_0
+            y = r[None, :, :] * (-sin_t * cos_t1 + cos_t * sin_t1) + y_0
+
+            # === 向量化速度计算 ===
+            v_x = -r[None, :, :] * w * np.pi / 30 * np.sin(w * np.pi / 30 * t + theta_1) - v_x_0
+            v_y = r[None, :, :] * w * np.pi / 30 * np.cos(w * np.pi / 30 * t + theta_1) + v_y_0
+
+            v_common = np.sqrt(v_x ** 2 + v_y ** 2)
+
+            # === 计算索引并过滤边界 ===
+            m_x = np.ceil(x / c_length_cell).astype(int)
+            m_y = np.ceil(y / c_width_cell).astype(int)
+
+            mask = (m_x >= 0) & (m_x < c_length_percell) & (m_y >= 0) & (m_y < c_width_mulcell)
+
+            idx_x = m_x[mask]
+            idx_y = m_y[mask]
+            vals = v_common[mask]
+
+            # === 精确累加 ===
+            # np.add.at(H, (idx_y, idx_x), vals)
+            flat_idx = np.ravel_multi_index((idx_y, idx_x), H.shape)
+            binc = np.bincount(flat_idx, weights=vals, minlength=H.size)
+            H += binc.reshape(H.shape)
+        # === 返回结果 ===
+        return H
 
     def polishing_cal(self):
         # 赋值操作
